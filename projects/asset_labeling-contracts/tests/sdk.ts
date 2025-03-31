@@ -53,6 +53,18 @@ export async function addOperatorToLabel(
   return txIds[0]
 }
 
+export async function removeOperatorFromLabel(
+  client: AssetLabelingClient,
+  operator: Account,
+  label: string,
+): Promise<string> {
+  const { txIds } = await client.send.removeOperatorFromLabel({
+    args: { operator: operator.addr.toString(), label },
+    boxReferences: [operator.addr.publicKey, label],
+  })
+  return txIds[0]
+}
+
 export async function getOperatorLabels(client: AssetLabelingClient, operator: Account): Promise<string[]> {
   const {
     returns: [operatorLabels],

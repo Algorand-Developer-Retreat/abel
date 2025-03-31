@@ -7,7 +7,14 @@ import {
 import { Account, Address } from 'algosdk'
 import { Config } from '@algorandfoundation/algokit-utils'
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
-import { addLabel, addOperatorToLabel, getLabelDescriptor, getOperatorLabels, removeLabel } from './sdk'
+import {
+  addLabel,
+  addOperatorToLabel,
+  getLabelDescriptor,
+  getOperatorLabels,
+  removeLabel,
+  removeOperatorFromLabel,
+} from './sdk'
 
 describe('asset labeling contract', () => {
   const localnet = algorandFixture()
@@ -147,5 +154,65 @@ describe('asset labeling contract', () => {
     await addOperatorToLabel(client, testAccount, id)
 
     await expect(() => addOperatorToLabel(client, testAccount, id)).rejects.toThrow(/ERR:EXISTS/)
+  })
+
+  test('1x add/remove operator label', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+    const id2 = 'w2'
+    const name = 'world'
+
+    await addLabel(client, testAccount, id, name)
+
+    await addOperatorToLabel(client, testAccount, id)
+    await removeOperatorFromLabel(client, testAccount, id)
+
+    await expect(() => getOperatorLabels(client, testAccount)).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('2x add/remove operator labels', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+    const id2 = 'w2'
+    const name = 'world'
+
+    await addLabel(client, testAccount, id, name)
+    await addLabel(client, testAccount, id2, name)
+
+    await addOperatorToLabel(client, testAccount, id)
+    await addOperatorToLabel(client, testAccount, id2)
+    await removeOperatorFromLabel(client, testAccount, id)
+
+    const operatorLabels = await getOperatorLabels(client, testAccount)
+    expect(operatorLabels[0]).toBe(id2)
+
+    await removeOperatorFromLabel(client, testAccount, id2)
+    await expect(() => getOperatorLabels(client, testAccount)).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('2x reverse add/remove operator labels', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+    const id2 = 'w2'
+    const name = 'world'
+
+    await addLabel(client, testAccount, id, name)
+    await addLabel(client, testAccount, id2, name)
+
+    await addOperatorToLabel(client, testAccount, id)
+    await addOperatorToLabel(client, testAccount, id2)
+    await removeOperatorFromLabel(client, testAccount, id2)
+
+    const operatorLabels = await getOperatorLabels(client, testAccount)
+    expect(operatorLabels[0]).toBe(id)
+
+    await removeOperatorFromLabel(client, testAccount, id)
+    await expect(() => getOperatorLabels(client, testAccount)).rejects.toThrow(/ERR:NOEXIST/)
   })
 })
