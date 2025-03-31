@@ -66,6 +66,7 @@ class AssetLabeling(ARC4Contract):
     @abimethod()
     def add_operator_to_label(self, operator: Account, label: String) -> None:
         ensure(label in self.labels, S("ERR:NOEXIST"))
+        # check if operator exists already
         if operator in self.operators:
             # existing operator, check for duplicate
             existing = self.operators[operator].copy()
@@ -75,15 +76,16 @@ class AssetLabeling(ARC4Contract):
             # add label to operator
             existing.append(arc4.String(label))
             self.operators[operator] = existing.copy()
-
-            # increment label operators
-            label_descriptor = self.labels[label].copy()
-            label_descriptor.num_operators = arc4.UInt64(
-                label_descriptor.num_operators.native + UInt64(1)
-            )
-            self.labels[label] = label_descriptor.copy()
         else:
+            # new operator, create new box
             self.operators[operator] = arc4.DynamicArray(arc4.String(label))
+
+        # increment label operators
+        label_descriptor = self.labels[label].copy()
+        label_descriptor.num_operators = arc4.UInt64(
+            label_descriptor.num_operators.native + UInt64(1)
+        )
+        self.labels[label] = label_descriptor.copy()
 
     @abimethod(readonly=True)
     def get_operator_labels(self, operator: Account) -> LabelList:

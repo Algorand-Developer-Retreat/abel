@@ -1,8 +1,13 @@
 import { algorandFixture } from '@algorandfoundation/algokit-utils/testing'
-import { AssetLabelingFactory } from '../smart_contracts/artifacts/asset_labeling/AssetLabelingClient'
-import { Account, Algodv2, Indexer } from 'algosdk'
+import {
+  AssetLabelingClient,
+  AssetLabelingFactory,
+  LabelDescriptor,
+} from '../smart_contracts/artifacts/asset_labeling/AssetLabelingClient'
+import { Account, Address } from 'algosdk'
 import { Config } from '@algorandfoundation/algokit-utils'
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
+import { addLabel, addOperatorToLabel, getLabelDescriptor, getOperatorLabels, removeLabel } from './sdk'
 
 describe('asset labeling contract', () => {
   const localnet = algorandFixture()
@@ -32,29 +37,13 @@ describe('asset labeling contract', () => {
     const id = 'wo'
     const name = 'world'
 
-    await client
-      .newGroup()
-      .addTransaction(
-        await client.algorand.createTransaction.payment({
-          sender: testAccount,
-          receiver: client.appAddress,
-          amount: (0.2).algos(),
-        }),
-      )
-      .addLabel({ args: { id, name }, boxReferences: [id] })
-      .send()
+    await addLabel(client, testAccount, id, name)
 
-    const {
-      returns: [labelDescriptor],
-    } = await client
-      .newGroup()
-      .getLabel({ args: { id }, boxReferences: [id] })
-      .simulate()
-
-    console.log({ labelDescriptor })
+    const labelDescriptor = await getLabelDescriptor(client, id)
 
     expect(labelDescriptor?.name).toBe(name)
     expect(labelDescriptor?.numAssets).toBe(0n)
+    expect(labelDescriptor?.numOperators).toBe(0n)
   })
 
   test('re-add existing label should fail', async () => {
@@ -64,31 +53,8 @@ describe('asset labeling contract', () => {
     const id = 'wo'
     const name = 'world'
 
-    const result = await client
-      .newGroup()
-      .addTransaction(
-        await client.algorand.createTransaction.payment({
-          sender: testAccount,
-          receiver: client.appAddress,
-          amount: (0.2).algos(),
-        }),
-      )
-      .addLabel({ args: { id, name }, boxReferences: [id] })
-      .send()
-
-    await expect(async () =>
-      client
-        .newGroup()
-        .addTransaction(
-          await client.algorand.createTransaction.payment({
-            sender: testAccount,
-            receiver: client.appAddress,
-            amount: (0.2).algos(),
-          }),
-        )
-        .addLabel({ args: { id, name }, boxReferences: [id] })
-        .send(),
-    ).rejects.toThrow(/ERR:EXISTS/)
+    await addLabel(client, testAccount, id, name)
+    await expect(() => addLabel(client, testAccount, id, name)).rejects.toThrow(/ERR:EXISTS/)
   })
 
   for (const id of ['w', 'www']) {
@@ -98,19 +64,7 @@ describe('asset labeling contract', () => {
 
       const name = 'world'
 
-      await expect(async () =>
-        client
-          .newGroup()
-          .addTransaction(
-            await client.algorand.createTransaction.payment({
-              sender: testAccount,
-              receiver: client.appAddress,
-              amount: (0.2).algos(),
-            }),
-          )
-          .addLabel({ args: { id, name }, boxReferences: [id] })
-          .send(),
-      ).rejects.toThrow(/ERR:LENGTH/)
+      await expect(() => addLabel(client, testAccount, id, name)).rejects.toThrow(/ERR:LENGTH/)
     })
   }
 
@@ -121,29 +75,11 @@ describe('asset labeling contract', () => {
     const id = 'wo'
     const name = 'world'
 
-    await client
-      .newGroup()
-      .addTransaction(
-        await client.algorand.createTransaction.payment({
-          sender: testAccount,
-          receiver: client.appAddress,
-          amount: (0.2).algos(),
-        }),
-      )
-      .addLabel({ args: { id, name }, boxReferences: [id] })
-      .send()
+    await addLabel(client, testAccount, id, name)
 
-    await client
-      .newGroup()
-      .removeLabel({ args: { id }, boxReferences: [id] })
-      .send()
+    await removeLabel(client, id)
 
-    await expect(async () =>
-      client
-        .newGroup()
-        .getLabel({ args: { id }, boxReferences: [id] })
-        .simulate(),
-    ).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(() => getLabelDescriptor(client, id)).rejects.toThrow(/ERR:NOEXIST/)
   })
 
   test('remove nonexist label should fail', async () => {
@@ -152,12 +88,7 @@ describe('asset labeling contract', () => {
 
     const id = 'wo'
 
-    await expect(async () =>
-      client
-        .newGroup()
-        .removeLabel({ args: { id }, boxReferences: [id] })
-        .send(),
-    ).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(removeLabel(client, id)).rejects.toThrow(/ERR:NOEXIST/)
   })
 
   test('add operator to label', async () => {
@@ -167,21 +98,54 @@ describe('asset labeling contract', () => {
     const id = 'wo'
     const name = 'world'
 
-    await client
-      .newGroup()
-      .addTransaction(
-        await client.algorand.createTransaction.payment({
-          sender: testAccount,
-          receiver: client.appAddress,
-          amount: (0.2).algos(),
-        }),
-      )
-      .addLabel({ args: { id, name }, boxReferences: [id] })
-      .send()
+    await addLabel(client, testAccount, id, name)
 
-    await client.send.addOperatorToLabel({
-      args: { operator: testAccount.addr.toString(), label: id },
-      boxReferences: [testAccount.addr.publicKey, id],
-    })
+    await addOperatorToLabel(client, testAccount, id)
+
+    const labelDescriptor = await getLabelDescriptor(client, id)
+
+    expect(labelDescriptor?.numOperators).toBe(1n)
+
+    const operatorLabels = await getOperatorLabels(client, testAccount)
+
+    expect(operatorLabels[0]).toBe(id)
+  })
+
+  test('add 2 labels to operator', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+    const name = 'world'
+    const id2 = 'w2'
+
+    await Promise.all([addLabel(client, testAccount, id, name), addLabel(client, testAccount, id2, name)])
+
+    await addOperatorToLabel(client, testAccount, id)
+    await addOperatorToLabel(client, testAccount, id2)
+
+    const labelDescriptor = await getLabelDescriptor(client, id)
+    expect(labelDescriptor.numOperators).toBe(1n)
+
+    const labelDescriptor2 = await getLabelDescriptor(client, id2)
+    expect(labelDescriptor2.numOperators).toBe(1n)
+
+    const operatorLabels = await getOperatorLabels(client, testAccount)
+
+    expect(operatorLabels[0]).toBe(id)
+    expect(operatorLabels[1]).toBe(id2)
+  })
+
+  test('add operator to label twice should fail', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+    const name = 'world'
+
+    await addLabel(client, testAccount, id, name)
+    await addOperatorToLabel(client, testAccount, id)
+
+    await expect(() => addOperatorToLabel(client, testAccount, id)).rejects.toThrow(/ERR:EXISTS/)
   })
 })
