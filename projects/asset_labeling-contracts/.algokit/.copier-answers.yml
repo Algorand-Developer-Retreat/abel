@@ -1,0 +1,10 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 1.6.0
+_src_path: gh:algorandfoundation/algokit-python-template
+author_email: bit@d13.co
+author_name: Bit D13
+contract_name: asset_labeling
+deployment_language: typescript
+preset_name: production
+project_name: asset_labeling-contracts
+

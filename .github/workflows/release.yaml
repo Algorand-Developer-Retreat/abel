@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.vscode/**'
+      - '.idea/**'
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  asset_labeling-contracts-validate:
+    name: Run asset_labeling-contracts release
+    secrets: inherit
+    uses: ./.github/workflows/asset_labeling-contracts-ci.yaml
+
+  asset_labeling-contracts-release:
+    name: Run asset_labeling-contracts release
+    secrets: inherit
+    uses: ./.github/workflows/asset_labeling-contracts-cd.yaml
+    needs: asset_labeling-contracts-validate
+
+  asset_labeling-frontend-validate:
+    name: Run asset_labeling-frontend release
+    secrets: inherit
+    uses: ./.github/workflows/asset_labeling-frontend-ci.yaml
+
+  asset_labeling-frontend-release:
+    name: Run asset_labeling-frontend release
+    secrets: inherit
+    uses: ./.github/workflows/asset_labeling-frontend-cd.yaml
+    needs: asset_labeling-frontend-validate

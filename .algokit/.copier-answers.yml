@@ -1,0 +1,11 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 2.1.4
+_src_path: gh:algorandfoundation/algokit-fullstack-template
+author_email: bit@d13.co
+author_name: Bit D13
+cloud_provider: none
+contract_name: asset_labeling
+deployment_language: typescript
+preset_name: production
+project_name: asset_labeling
+

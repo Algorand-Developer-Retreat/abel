@@ -1,0 +1,14 @@
+name: Pull Request validation
+
+on: [pull_request]
+
+
+jobs:
+  asset_labeling-contracts-ci:
+    name: Run asset_labeling-contracts validation
+    uses: ./.github/workflows/asset_labeling-contracts-ci.yaml
+
+  asset_labeling-frontend-ci:
+    name: Run asset_labeling-frontend validation
+    uses: ./.github/workflows/asset_labeling-frontend-ci.yaml
+
