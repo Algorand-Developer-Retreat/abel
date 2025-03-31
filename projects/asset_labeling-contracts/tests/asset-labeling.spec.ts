@@ -8,8 +8,9 @@ describe('asset labeling contract', () => {
   const localnet = algorandFixture()
   beforeAll(() => {
     Config.configure({
-      debug: true,
-      // traceAll: true,
+      populateAppCallResources: false,
+      debug: false,
+      traceAll: false,
     })
   })
   beforeEach(localnet.newScope)
@@ -24,26 +25,163 @@ describe('asset labeling contract', () => {
     return { client: appClient }
   }
 
-  test('says hello', async () => {
+  test('add label', async () => {
     const { testAccount } = localnet.context
     const { client } = await deploy(testAccount)
 
-    const result = await client.send.hello({ args: { name: 'World' } })
+    const id = 'wo'
+    const name = 'world'
 
-    expect(result.return).toBe('Hello, World')
-  })
-
-  test('simulate says hello with correct budget consumed', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
-    const result = await client
+    await client
       .newGroup()
-      .hello({ args: { name: 'World' } })
-      .hello({ args: { name: 'Jane' } })
+      .addTransaction(
+        await client.algorand.createTransaction.payment({
+          sender: testAccount,
+          receiver: client.appAddress,
+          amount: (0.2).algos(),
+        }),
+      )
+      .addLabel({ args: { id, name }, boxReferences: [id] })
+      .send()
+
+    const {
+      returns: [labelDescriptor],
+    } = await client
+      .newGroup()
+      .getLabel({ args: { id }, boxReferences: [id] })
       .simulate()
 
-    expect(result.returns[0]).toBe('Hello, World')
-    expect(result.returns[1]).toBe('Hello, Jane')
-    expect(result.simulateResponse.txnGroups[0].appBudgetConsumed).toBeLessThan(100)
+    console.log({ labelDescriptor })
+
+    expect(labelDescriptor?.name).toBe(name)
+    expect(labelDescriptor?.numAssets).toBe(0n)
+  })
+
+  test('re-add existing label should fail', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+    const name = 'world'
+
+    const result = await client
+      .newGroup()
+      .addTransaction(
+        await client.algorand.createTransaction.payment({
+          sender: testAccount,
+          receiver: client.appAddress,
+          amount: (0.2).algos(),
+        }),
+      )
+      .addLabel({ args: { id, name }, boxReferences: [id] })
+      .send()
+
+    await expect(async () =>
+      client
+        .newGroup()
+        .addTransaction(
+          await client.algorand.createTransaction.payment({
+            sender: testAccount,
+            receiver: client.appAddress,
+            amount: (0.2).algos(),
+          }),
+        )
+        .addLabel({ args: { id, name }, boxReferences: [id] })
+        .send(),
+    ).rejects.toThrow(/ERR:EXISTS/)
+  })
+
+  for (const id of ['w', 'www']) {
+    test(`add label with invalid length (${id.length}) should fail`, async () => {
+      const { testAccount } = localnet.context
+      const { client } = await deploy(testAccount)
+
+      const name = 'world'
+
+      await expect(async () =>
+        client
+          .newGroup()
+          .addTransaction(
+            await client.algorand.createTransaction.payment({
+              sender: testAccount,
+              receiver: client.appAddress,
+              amount: (0.2).algos(),
+            }),
+          )
+          .addLabel({ args: { id, name }, boxReferences: [id] })
+          .send(),
+      ).rejects.toThrow(/ERR:LENGTH/)
+    })
+  }
+
+  test('add label, remove label', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+    const name = 'world'
+
+    await client
+      .newGroup()
+      .addTransaction(
+        await client.algorand.createTransaction.payment({
+          sender: testAccount,
+          receiver: client.appAddress,
+          amount: (0.2).algos(),
+        }),
+      )
+      .addLabel({ args: { id, name }, boxReferences: [id] })
+      .send()
+
+    await client
+      .newGroup()
+      .removeLabel({ args: { id }, boxReferences: [id] })
+      .send()
+
+    await expect(async () =>
+      client
+        .newGroup()
+        .getLabel({ args: { id }, boxReferences: [id] })
+        .simulate(),
+    ).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('remove nonexist label should fail', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+
+    await expect(async () =>
+      client
+        .newGroup()
+        .removeLabel({ args: { id }, boxReferences: [id] })
+        .send(),
+    ).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('add operator to label', async () => {
+    const { testAccount } = localnet.context
+    const { client } = await deploy(testAccount)
+
+    const id = 'wo'
+    const name = 'world'
+
+    await client
+      .newGroup()
+      .addTransaction(
+        await client.algorand.createTransaction.payment({
+          sender: testAccount,
+          receiver: client.appAddress,
+          amount: (0.2).algos(),
+        }),
+      )
+      .addLabel({ args: { id, name }, boxReferences: [id] })
+      .send()
+
+    await client.send.addOperatorToLabel({
+      args: { operator: testAccount.addr.toString(), label: id },
+      boxReferences: [testAccount.addr.publicKey, id],
+    })
   })
 })
