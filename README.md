@@ -102,7 +102,9 @@ Operator: 32 bytes pk
 
 #### Asset <> Labels
 
+```python
 [asset_ID uint64] -> label_id[]
+```
 
 ## Registry Methods
 
