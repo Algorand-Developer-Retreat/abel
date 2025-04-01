@@ -9,7 +9,7 @@
 - Registry SDK is in PoC state (for tests)
 - Asset views are in development
 
-_Disclaimer: This is a proof of concept developer for the 2025 Algorand Developer Retreat. Not endorsed by the Algorand Foundation or Pera.
+_Disclaimer: This is a proof of concept developer for the 2025 Algorand Developer Retreat. Not endorsed by the Algorand Foundation or Pera._
 
 ## Overview
 
