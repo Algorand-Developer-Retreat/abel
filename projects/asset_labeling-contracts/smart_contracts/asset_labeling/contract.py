@@ -3,6 +3,7 @@ from algopy import (
     ARC4Contract,
     BoxMap,
     String,
+    Txn,
     UInt64,
     arc4,
     log,
@@ -16,7 +17,8 @@ S = String
 
 LabelList = arc4.DynamicArray[arc4.String]
 
-NOT_FOUND = 2**32 - 1  # magic constant for "not found in list"
+NOT_FOUND_KEY = 2**32  # magic constant for "list not found"
+NOT_FOUND_VALUE = 2**32 - 1  # magic constant for "not found in list"
 
 
 @subroutine
@@ -34,14 +36,22 @@ class LabelDescriptor(arc4.Struct):
 
 class AssetLabeling(ARC4Contract):
     def __init__(self) -> None:
+        self.admin = Txn.sender
         self.labels = BoxMap(String, LabelDescriptor, key_prefix=b"")
         self.operators = BoxMap(Account, LabelList, key_prefix=b"")
 
-    # label ops. admin only
+    @subroutine
+    def admin_only(self) -> None:
+        ensure(Txn.sender == self.admin, S("ERR:UNAUTH"))
+
+    @abimethod()
+    def change_admin(self, new_admin: Account) -> None:
+        self.admin_only()
+        self.admin = new_admin
 
     @abimethod()
     def add_label(self, id: String, name: String) -> None:
-        # TODO admin only
+        self.admin_only()
         ensure(id not in self.labels, S("ERR:EXISTS"))
         ensure(id.bytes.length == 2, S("ERR:LENGTH"))
         self.labels[id] = LabelDescriptor(
@@ -52,7 +62,7 @@ class AssetLabeling(ARC4Contract):
 
     @abimethod()
     def remove_label(self, id: String) -> None:
-        # TODO admin only
+        self.admin_only()
         ensure(id in self.labels, S("ERR:NOEXIST"))
         ensure(id.bytes.length == 2, S("ERR:LENGTH"))
         ensure(self.labels[id].num_assets == 0, S("ERR:NOEMPTY"))
@@ -66,21 +76,35 @@ class AssetLabeling(ARC4Contract):
     # operator<>label access ops. admin and operators
 
     @subroutine
+    def admin_or_operator_only(self, label: String) -> None:
+        if Txn.sender == self.admin:
+            return
+        ensure(
+            self.get_operator_label_index(Txn.sender, label) != UInt64(NOT_FOUND_KEY)
+            and self.get_operator_label_index(Txn.sender, label)
+            != UInt64(NOT_FOUND_VALUE),
+            S("ERR:UNAUTH"),
+        )
+
+    @subroutine
     def get_operator_label_index(self, operator: Account, label: String) -> UInt64:
-        ensure(operator in self.operators, S("ERR:NOEXIST"))
+        if operator not in self.operators:
+            return UInt64(NOT_FOUND_KEY)
         for idx, stored_label in uenumerate(self.operators[operator]):
             if stored_label == label:
                 return idx
-        return UInt64(NOT_FOUND)
+        return UInt64(NOT_FOUND_VALUE)
 
     @abimethod()
     def add_operator_to_label(self, operator: Account, label: String) -> None:
+        self.admin_or_operator_only(label)
         ensure(label in self.labels, S("ERR:NOEXIST"))
         # check if operator exists already
         if operator in self.operators:
             # existing operator, check for duplicate
             ensure(
-                self.get_operator_label_index(operator, label) == UInt64(NOT_FOUND),
+                self.get_operator_label_index(operator, label)
+                == UInt64(NOT_FOUND_VALUE),
                 S("ERR:EXISTS"),
             )
 
@@ -101,11 +125,31 @@ class AssetLabeling(ARC4Contract):
 
     @abimethod()
     def remove_operator_from_label(self, operator: Account, label: String) -> None:
+        self.admin_or_operator_only(label)
+
         ensure(label in self.labels, S("ERR:NOEXIST"))
         ensure(operator in self.operators, S("ERR:NOEXIST"))
 
+        # ensure label exists in operator
         label_idx = self.get_operator_label_index(operator, label)
-        ensure(label_idx != UInt64(NOT_FOUND), S("ERR:NOEXIST"))
+        ensure(
+            label_idx != UInt64(NOT_FOUND_VALUE)
+            and label_idx
+            != UInt64(NOT_FOUND_KEY),  # key check redundant, checked above
+            S("ERR:NOEXIST"),
+        )
+
+        # ensure only empty labels can be left operator-less
+        label_descriptor = self.labels[label].copy()
+        ensure(
+            label_descriptor.num_operators > 1 or label_descriptor.num_assets == 0,
+            S("ERR:NOEMPTY"),
+        )
+        # decr operator count
+        label_descriptor.num_operators = arc4.UInt64(
+            label_descriptor.num_operators.native - UInt64(1)
+        )
+        self.labels[label] = label_descriptor.copy()
 
         if self.operators[operator].length == 1:
             del self.operators[operator]

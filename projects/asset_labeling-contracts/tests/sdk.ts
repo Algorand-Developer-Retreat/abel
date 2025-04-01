@@ -19,6 +19,8 @@ export async function addLabel(
     )
     .addLabel({ args: { id: labelId, name: labelName }, boxReferences: [labelId] })
     .send()
+
+  // client.algorand.client.getAppFactory()
   return txIds[0]
 }
 
@@ -60,7 +62,7 @@ export async function removeOperatorFromLabel(
 ): Promise<string> {
   const { txIds } = await client.send.removeOperatorFromLabel({
     args: { operator: operator.addr.toString(), label },
-    boxReferences: [operator.addr.publicKey, label],
+    boxReferences: [operator.addr.publicKey, label /* TODO default sender */],
   })
   return txIds[0]
 }
