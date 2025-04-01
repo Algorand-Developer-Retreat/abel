@@ -85,6 +85,7 @@ export async function addLabelToAsset(client: AssetLabelingClient, asset: bigint
   })
   return txIds[0]
 }
+
 export async function removeLabelFromAsset(client: AssetLabelingClient, asset: bigint, label: string): Promise<string> {
   const { txIds } = await client.send.removeLabelFromAsset({
     args: { asset, label },

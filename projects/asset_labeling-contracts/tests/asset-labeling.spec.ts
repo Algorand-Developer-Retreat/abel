@@ -1,6 +1,9 @@
 import { algorandFixture } from '@algorandfoundation/algokit-utils/testing'
-import { AssetLabelingFactory } from '../smart_contracts/artifacts/asset_labeling/AssetLabelingClient'
-import { Account } from 'algosdk'
+import {
+  AssetLabelingClient,
+  AssetLabelingFactory,
+} from '../smart_contracts/artifacts/asset_labeling/AssetLabelingClient'
+import { Account, Address, appendSignMultisigTransaction } from 'algosdk'
 import { Config } from '@algorandfoundation/algokit-utils'
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
 import {
@@ -23,14 +26,17 @@ import {
 // add_op nonexist label should fail
 // remove_op nonexist label should fail
 
+const config = {
+  populateAppCallResources: true,
+  debug: false,
+  traceAll: false,
+}
+
 describe('asset labeling contract', () => {
   const localnet = algorandFixture()
+
   beforeAll(() => {
-    Config.configure({
-      populateAppCallResources: true,
-      debug: false,
-      traceAll: false,
-    })
+    Config.configure(config)
   })
   beforeEach(localnet.newScope)
 
@@ -44,33 +50,46 @@ describe('asset labeling contract', () => {
     return { adminClient: appClient }
   }
 
-  test('change admin', async () => {
-    const { testAccount: adminAccount } = localnet.context
-    const { adminClient } = await deploy(adminAccount)
+  describe('change admin', () => {
+    let adminClient: AssetLabelingClient
+    let randoClient: AssetLabelingClient
+    let adminAccount: Address & Account & TransactionSignerAccount
+    let randoAccount: Address & Account & TransactionSignerAccount
 
-    const id = 'wo'
-    const name = 'world'
+    beforeAll(async () => {
+      await localnet.newScope()
 
-    const newAdmin = await localnet.context.generateAccount({ initialFunds: (0).algos() })
+      adminAccount = localnet.context.testAccount
+      adminClient = (await deploy(adminAccount)).adminClient
 
-    await adminClient.send.changeAdmin({ args: { newAdmin: newAdmin.addr.toString() } })
-    const storedAdmin = await adminClient.state.global.admin()
-
-    expect(storedAdmin.asByteArray()).toEqual(newAdmin.addr.publicKey)
-  })
-  test('change admin should fail when not called by admin', async () => {
-    const { testAccount: adminAccount } = localnet.context
-    const { adminClient } = await deploy(adminAccount)
-
-    const rando = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    const randoClient = adminClient.clone({
-      defaultSender: rando,
-      defaultSigner: rando.signer,
+      randoAccount = await localnet.context.generateAccount({ initialFunds: (1).algos() })
+      randoClient = adminClient.clone({
+        defaultSender: randoAccount,
+        defaultSigner: randoAccount.signer,
+      })
     })
 
-    await expect(() => randoClient.send.changeAdmin({ args: { newAdmin: rando.addr.toString() } })).rejects.toThrow(
-      /ERR:UNAUTH/,
-    )
+    test('should work', async () => {
+      await adminClient.send.changeAdmin({ args: { newAdmin: randoAccount.addr.toString() } })
+      const storedAdmin = await adminClient.state.global.admin()
+      expect(storedAdmin.asByteArray()).toEqual(randoAccount.addr.publicKey)
+
+      await randoClient.send.changeAdmin({ args: { newAdmin: adminAccount.addr.toString() } })
+      const revertedAdmin = await adminClient.state.global.admin()
+      expect(revertedAdmin.asByteArray()).toEqual(adminAccount.addr.publicKey)
+    })
+
+    test('change admin should fail when not called by admin', async () => {
+      await expect(() =>
+        randoClient.send.changeAdmin({ args: { newAdmin: randoAccount.addr.toString() } }),
+      ).rejects.toThrow(/ERR:UNAUTH/)
+
+      await adminClient.send.changeAdmin({ args: { newAdmin: randoAccount.addr.toString() } })
+
+      await expect(() =>
+        adminClient.send.changeAdmin({ args: { newAdmin: randoAccount.addr.toString() } }),
+      ).rejects.toThrow(/ERR:UNAUTH/)
+    })
   })
 
   test('add label', async () => {
