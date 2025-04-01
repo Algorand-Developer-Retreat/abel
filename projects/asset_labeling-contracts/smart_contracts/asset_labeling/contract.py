@@ -1,6 +1,7 @@
 from algopy import (
     Account,
     ARC4Contract,
+    Asset,
     BoxMap,
     String,
     Txn,
@@ -38,6 +39,7 @@ class AssetLabeling(ARC4Contract):
     def __init__(self) -> None:
         self.admin = Txn.sender
         self.labels = BoxMap(String, LabelDescriptor, key_prefix=b"")
+        self.assets = BoxMap(Asset, LabelList, key_prefix=b"")
         self.operators = BoxMap(Account, LabelList, key_prefix=b"")
 
     @subroutine
@@ -79,6 +81,10 @@ class AssetLabeling(ARC4Contract):
     def admin_or_operator_only(self, label: String) -> None:
         if Txn.sender == self.admin:
             return
+        self.operator_only(label)
+
+    @subroutine
+    def operator_only(self, label: String) -> None:
         ensure(
             self.get_operator_label_index(Txn.sender, label) != UInt64(NOT_FOUND_KEY)
             and self.get_operator_label_index(Txn.sender, label)
@@ -168,3 +174,79 @@ class AssetLabeling(ARC4Contract):
     def get_operator_labels(self, operator: Account) -> LabelList:
         ensure(operator in self.operators, S("ERR:NOEXIST"))
         return self.operators[operator]
+
+    @subroutine
+    def get_asset_label_index(self, asset: Asset, label: String) -> UInt64:
+        if asset not in self.assets:
+            return UInt64(NOT_FOUND_KEY)
+        for idx, stored_label in uenumerate(self.assets[asset]):
+            if stored_label == label:
+                return idx
+        return UInt64(NOT_FOUND_VALUE)
+
+    @abimethod()
+    def add_label_to_asset(self, label: String, asset: Asset) -> None:
+        ensure(label in self.labels, S("ERR:NOEXIST"))
+
+        self.operator_only(label)
+
+        if asset in self.assets:
+            # existing operator, check for duplicate
+            ensure(
+                self.get_asset_label_index(asset, label) == UInt64(NOT_FOUND_VALUE),
+                S("ERR:EXISTS"),
+            )
+
+            # add label to operator
+            existing = self.assets[asset].copy()
+            existing.append(arc4.String(label))
+            self.assets[asset] = existing.copy()
+        else:
+            # new operator, create new box
+            self.assets[asset] = arc4.DynamicArray(arc4.String(label))
+
+        # incr asset count
+        label_descriptor = self.labels[label].copy()
+        label_descriptor.num_assets = arc4.UInt64(
+            label_descriptor.num_assets.native + UInt64(1)
+        )
+        self.labels[label] = label_descriptor.copy()
+
+    @abimethod()
+    def remove_label_from_asset(self, label: String, asset: Asset) -> None:
+        ensure(label in self.labels, S("ERR:NOEXIST"))
+
+        self.operator_only(label)
+
+        found = False
+        if self.assets[asset].length == 1:
+            if self.assets[asset][0] == label:
+                del self.assets[asset]
+                found = True
+            else:
+                found = False
+        else:
+            next_list = arc4.DynamicArray[arc4.String]()
+            # walk, push everything to new box except label
+            # save $found to throw if not found
+            for idx, stored_label in uenumerate(self.assets[asset]):
+                if stored_label != label:
+                    next_list.append(stored_label)
+                else:
+                    found = True
+
+            self.assets[asset] = next_list.copy()
+
+        ensure(found, S("ERR:NOEXIST"))
+
+        # decr asset count
+        label_descriptor = self.labels[label].copy()
+        label_descriptor.num_assets = arc4.UInt64(
+            label_descriptor.num_assets.native - UInt64(1)
+        )
+        self.labels[label] = label_descriptor.copy()
+
+    @abimethod(readonly=True)
+    def get_asset_labels(self, asset: Asset) -> LabelList:
+        ensure(asset in self.assets, S("ERR:NOEXIST"))
+        return self.assets[asset]

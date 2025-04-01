@@ -1,5 +1,5 @@
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
-import { Address, Account } from 'algosdk'
+import { Address, Account, encodeUint64 } from 'algosdk'
 import { AssetLabelingClient, LabelDescriptor } from '../smart_contracts/artifacts/asset_labeling/AssetLabelingClient'
 
 export async function addLabel(
@@ -76,4 +76,33 @@ export async function getOperatorLabels(client: AssetLabelingClient, operator: A
     .simulate()
 
   return operatorLabels!
+}
+
+export async function addLabelToAsset(client: AssetLabelingClient, asset: bigint, label: string): Promise<string> {
+  const { txIds } = await client.send.addLabelToAsset({
+    args: { asset, label },
+    boxReferences: [label],
+  })
+  return txIds[0]
+}
+export async function removeLabelFromAsset(client: AssetLabelingClient, asset: bigint, label: string): Promise<string> {
+  const { txIds } = await client.send.removeLabelFromAsset({
+    args: { asset, label },
+    boxReferences: [
+      encodeUint64(asset),
+      /* TODO default sender */
+    ],
+  })
+  return txIds[0]
+}
+
+export async function getAssetLabels(client: AssetLabelingClient, asset: bigint): Promise<string[]> {
+  const {
+    returns: [assetLabels],
+  } = await client
+    .newGroup()
+    .getAssetLabels({ args: { asset }, boxReferences: [encodeUint64(asset)] })
+    .simulate()
+
+  return assetLabels!
 }

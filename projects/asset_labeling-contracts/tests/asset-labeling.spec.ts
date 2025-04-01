@@ -4,16 +4,18 @@ import { Account } from 'algosdk'
 import { Config } from '@algorandfoundation/algokit-utils'
 import { TransactionSignerAccount } from '@algorandfoundation/algokit-utils/types/account'
 import {
+  addLabelToAsset,
   addLabel,
   addOperatorToLabel,
+  getAssetLabels,
   getLabelDescriptor,
   getOperatorLabels,
   removeLabel,
   removeOperatorFromLabel,
+  removeLabelFromAsset,
 } from './sdk'
 
 // TODO:
-// chamge_admin
 // add_label as nonadmin (operator?) should fail
 // remove_label as nonadmin (operator?) should fail
 // add_op as operator
@@ -39,29 +41,29 @@ describe('asset labeling contract', () => {
     })
 
     const { appClient } = await factory.deploy({ onUpdate: 'append', onSchemaBreak: 'append' })
-    return { client: appClient }
+    return { adminClient: appClient }
   }
 
   test('change admin', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
 
     const newAdmin = await localnet.context.generateAccount({ initialFunds: (0).algos() })
 
-    await client.send.changeAdmin({ args: { newAdmin: newAdmin.addr.toString() } })
-    const storedAdmin = await client.state.global.admin()
+    await adminClient.send.changeAdmin({ args: { newAdmin: newAdmin.addr.toString() } })
+    const storedAdmin = await adminClient.state.global.admin()
 
     expect(storedAdmin.asByteArray()).toEqual(newAdmin.addr.publicKey)
   })
   test('change admin should fail when not called by admin', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const rando = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    const randoClient = client.clone({
+    const randoClient = adminClient.clone({
       defaultSender: rando,
       defaultSigner: rando.signer,
     })
@@ -72,15 +74,15 @@ describe('asset labeling contract', () => {
   })
 
   test('add label', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name)
 
-    const labelDescriptor = await getLabelDescriptor(client, id)
+    const labelDescriptor = await getLabelDescriptor(adminClient, id)
 
     expect(labelDescriptor?.name).toBe(name)
     expect(labelDescriptor?.numAssets).toBe(0n)
@@ -88,234 +90,412 @@ describe('asset labeling contract', () => {
   })
 
   test('add label should fail by nonadmin', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
 
     const rando = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    const randoClient = client.clone({
+    const randoClient = adminClient.clone({
       defaultSender: rando,
       defaultSigner: rando.signer,
     })
 
-    await expect(() => addLabel(randoClient, testAccount, id, name)).rejects.toThrow(/ERR:UNAUTH/)
+    await expect(() => addLabel(randoClient, adminAccount, id, name)).rejects.toThrow(/ERR:UNAUTH/)
   })
 
   test('re-add existing label should fail', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
-    await expect(() => addLabel(client, testAccount, id, name)).rejects.toThrow(/ERR:EXISTS/)
+    await addLabel(adminClient, adminAccount, id, name)
+    await expect(() => addLabel(adminClient, adminAccount, id, name)).rejects.toThrow(/ERR:EXISTS/)
   })
 
   for (const id of ['w', 'www']) {
     test(`add label with invalid length (${id.length}) should fail`, async () => {
-      const { testAccount } = localnet.context
-      const { client } = await deploy(testAccount)
+      const { testAccount: adminAccount } = localnet.context
+      const { adminClient } = await deploy(adminAccount)
 
       const name = 'world'
 
-      await expect(() => addLabel(client, testAccount, id, name)).rejects.toThrow(/ERR:LENGTH/)
+      await expect(() => addLabel(adminClient, adminAccount, id, name)).rejects.toThrow(/ERR:LENGTH/)
     })
   }
 
   test('add label, remove label', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name)
 
-    await removeLabel(client, id)
+    await removeLabel(adminClient, id)
 
-    await expect(() => getLabelDescriptor(client, id)).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(() => getLabelDescriptor(adminClient, id)).rejects.toThrow(/ERR:NOEXIST/)
   })
 
   test('remove nonexist label should fail', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
 
-    await expect(removeLabel(client, id)).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(removeLabel(adminClient, id)).rejects.toThrow(/ERR:NOEXIST/)
   })
 
   test('add operator to label', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name)
 
-    await addOperatorToLabel(client, testAccount, id)
+    await addOperatorToLabel(adminClient, adminAccount, id)
 
-    const labelDescriptor = await getLabelDescriptor(client, id)
+    const labelDescriptor = await getLabelDescriptor(adminClient, id)
 
     expect(labelDescriptor?.numOperators).toBe(1n)
 
-    const operatorLabels = await getOperatorLabels(client, testAccount)
-    expect(operatorLabels).toBe([id])
+    const operatorLabels = await getOperatorLabels(adminClient, adminAccount)
+    expect(operatorLabels).toStrictEqual([id])
 
-    const { numOperators } = await getLabelDescriptor(client, id)
+    const { numOperators } = await getLabelDescriptor(adminClient, id)
     expect(numOperators).toBe(1n)
   })
 
   test('add operator to label by operator', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
 
-    await addLabel(client, testAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name)
 
-    await addOperatorToLabel(client, operator, id)
+    await addOperatorToLabel(adminClient, operator, id)
 
-    const [operatorLabel] = await getOperatorLabels(client, operator)
+    const [operatorLabel] = await getOperatorLabels(adminClient, operator)
     expect(operatorLabel).toBe(id)
 
-    const operatorClient = client.clone({
+    const operatorClient = adminClient.clone({
       defaultSender: operator,
+      defaultSigner: operator.signer,
     })
+
+    const operator2 = await localnet.context.generateAccount({ initialFunds: (0).algos() })
+    await addOperatorToLabel(operatorClient, operator2, id)
   })
 
   test('add 2 labels to operator', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
     const id2 = 'w2'
 
-    await Promise.all([addLabel(client, testAccount, id, name), addLabel(client, testAccount, id2, name)])
+    await Promise.all([addLabel(adminClient, adminAccount, id, name), addLabel(adminClient, adminAccount, id2, name)])
 
-    await addOperatorToLabel(client, testAccount, id)
-    await addOperatorToLabel(client, testAccount, id2)
+    await addOperatorToLabel(adminClient, adminAccount, id)
+    await addOperatorToLabel(adminClient, adminAccount, id2)
 
-    const labelDescriptor = await getLabelDescriptor(client, id)
+    const labelDescriptor = await getLabelDescriptor(adminClient, id)
     expect(labelDescriptor.numOperators).toBe(1n)
 
-    const labelDescriptor2 = await getLabelDescriptor(client, id2)
+    const labelDescriptor2 = await getLabelDescriptor(adminClient, id2)
     expect(labelDescriptor2.numOperators).toBe(1n)
 
-    const operatorLabels = await getOperatorLabels(client, testAccount)
+    const operatorLabels = await getOperatorLabels(adminClient, adminAccount)
 
-    expect(operatorLabels[0]).toBe(id)
-    expect(operatorLabels[1]).toBe(id2)
+    expect(operatorLabels).toStrictEqual([id, id2])
   })
 
   test('add operator to label twice should fail', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
-    await addOperatorToLabel(client, testAccount, id)
+    await addLabel(adminClient, adminAccount, id, name)
+    await addOperatorToLabel(adminClient, adminAccount, id)
 
-    await expect(() => addOperatorToLabel(client, testAccount, id)).rejects.toThrow(/ERR:EXISTS/)
+    await expect(() => addOperatorToLabel(adminClient, adminAccount, id)).rejects.toThrow(/ERR:EXISTS/)
   })
 
   test('1x add/remove operator label', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const id2 = 'w2'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name)
 
-    await addOperatorToLabel(client, testAccount, id)
-    await removeOperatorFromLabel(client, testAccount, id)
+    await addOperatorToLabel(adminClient, adminAccount, id)
+    await removeOperatorFromLabel(adminClient, adminAccount, id)
 
-    await expect(() => getOperatorLabels(client, testAccount)).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(() => getOperatorLabels(adminClient, adminAccount)).rejects.toThrow(/ERR:NOEXIST/)
 
-    const { numOperators } = await getLabelDescriptor(client, id)
+    const { numOperators } = await getLabelDescriptor(adminClient, id)
     expect(numOperators).toBe(0n)
   })
 
   test('2x add/remove operator labels', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const id2 = 'w2'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
-    await addLabel(client, testAccount, id2, name)
+    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id2, name)
 
-    await addOperatorToLabel(client, testAccount, id)
-    await addOperatorToLabel(client, testAccount, id2)
-    await removeOperatorFromLabel(client, testAccount, id)
+    await addOperatorToLabel(adminClient, adminAccount, id)
+    await addOperatorToLabel(adminClient, adminAccount, id2)
+    await removeOperatorFromLabel(adminClient, adminAccount, id)
 
-    const [operatorLabel] = await getOperatorLabels(client, testAccount)
+    const [operatorLabel] = await getOperatorLabels(adminClient, adminAccount)
     expect(operatorLabel).toBe(id2)
 
-    await removeOperatorFromLabel(client, testAccount, id2)
-    await expect(() => getOperatorLabels(client, testAccount)).rejects.toThrow(/ERR:NOEXIST/)
+    await removeOperatorFromLabel(adminClient, adminAccount, id2)
+    await expect(() => getOperatorLabels(adminClient, adminAccount)).rejects.toThrow(/ERR:NOEXIST/)
 
-    const { numOperators } = await getLabelDescriptor(client, id)
+    const { numOperators } = await getLabelDescriptor(adminClient, id)
     expect(numOperators).toBe(0n)
   })
 
   test('2x reverse add/remove operator labels', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const id2 = 'w2'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
-    await addLabel(client, testAccount, id2, name)
+    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id2, name)
 
-    await addOperatorToLabel(client, testAccount, id)
-    await addOperatorToLabel(client, testAccount, id2)
-    await removeOperatorFromLabel(client, testAccount, id2)
+    await addOperatorToLabel(adminClient, adminAccount, id)
+    await addOperatorToLabel(adminClient, adminAccount, id2)
+    await removeOperatorFromLabel(adminClient, adminAccount, id2)
 
-    const [operatorLabel] = await getOperatorLabels(client, testAccount)
+    const [operatorLabel] = await getOperatorLabels(adminClient, adminAccount)
     expect(operatorLabel).toBe(id)
 
-    await removeOperatorFromLabel(client, testAccount, id)
-    await expect(() => getOperatorLabels(client, testAccount)).rejects.toThrow(/ERR:NOEXIST/)
+    await removeOperatorFromLabel(adminClient, adminAccount, id)
+    await expect(() => getOperatorLabels(adminClient, adminAccount)).rejects.toThrow(/ERR:NOEXIST/)
 
-    const { numOperators } = await getLabelDescriptor(client, id)
+    const { numOperators } = await getLabelDescriptor(adminClient, id)
     expect(numOperators).toBe(0n)
   })
 
   test('remove operator label from unauth should fail', async () => {
-    const { testAccount } = localnet.context
-    const { client } = await deploy(testAccount)
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const id2 = 'w2'
     const name = 'world'
 
-    await addLabel(client, testAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name)
 
-    await addOperatorToLabel(client, testAccount, id)
+    await addOperatorToLabel(adminClient, adminAccount, id)
 
     const rando = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    const randoClient = client.clone({
+    const randoClient = adminClient.clone({
       defaultSender: rando,
       defaultSigner: rando.signer,
     })
 
-    await expect(() => removeOperatorFromLabel(randoClient, testAccount, id)).rejects.toThrow(/ERR:UNAUTH/)
+    await expect(() => removeOperatorFromLabel(randoClient, adminAccount, id)).rejects.toThrow(/ERR:UNAUTH/)
+  })
+
+  test('add label to asset', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+
+    await addLabelToAsset(operatorClient, assetId, label)
+
+    const labelDescriptor = await getLabelDescriptor(operatorClient, label)
+    expect(labelDescriptor.numAssets).toBe(1n)
+
+    const assetLabels = await getAssetLabels(operatorClient, assetId)
+    expect(assetLabels).toStrictEqual([label])
+  })
+
+  test('add label twice should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+
+    await addLabelToAsset(operatorClient, assetId, label)
+    await expect(() => addLabelToAsset(operatorClient, assetId, label)).rejects.toThrow(/ERR:EXIS/)
+  })
+
+  test('add non-existent label should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+
+    const nonLabel = 'oh'
+    await expect(() => addLabelToAsset(adminClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(() => addLabelToAsset(operatorClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('add label by non-operator should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    await expect(() => addLabelToAsset(adminClient, assetId, label)).rejects.toThrow(/ERR:UNAUTH/)
+  })
+
+  test('remove label from asset', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+    await addLabelToAsset(operatorClient, assetId, label)
+    await removeLabelFromAsset(operatorClient, assetId, label)
+
+    const labelDescriptor = await getLabelDescriptor(operatorClient, label)
+    expect(labelDescriptor.numAssets).toBe(0n)
+
+    await expect(() => getAssetLabels(operatorClient, assetId)).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('remove non-existent label should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+
+    const nonLabel = 'oh'
+    await expect(() => removeLabelFromAsset(adminClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(() => removeLabelFromAsset(operatorClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('remove label by non-operator should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+    await addLabelToAsset(operatorClient, assetId, label)
+
+    await expect(() => removeLabelFromAsset(adminClient, assetId, label)).rejects.toThrow(/ERR:UNAUTH/)
+  })
+
+  test('remove missing label from asset should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label1 = 'wo'
+    const label2 = 'wi'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label1, labelName)
+    await addLabel(adminClient, adminAccount, label2, labelName)
+    await addOperatorToLabel(adminClient, operator, label1)
+    await addOperatorToLabel(adminClient, operator, label2)
+
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+    await addLabelToAsset(operatorClient, assetId, label1)
+
+    await expect(() => removeLabelFromAsset(operatorClient, assetId, label2)).rejects.toThrow(/ERR:NOEXIST/)
   })
 })
