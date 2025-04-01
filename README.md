@@ -17,7 +17,7 @@ Registry contract to provide:
 2) supporting multiple providers & labels, and
 3) bonus: enable efficiently fetching (broader) asset information (off-chain, batching via simulate)
 
-### Objectives
+## Objectives
 
 **1) Create a transparent and highly available registry for asset verification labels**
 
@@ -41,17 +41,22 @@ As an example, rendering a simple asset transfer transaction in a table row coul
 
 The general concept of this registry is generalizable to other use cases. Open sourcing this contract with a permissive licence will make it useful for other types of registry deployments, and for educational purposes.
 
-### Concepts
+## Concepts
 
 The core service provided is **labeling** of **assets**.
 
-A **label** corresponds to a single label by a verification/labeling provider, e.g. "pv" for "Pera Verified", or "ps" for "Pera Suspicious".
+A **label** corresponds to a single label by a verification/labeling provider, e.g. `pv` for "Pera Verified", or `ps` for "Pera Suspicious".
 
-Assets can be assigned multiple labels from different operators.
+Assets can be assigned multiple labels from different providers/operators.
 
 Role based access controls enforce access privileges to each label.
 
-Roles: Admin, Operators (per label.)
+Roles:
+
+- Admin
+- Per-label Operators
+
+Access:
 
 - Admin has admin privileges, can create new labels, and add/remove operators to labels.
 - Operators are given access to a $label:
@@ -59,7 +64,7 @@ Roles: Admin, Operators (per label.)
     - add/remove operators to the $label access group
 - Operators can be assigned to multiple labels
 
-_Note: The concept of a "provider" is not mapped to the contract explicitly. RBAC is applied to labels. Multiple labels under the same provider are treated separately, e.g. "Pera Verified" and "Pera Suspicious" are not linked and have separate "operators" in the RBAC system. The complexity of mapping the "provider" entity to the contract logic does not seem to be a reasonable trade-off at this time._
+_Note: The concept of a "provider" is not mapped to the contract explicitly. The complexity of mapping the "provider" entity to the contract logic does not seem to be a reasonable trade-off at this time. Instead, RBAC is applied to labels. Multiple labels under the same provider are treated separately, e.g. "Pera Verified" and "Pera Suspicious" are not linked and would be managed independently in the RBAC system. Each label can have multiple operators addresses, e.g. "Pera Verified" can have a primary operator account to update labels, as well as a secondary/failsafe. Within a label operator group, there no hierarchy - any label operator can remove any other label operator._
 
 ## Registry Design
 
