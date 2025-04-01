@@ -2,12 +2,14 @@
 
 **Impatient? Jump to [setup](#Setup).**
 
-**Status: Alpha:**
+**Status: Alpha**
 
 - Registry contract is feature complete
 - Registry tests are almost done
 - Registry SDK is in PoC state (for tests)
 - Asset views are in development
+
+_Disclaimer: This is a proof of concept developer for the 2025 Algorand Developer Retreat. Not endorsed by the Algorand Foundation or Pera.
 
 ## Overview
 
@@ -16,6 +18,7 @@ Registry contract to provide:
 1) on- and off-chain verification status ("label") for ASAs
 2) supporting multiple providers & labels, and
 3) bonus: enable efficiently fetching (broader) asset information (off-chain, batching via simulate)
+
 
 ## Objectives
 
