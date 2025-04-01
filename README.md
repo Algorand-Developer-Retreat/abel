@@ -1,11 +1,11 @@
-# Abel: On-Chain Asset Labeling & Verification Registry
+# Abel: On-Chain Asset Labeling Registry
 
 **Impatient? Jump to [setup](#Setup).**
 
-**Status: Alpha.**
+**Status: Alpha:**
 
 - Registry contract is feature complete
-- Registry tests are partially done
+- Registry tests are almost done
 - Registry SDK is in PoC state (for tests)
 - Asset views are in development
 
@@ -13,9 +13,9 @@
 
 Registry contract to provide:
 
-1) on- and off-chain verification status for ASAs
-2) supporting multiple providers/labels, and
-3) bonus: enable efficiently fetching (broader) asset information off-chain (batching via simulate)
+1) on- and off-chain verification status ("label") for ASAs
+2) supporting multiple providers & labels, and
+3) bonus: enable efficiently fetching (broader) asset information (off-chain, batching via simulate)
 
 ### Objectives
 
@@ -25,19 +25,21 @@ Currently, the Pera Asset Verification system has prevailed in our ecosystem. Mo
 
 **2) Enable & encourage new asset labeling providers**
 
+In the interest of decentralization, it would be good to enable multiple providers instead of just Pera.
+
 Establishing a straightforward distribution method for asset labeling should reduce the friction for other parties to start providing asset labeling services, either as a public good or for private usage.
 
-**3) Provide methods to perform bulk asset information lookups**
+**3) Bonus: provide methods to perform bulk asset information lookups**
 
 The secondary utility of this contract will be offering read-only calls that can be simulated to fetch multiple assets' information at once, for use in frontends like explorers, defi, etc.
 
-Using this method will allow fetching up to 128 assets' data at a time, resulting in significantly reduced overhead in networking/API requests etc.
+Using this method will allow fetching up to 128 assets' data at a time, resulting in significantly reduced overhead in networking/API requests etc for frontends and (web 2) backends.
 
-As an example, rendering a simple asset transfer transaction in a table row will require at minimum the asset decimals (in order to render the amount) and the unit name (in order to indicate the asset being transferred.) Currently, querying for these two pieces of information requires an asset lookup from algod or indexer.
+As an example, rendering a simple asset transfer transaction in a table row could require just the asset decimals (in order to render the amount) and the unit name (in order to indicate the asset being transferred.) Currently, querying for these two pieces of information requires an entire asset object lookup from algod or indexer, and for tens+ of assets in a page, this can add up.
 
 **4) Open source example**
 
-The general concept of this registry is generalizable to other use cases. Open sourcing this contract with a permissive licence would make it useful for other types of registry deployments, and for educational purposes.
+The general concept of this registry is generalizable to other use cases. Open sourcing this contract with a permissive licence will make it useful for other types of registry deployments, and for educational purposes.
 
 ### Concepts
 
