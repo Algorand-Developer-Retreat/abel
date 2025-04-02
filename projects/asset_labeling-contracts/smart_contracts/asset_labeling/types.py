@@ -44,3 +44,21 @@ class AssetSmall(arc4.Struct):
 
 
 # Full view, everything from algod /v2/assets API + reserve  balance
+class AssetFull(arc4.Struct):
+    name: arc4.String
+    unit_name: arc4.String
+    url: arc4.String
+
+    total: arc4.UInt64
+    decimals: arc4.UInt8
+
+    manager: arc4.Address
+    freeze: arc4.Address
+    clawback: arc4.Address
+    reserve: arc4.Address
+
+    metadata_hash: arc4.DynamicBytes
+
+    reserve_balance: arc4.UInt64
+
+    labels: LabelList

@@ -17,6 +17,7 @@ from algopy import (
 from algopy.arc4 import abimethod
 
 from .types import (
+    AssetFull,
     AssetMicro,
     AssetMicroLabels,
     AssetSmall,
@@ -373,3 +374,38 @@ class AssetLabeling(ARC4Contract):
     def get_assets_small(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_small(asset_id.native))
+
+    # full (3 refs, max 42)
+
+    @subroutine
+    def _get_asset_full(self, asset_id: UInt64) -> AssetFull:
+        asset = Asset(asset_id)
+        reserve_acct = Account(asset.reserve.bytes)
+        reserve_balance = (
+            asset.balance(reserve_acct)
+            if reserve_acct.is_opted_in(asset)
+            else UInt64(0)
+        )
+        return AssetFull(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            url=b2str(asset.url),
+            total=arc4.UInt64(asset.total),
+            decimals=arc4.UInt8(asset.decimals),
+            manager=arc4.Address(asset.manager),
+            freeze=arc4.Address(asset.freeze),
+            clawback=arc4.Address(asset.clawback),
+            reserve=arc4.Address(asset.reserve),
+            reserve_balance=arc4.UInt64(reserve_balance),
+            metadata_hash=arc4.DynamicBytes(asset.metadata_hash),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_full(self, asset: UInt64) -> AssetFull:
+        return self._get_asset_full(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_full(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_full(asset_id.native))
