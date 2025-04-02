@@ -1,6 +1,10 @@
+/**
+ * @packageDocumentation
+ * @document ./create.guide.md
+ */
 import { writeFileSync } from "fs";
 import { AlgorandClient } from "@algorandfoundation/algokit-utils";
-import { AbelSDK, AssetLabelingClient, AssetLabelingFactory } from "../dist";
+import { AbelSDK, AssetLabelingClient, AssetLabelingFactory } from "../src/index.js";
 import { Config } from "@algorandfoundation/algokit-utils";
 
 const LABEL_ID = process.env.LABEL_ID ?? "pv";

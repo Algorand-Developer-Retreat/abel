@@ -1,0 +1,12 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "@abels/sdk",
+  "customFooterHtml": "Copyright <strong>D13</strong> 2025",
+  "hideGenerator": true,
+  "excludeInternal": true,
+  "readme": "../../README.md",
+  "entryPoints": [
+    "./src/index.ts",
+    "./cli/create.ts"
+  ]
+}
