@@ -303,6 +303,8 @@ export class AbelSDK {
 
   /*
    * pMap batcher, merge maps after
+   *
+   * decorator pattern instead would be nice but ... eh
    */
   async batchCall<T extends AnyFn>(method: T, args: FirstArgument<T>, methodMax: number): Promise<ReturnType<T>> {
     const chunked = chunk(args, methodMax);
