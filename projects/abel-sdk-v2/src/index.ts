@@ -8,6 +8,7 @@ import {
   AssetLabelingFactory,
   AssetMicro,
   AssetMicroFromTuple,
+  AssetMicroLabelsFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
 import { AnyFn, FirstArgument, LabelDescriptor } from "./types.js";
@@ -264,6 +265,22 @@ export class AbelSDK {
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroFromTuple, "get_asset_micro");
+    return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
+  };
+
+
+  getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+    const METHOD_MAX = 64;
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicroLabels, assetIds, METHOD_MAX);
+
+    const { confirmations } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsMicroLabels({ args: { assets: assetIds } })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroLabelsFromTuple, "get_asset_micro_labels");
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 

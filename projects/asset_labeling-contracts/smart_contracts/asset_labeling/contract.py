@@ -15,7 +15,7 @@ from algopy import (
 )
 from algopy.arc4 import abimethod
 
-from .types import AssetMicro, LabelDescriptor, LabelList, S
+from .types import AssetMicro, AssetMicroLabels, LabelDescriptor, LabelList, S
 
 NOT_FOUND_KEY = 2**32  # magic constant for "list not found"
 NOT_FOUND_VALUE = 2**32 - 1  # magic constant for "not found in list"
@@ -277,7 +277,12 @@ class AssetLabeling(ARC4Contract):
                 out.append(empty_list())
         return out
 
+    #
     # Batch asset data fetch methods
+    #
+
+    # Micro: Unit Name, Decimals (max 128)
+
     @subroutine
     def _get_asset_micro(self, asset_id: UInt64) -> AssetMicro:
         asset = Asset(asset_id)
@@ -294,3 +299,26 @@ class AssetLabeling(ARC4Contract):
     def get_assets_micro(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_micro(asset_id.native))
+
+    # Micro: Unit Name, Decimals, Labels (max 64)
+
+    @subroutine
+    def _get_asset_micro_labels(self, asset_id: UInt64) -> AssetMicroLabels:
+        asset = Asset(asset_id)
+        am = AssetMicroLabels(
+            unit_name=b2str(asset.unit_name),
+            decimals=arc4.UInt8(asset.decimals),
+            labels=empty_list(),
+        )
+        if asset in self.assets:
+            am.labels = self.assets[asset].copy()
+        return am
+
+    @abimethod(readonly=True)
+    def get_asset_micro_labels(self, asset: UInt64) -> AssetMicroLabels:
+        return self._get_asset_micro_labels(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_micro_labels(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_micro_labels(asset_id.native))

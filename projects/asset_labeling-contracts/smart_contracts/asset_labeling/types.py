@@ -14,3 +14,9 @@ class LabelDescriptor(arc4.Struct):
 class AssetMicro(arc4.Struct):
     unit_name: arc4.String
     decimals: arc4.UInt8
+
+
+class AssetMicroLabels(arc4.Struct):
+    unit_name: arc4.String
+    decimals: arc4.UInt8
+    labels: LabelList

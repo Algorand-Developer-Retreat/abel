@@ -3,9 +3,7 @@ import { AlgorandClient } from "@algorandfoundation/algokit-utils";
 import { AbelSDK, AssetLabelingClient, AssetLabelingFactory } from "../dist";
 import { Config } from "@algorandfoundation/algokit-utils";
 
-const start = BigInt(process.argv[2])
-const len = parseInt(process.argv[3], 10)
-const concurrency = parseInt(process.argv[4] ?? "2", 10)
+Config.configure({ populateAppCallResources: false, debug: false, traceAll: false });
 
 const algorand = AlgorandClient.fromEnvironment();
 const deployer = await algorand.account.fromEnvironment("DEPLOYER");
@@ -32,12 +30,9 @@ if (["create", "replace"].includes(result.operationPerformed)) {
 }
 
 const { appId } = appClient;
-const sdk = new AbelSDK({ algorand, appId, writeAccount: deployer, concurrency });
+const sdk = new AbelSDK({ algorand, appId, writeAccount: deployer, });
 
-const aids = new Array(len).fill(0).map((_, i) => start+BigInt(i))
-const startTs = Date.now();
-const assets = await sdk.getAssetMicro(aids);
-const endTs = Date.now()
-console.log(...assets.values());
-console.log(endTs - startTs, 'ms');
-console.log('map size:', assets.size);
+const assetId = BigInt(process.argv[2] ?? "1002")
+const label = process.argv[3] ?? "pv"
+
+const { txIds } = await sdk.addLabelToAsset(assetId, label);

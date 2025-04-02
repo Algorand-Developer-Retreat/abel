@@ -81,18 +81,18 @@ console.log(await sdk.getAssetsLabels([3832n, ASSET_ID]))
 
 
 await logAllState();
-if (process.env.STOP)
-  process.exit(1);
-
-
-console.log("removing label from asset");
-await sdk.removeLabelFromAsset(ASSET_ID, LABEL_ID);
-
-console.log(await sdk.getLabelDescriptors(["pv"]));
-
-console.log("removing operator from label");
-await sdk.removeOperatorFromLabel(operator, LABEL_ID);
-
-console.log("removing operator from label");
-await sdk.removeLabel(LABEL_ID);
-
+// if (process.env.STOP)
+//   process.exit(1);
+// 
+// 
+// console.log("removing label from asset");
+// await sdk.removeLabelFromAsset(ASSET_ID, LABEL_ID);
+// 
+// console.log(await sdk.getLabelDescriptors(["pv"]));
+// 
+// console.log("removing operator from label");
+// await sdk.removeOperatorFromLabel(operator, LABEL_ID);
+// 
+// console.log("removing operator from label");
+// await sdk.removeLabel(LABEL_ID);
+// 
