@@ -5,6 +5,8 @@ import { BoxName } from "@algorandfoundation/algokit-utils/types/app";
 import {
   AssetLabelingClient,
   AssetLabelingFactory,
+  AssetMicro,
+  AssetMicroFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
 import { AnyFn, LabelDescriptor } from "./types.js";
@@ -88,7 +90,7 @@ export class AbelSDK {
       } = await wrapErrors(
         this.readClient
           .newGroup()
-          .getLabel({ args: { id: labelId }, boxReferences: [labelId] })
+          .getLabel({ args: { id: labelId } })
           .simulate(SIMULATE_PARAMS)
       );
       return { id: labelId, ...labelDescriptorValue! };
@@ -105,16 +107,14 @@ export class AbelSDK {
     const { confirmations } = await wrapErrors(
       this.readClient
         .newGroup()
-        .logLabels({ args: { ids: labelIds }, boxReferences: labelIds })
+        .logLabels({ args: { ids: labelIds } })
         .simulate(SIMULATE_PARAMS)
     );
 
     const logs = confirmations[0]!.logs ?? [];
-
-    const labelDescriptors: Map<string, LabelDescriptor> = new Map();
-
     const descriptorValues = this.parseLogsAs(logs, LabelDescriptorBoxValueFromTuple, "get_label");
 
+    const labelDescriptors: Map<string, LabelDescriptor> = new Map();
     descriptorValues.forEach((descriptorValue, idx) => {
       const id = labelIds[idx];
       labelDescriptors.set(id, { id, ...descriptorValue });
@@ -129,7 +129,7 @@ export class AbelSDK {
     } = await wrapErrors(
       this.readClient
         .newGroup()
-        .getOperatorLabels({ args: { operator }, boxReferences: [operator] })
+        .getOperatorLabels({ args: { operator } })
         .simulate(SIMULATE_PARAMS)
     );
 
@@ -142,7 +142,7 @@ export class AbelSDK {
     } = await wrapErrors(
       this.readClient
         .newGroup()
-        .getAssetLabels({ args: { asset: assetId }, boxReferences: [encodeUint64(assetId)] })
+        .getAssetLabels({ args: { asset: assetId } })
         .simulate(SIMULATE_PARAMS)
     );
 
@@ -155,7 +155,7 @@ export class AbelSDK {
     } = await wrapErrors(
       this.readClient
         .newGroup()
-        .getAssetsLabels({ args: { assets: assetIds }, boxReferences: assetIds.map((a) => encodeUint64(a)) })
+        .getAssetsLabels({ args: { assets: assetIds } })
         .simulate(SIMULATE_PARAMS)
     );
 
@@ -245,6 +245,23 @@ export class AbelSDK {
       boxReferences: [labelId, encodeUint64(assetId), decodeAddress(this.writeAccount.addr).publicKey],
     });
     return wrapErrors(query);
+  }
+
+  /* Batch fetch asset views */
+  async getAssetsMicro(assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> {
+    const { confirmations } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsMicro({ args: { assets: assetIds } })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroFromTuple, "get_asset_micro");
+
+    return new Map(assetValues.map((descriptorValue, idx) => {
+      const id = assetIds[idx];
+      return [id, { id, ...descriptorValue }]
+    }));
   }
 
   /* Utils */

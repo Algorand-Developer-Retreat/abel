@@ -3,6 +3,7 @@ from algopy import (
     ARC4Contract,
     Asset,
     BoxMap,
+    Bytes,
     String,
     Txn,
     UInt64,
@@ -14,9 +15,7 @@ from algopy import (
 )
 from algopy.arc4 import abimethod
 
-S = String
-
-LabelList = arc4.DynamicArray[arc4.String]
+from .types import AssetMicro, LabelDescriptor, LabelList, S
 
 NOT_FOUND_KEY = 2**32  # magic constant for "list not found"
 NOT_FOUND_VALUE = 2**32 - 1  # magic constant for "not found in list"
@@ -34,10 +33,9 @@ def empty_list() -> LabelList:
     return arc4.DynamicArray[arc4.String]()
 
 
-class LabelDescriptor(arc4.Struct):
-    name: arc4.String
-    num_assets: arc4.UInt64
-    num_operators: arc4.UInt64
+@subroutine
+def b2str(b: Bytes) -> arc4.String:
+    return arc4.String(String.from_bytes(b))
 
 
 class AssetLabeling(ARC4Contract):
@@ -278,3 +276,21 @@ class AssetLabeling(ARC4Contract):
             else:
                 out.append(empty_list())
         return out
+
+    # Batch asset data fetch methods
+    @subroutine
+    def _get_asset_micro(self, asset_id: UInt64) -> AssetMicro:
+        asset = Asset(asset_id)
+        return AssetMicro(
+            unit_name=b2str(asset.unit_name),
+            decimals=arc4.UInt8(asset.decimals),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_micro(self, asset: UInt64) -> AssetMicro:
+        return self._get_asset_micro(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_micro(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_micro(asset_id.native))
