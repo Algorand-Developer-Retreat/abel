@@ -4,6 +4,7 @@ from algopy import (
     Asset,
     BoxMap,
     Bytes,
+    Global,
     String,
     Txn,
     UInt64,
@@ -18,6 +19,7 @@ from algopy.arc4 import abimethod
 from .types import (
     AssetMicro,
     AssetMicroLabels,
+    AssetSmall,
     AssetText,
     LabelDescriptor,
     LabelList,
@@ -288,7 +290,7 @@ class AssetLabeling(ARC4Contract):
     # Batch asset data fetch methods
     #
 
-    # Micro: Unit Name, Decimals (max 128)
+    # Micro: Unit Name, Decimals (1 ref, max 128)
 
     @subroutine
     def _get_asset_micro(self, asset_id: UInt64) -> AssetMicro:
@@ -307,7 +309,7 @@ class AssetLabeling(ARC4Contract):
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_micro(asset_id.native))
 
-    # Micro+Label: Unit Name, Decimals, Labels (max 64)
+    # Micro+Label: Unit Name, Decimals, Labels (2 refs, max 64)
 
     @subroutine
     def _get_asset_micro_labels(self, asset_id: UInt64) -> AssetMicroLabels:
@@ -327,7 +329,7 @@ class AssetLabeling(ARC4Contract):
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_micro_labels(asset_id.native))
 
-    # Text: Searchable - Asset name, Unit Name, URL, Labels (max 64)
+    # Text: Searchable - Asset name, Unit Name, URL, Labels (2 refs, max 64)
 
     @subroutine
     def _get_asset_text(self, asset_id: UInt64) -> AssetText:
@@ -347,3 +349,27 @@ class AssetLabeling(ARC4Contract):
     def get_assets_text(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_text(asset_id.native))
+
+    # small (2 refs, max 64)
+
+    @subroutine
+    def _get_asset_small(self, asset_id: UInt64) -> AssetSmall:
+        asset = Asset(asset_id)
+        return AssetSmall(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            decimals=arc4.UInt8(asset.decimals),
+            total=arc4.UInt64(asset.total),
+            has_freeze=arc4.Bool(asset.freeze != Global.zero_address),
+            has_clawback=arc4.Bool(asset.clawback != Global.zero_address),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_small(self, asset: UInt64) -> AssetSmall:
+        return self._get_asset_small(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_small(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_small(asset_id.native))

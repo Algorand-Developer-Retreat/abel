@@ -30,3 +30,17 @@ class AssetText(arc4.Struct):
     unit_name: arc4.String
     url: arc4.String
     labels: LabelList
+
+
+# Small view, what a hover card on an explorer may show
+class AssetSmall(arc4.Struct):
+    name: arc4.String
+    unit_name: arc4.String
+    decimals: arc4.UInt8
+    total: arc4.UInt64
+    has_freeze: arc4.Bool
+    has_clawback: arc4.Bool
+    labels: LabelList
+
+
+# Full view, everything from algod /v2/assets API + reserve  balance
