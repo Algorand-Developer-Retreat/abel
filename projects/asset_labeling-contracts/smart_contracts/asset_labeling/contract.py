@@ -15,7 +15,14 @@ from algopy import (
 )
 from algopy.arc4 import abimethod
 
-from .types import AssetMicro, AssetMicroLabels, LabelDescriptor, LabelList, S
+from .types import (
+    AssetMicro,
+    AssetMicroLabels,
+    AssetText,
+    LabelDescriptor,
+    LabelList,
+    S,
+)
 
 NOT_FOUND_KEY = 2**32  # magic constant for "list not found"
 NOT_FOUND_VALUE = 2**32 - 1  # magic constant for "not found in list"
@@ -300,19 +307,16 @@ class AssetLabeling(ARC4Contract):
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_micro(asset_id.native))
 
-    # Micro: Unit Name, Decimals, Labels (max 64)
+    # Micro+Label: Unit Name, Decimals, Labels (max 64)
 
     @subroutine
     def _get_asset_micro_labels(self, asset_id: UInt64) -> AssetMicroLabels:
         asset = Asset(asset_id)
-        am = AssetMicroLabels(
+        return AssetMicroLabels(
             unit_name=b2str(asset.unit_name),
             decimals=arc4.UInt8(asset.decimals),
-            labels=empty_list(),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
         )
-        if asset in self.assets:
-            am.labels = self.assets[asset].copy()
-        return am
 
     @abimethod(readonly=True)
     def get_asset_micro_labels(self, asset: UInt64) -> AssetMicroLabels:
@@ -322,3 +326,24 @@ class AssetLabeling(ARC4Contract):
     def get_assets_micro_labels(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_micro_labels(asset_id.native))
+
+    # Text: Searchable - Asset name, Unit Name, URL, Labels (max 64)
+
+    @subroutine
+    def _get_asset_text(self, asset_id: UInt64) -> AssetText:
+        asset = Asset(asset_id)
+        return AssetText(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            url=b2str(asset.url),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_text(self, asset: UInt64) -> AssetText:
+        return self._get_asset_text(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_text(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_text(asset_id.native))
