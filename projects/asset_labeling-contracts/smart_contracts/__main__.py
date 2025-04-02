@@ -91,18 +91,20 @@ def build(output_dir: Path, contract_path: Path) -> Path:
     output_dir.mkdir(exist_ok=True, parents=True)
     logger.info(f"Exporting {contract_path} to {output_dir}")
 
+    cmd_list = [
+        "algokit",
+        "--no-color",
+        "compile",
+        "python",
+        str(contract_path.resolve()),
+        f"--out-dir={output_dir}",
+        "--no-output-arc32",
+        "--output-arc56",
+        "--output-source-map",
+    ]
+    logger.debug(f"Running {" ".join(cmd_list)}")
     build_result = subprocess.run(
-        [
-            "algokit",
-            "--no-color",
-            "compile",
-            "python",
-            str(contract_path.resolve()),
-            f"--out-dir={output_dir}",
-            "--no-output-arc32",
-            "--output-arc56",
-            "--output-source-map",
-        ],
+        cmd_list,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,

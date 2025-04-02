@@ -1,0 +1,26 @@
+{
+  "name": "abel-sdk-v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf dist/ artifacts/ src/generated/",
+    "prebuild": "npm run clean && scripts/update-artifacts.sh",
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@algorandfoundation/algokit-client-generator": "^4.0.9",
+    "@types/node": "^22.13.17"
+  },
+  "peerDependencies": {
+    "@algorandfoundation/algokit-utils": "=7.0.2",
+    "algosdk": "^2.8.0"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3"
+  }
+}
