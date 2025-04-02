@@ -137,7 +137,6 @@ export class AbelSDK {
   }
 
   async getAssetLabels(assetId: bigint): Promise<string[]> {
-    // TODO should this throw NONEXIST if it is not labelled??
     const {
       returns: [assetLabels],
     } = await wrapErrors(
