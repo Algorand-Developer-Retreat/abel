@@ -29,6 +29,11 @@ def ensure(cond: bool, msg: String) -> None:  # noqa: FBT001
         op.err()
 
 
+@subroutine
+def empty_list() -> LabelList:
+    return arc4.DynamicArray[arc4.String]()
+
+
 class LabelDescriptor(arc4.Struct):
     name: arc4.String
     num_assets: arc4.UInt64
@@ -39,6 +44,7 @@ class AssetLabeling(ARC4Contract):
     def __init__(self) -> None:
         self.admin = Txn.sender
         self.labels = BoxMap(String, LabelDescriptor, key_prefix=b"")
+        # TODO does this need to be an asset? Uint64 could be better
         self.assets = BoxMap(Asset, LabelList, key_prefix=b"")
         self.operators = BoxMap(Account, LabelList, key_prefix=b"")
 
@@ -177,8 +183,10 @@ class AssetLabeling(ARC4Contract):
 
     @abimethod(readonly=True)
     def get_operator_labels(self, operator: Account) -> LabelList:
-        ensure(operator in self.operators, S("ERR:NOEXIST"))
-        return self.operators[operator]
+        if operator in self.operators:
+            return self.operators[operator]
+        # return empty list
+        return empty_list()
 
     @subroutine
     def get_asset_label_index(self, asset: Asset, label: String) -> UInt64:
@@ -253,5 +261,20 @@ class AssetLabeling(ARC4Contract):
 
     @abimethod(readonly=True)
     def get_asset_labels(self, asset: Asset) -> LabelList:
-        ensure(asset in self.assets, S("ERR:NOEXIST"))
-        return self.assets[asset]
+        if asset in self.assets:
+            return self.assets[asset]
+        # return empty
+        return empty_list()
+
+    @abimethod(readonly=True)
+    def get_assets_labels(
+        self, assets: arc4.DynamicArray[arc4.UInt64]
+    ) -> arc4.DynamicArray[LabelList]:
+        out = arc4.DynamicArray[LabelList]()
+        for _i, asset_id in uenumerate(assets):
+            asset = Asset(asset_id.native)
+            if asset in self.assets:
+                out.append(self.assets[asset].copy())
+            else:
+                out.append(empty_list())
+        return out

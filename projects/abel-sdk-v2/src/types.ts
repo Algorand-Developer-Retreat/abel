@@ -6,3 +6,4 @@ export interface LabelDescriptor extends LabelDescriptorBoxValue {
   id: string;
 }
 
+export type AnyFn = (...args: any[]) => any;

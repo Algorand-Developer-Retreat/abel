@@ -1,4 +1,3 @@
-
 export async function wrapErrors<T>(a: T) {
   try {
     return await a;

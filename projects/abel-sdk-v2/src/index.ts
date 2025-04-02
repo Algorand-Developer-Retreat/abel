@@ -1,5 +1,5 @@
 import { TransactionSignerAccount } from "@algorandfoundation/algokit-utils/types/account";
-import { decodeAddress, encodeUint64, makeEmptyTransactionSigner } from "algosdk";
+import { decodeAddress, decodeUint64, encodeAddress, encodeUint64, makeEmptyTransactionSigner } from "algosdk";
 import { AlgorandClient } from "@algorandfoundation/algokit-utils";
 import { BoxName } from "@algorandfoundation/algokit-utils/types/app";
 import {
@@ -7,7 +7,7 @@ import {
   AssetLabelingFactory,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
-import { LabelDescriptor } from "./types.js";
+import { AnyFn, LabelDescriptor } from "./types.js";
 import { wrapErrors } from "./util.js";
 
 export * from "./types.js";
@@ -61,42 +61,47 @@ export class AbelSDK {
     return this.readClient.appId;
   }
 
-  private async getBoxesByLength(length: number): Promise<BoxName[]> {
-    const boxNames = await this.readClient.algorand.app.getBoxNames(this.appId);
-    return boxNames.filter((boxName) => boxName.name.length === 2);
+  //  Box bead wrappers
+
+  async getAllLabels(): Promise<string[]> {
+    return (await this.getBoxesByLength(2)).map((boxName) => boxName.name);
+  }
+
+  async getAllOperators(): Promise<string[]> {
+    return (await this.getBoxesByLength(32)).map((boxName) => encodeAddress(boxName.nameRaw));
+  }
+
+  async getAllAssetIDs(): Promise<bigint[]> {
+    return (await this.getBoxesByLength(8)).map((boxName) => decodeUint64(boxName.nameRaw, "bigint"));
   }
 
   /*
-   * ts guard for write clients only
-   */
-  requireWriteClient(): asserts this is this & { writeAccount: TransactionSignerAccount } & { writeClient: AssetLabelingClient } {
-    if (this.writeAccount === undefined || this.writeClient === undefined) {
-      throw new Error(`A transaction operation was issued on a read-only client`);
-    }
-  }
-
-  /*
-   * Readers
+   * Registry Readers
    *
    * We simulate from a client configured with a (theoretically) known-good account on all networks, default dev fee sink
    */
 
-  async getLabelDescriptor(labelId: string): Promise<LabelDescriptor> {
-    const {
-      returns: [labelDescriptorValue],
-    } = await wrapErrors(
-      this.readClient
-        .newGroup()
-        .getLabel({ args: { id: labelId }, boxReferences: [labelId] })
-        .simulate(SIMULATE_PARAMS)
-    );
-
-    return { id: labelId, ...labelDescriptorValue! };
+  async getLabelDescriptor(labelId: string): Promise<LabelDescriptor | null> {
+    try {
+      const {
+        returns: [labelDescriptorValue],
+      } = await wrapErrors(
+        this.readClient
+          .newGroup()
+          .getLabel({ args: { id: labelId }, boxReferences: [labelId] })
+          .simulate(SIMULATE_PARAMS)
+      );
+      return { id: labelId, ...labelDescriptorValue! };
+    } catch (e) {
+      if ((e as Error).message === "ERR:NOEXIST") {
+        return null;
+      } else {
+        throw e;
+      }
+    }
   }
 
   async getLabelDescriptors(labelIds: string[]): Promise<Map<string, LabelDescriptor>> {
-    const labels = await this.getBoxesByLength(2);
-
     const { confirmations } = await wrapErrors(
       this.readClient
         .newGroup()
@@ -106,17 +111,12 @@ export class AbelSDK {
 
     const logs = confirmations[0]!.logs ?? [];
 
-    // find a method that returns the same value as we are logging
-    const method = this.readClient.appClient.getABIMethod("get_label");
-
     const labelDescriptors: Map<string, LabelDescriptor> = new Map();
 
-    logs.forEach((logValue: Uint8Array, idx) => {
+    const descriptorValues = this.parseLogsAs(logs, LabelDescriptorBoxValueFromTuple, "get_label");
+
+    descriptorValues.forEach((descriptorValue, idx) => {
       const id = labelIds[idx];
-      const descriptorValue = LabelDescriptorBoxValueFromTuple(
-        // @ts-ignore TODO fixable?
-        method.returns.type.decode(logs[idx])
-      );
       labelDescriptors.set(id, { id, ...descriptorValue });
     });
 
@@ -137,6 +137,7 @@ export class AbelSDK {
   }
 
   async getAssetLabels(assetId: bigint): Promise<string[]> {
+    // TODO should this throw NONEXIST if it is not labelled??
     const {
       returns: [assetLabels],
     } = await wrapErrors(
@@ -147,6 +148,24 @@ export class AbelSDK {
     );
 
     return assetLabels!;
+  }
+
+  async getAssetsLabels(assetIds: bigint[]): Promise<Map<bigint, string[]>> {
+    const {
+      returns: [assetsLabels],
+    } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsLabels({ args: { assets: assetIds }, boxReferences: assetIds.map((a) => encodeUint64(a)) })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const map: Map<bigint, string[]> = new Map();
+    assetsLabels?.forEach((assetLabels, idx) => {
+      map.set(assetIds[idx], assetLabels);
+    });
+
+    return map;
   }
 
   /*
@@ -227,5 +246,39 @@ export class AbelSDK {
       boxReferences: [labelId, encodeUint64(assetId), decodeAddress(this.writeAccount.addr).publicKey],
     });
     return wrapErrors(query);
+  }
+
+  /* Utils */
+
+  private async getBoxesByLength(length: number): Promise<BoxName[]> {
+    const boxNames = await this.readClient.algorand.app.getBoxNames(this.appId);
+    return boxNames.filter((boxName) => boxName.nameRaw.length === length);
+  }
+
+  /*
+   * parse typed arc4 structs from logs
+   *
+   * tupleParser is like generated clients' xyzArcStructFromTuple
+   * abiDecodingMethod is a method name that returns the same avi return type as we are logging
+   *    e.g. if we are parsing log_label_descriptors() logs that logs LabelDescriptor, abiDecodingMethod can be get_label_descriptor that has ABI return LabelDescriptor
+   */
+  parseLogsAs<T extends AnyFn>(logs: Uint8Array[], tupleParser: T, abiDecodingMethodName: string): ReturnType<T>[] {
+    const decodingMethod = this.readClient.appClient.getABIMethod(abiDecodingMethodName);
+    const parsed = logs.map((logValue) =>
+      tupleParser(
+        // @ts-ignore TODO fixable?
+        decodingMethod.returns.type.decode(logValue)
+      )
+    );
+    return parsed;
+  }
+
+  /*
+   * ts guard for write clients only
+   */
+  requireWriteClient(): asserts this is this & { writeAccount: TransactionSignerAccount } & { writeClient: AssetLabelingClient } {
+    if (this.writeAccount === undefined || this.writeClient === undefined) {
+      throw new Error(`A transaction operation was issued on a read-only client`);
+    }
   }
 }
