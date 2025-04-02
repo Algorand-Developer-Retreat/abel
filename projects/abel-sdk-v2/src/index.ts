@@ -9,6 +9,9 @@ import {
   AssetMicro,
   AssetMicroFromTuple,
   AssetMicroLabelsFromTuple,
+  AssetSmallFromTuple,
+  AssetTextFromTuple,
+  AssetFullFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
 import { AnyFn, FirstArgument, LabelDescriptor } from "./types.js";
@@ -268,7 +271,6 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-
   getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicroLabels, assetIds, METHOD_MAX);
@@ -281,6 +283,51 @@ export class AbelSDK {
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroLabelsFromTuple, "get_asset_micro_labels");
+    return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
+  };
+
+  getAssetsText = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+    const METHOD_MAX = 64;
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsText, assetIds, METHOD_MAX);
+
+    const { confirmations } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsText({ args: { assets: assetIds } })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroLabelsFromTuple, "get_asset_text");
+    return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
+  };
+
+  getAssetsSmall = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+    const METHOD_MAX = 64;
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsSmall, assetIds, METHOD_MAX);
+
+    const { confirmations } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsSmall({ args: { assets: assetIds } })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetSmallFromTuple, "get_asset_small");
+    return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
+  };
+
+  getAssetsFull = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+    const METHOD_MAX = 42;
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsFull, assetIds, METHOD_MAX);
+
+    const { confirmations } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsFull({ args: { assets: assetIds } })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetFullFromTuple, "get_asset_full");
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 

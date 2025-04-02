@@ -3,7 +3,7 @@
   "sources": [
     "../../asset_labeling/contract.py"
   ],
-  "mappings": "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",
+  "mappings": "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",
   "op_pc_offset": 0,
   "pc_events": {
     "1": {
@@ -69,7 +69,7 @@
       "stack_out": []
     },
     "121": {
-      "op": "pushbytess 0x8f0d7d8e 0x7c1b32f6 0x17e691ae 0x33d0ffdc 0x725616e7 0xfac1cf1b 0xb4c50b9f 0xa2dd2247 0xa37dea11 0x68f18efa 0xc2ed743f 0xa67f03c2 0xaaee0c61 0xb6c39f68 0x635be362 0x7093b10d 0xe1bb95fc 0x5540b80a 0x7a4ce4b9 0x366c51af 0xd5d3bad3 0x03ba98db // method \"change_admin(account)void\", method \"add_label(string,string)void\", method \"remove_label(string)void\", method \"get_label(string)(string,uint64,uint64)\", method \"log_labels(string[])void\", method \"add_operator_to_label(account,string)void\", method \"remove_operator_from_label(account,string)void\", method \"get_operator_labels(account)string[]\", method \"add_label_to_asset(string,asset)void\", method \"remove_label_from_asset(string,asset)void\", method \"get_asset_labels(asset)string[]\", method \"get_assets_labels(uint64[])string[][]\", method \"get_asset_micro(uint64)(string,uint8)\", method \"get_assets_micro(uint64[])void\", method \"get_asset_micro_labels(uint64)(string,uint8,string[])\", method \"get_assets_micro_labels(uint64[])void\", method \"get_asset_text(uint64)(string,string,string,string[])\", method \"get_assets_text(uint64[])void\", method \"get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[])\", method \"get_assets_small(uint64[])void\", method \"get_asset_full(uint64)(string,string,string,uint64,uint8,address,address,address,address,byte[],uint64,string[])\", method \"get_assets_full(uint64[])void\"",
+      "op": "pushbytess 0x8f0d7d8e 0x7c1b32f6 0x17e691ae 0x33d0ffdc 0x725616e7 0xfac1cf1b 0xb4c50b9f 0xa2dd2247 0xa37dea11 0x68f18efa 0xc2ed743f 0xa67f03c2 0xaaee0c61 0xb6c39f68 0x635be362 0x7093b10d 0x4f53c25d 0x5540b80a 0x7a4ce4b9 0x366c51af 0xd5d3bad3 0x03ba98db // method \"change_admin(account)void\", method \"add_label(string,string)void\", method \"remove_label(string)void\", method \"get_label(string)(string,uint64,uint64)\", method \"log_labels(string[])void\", method \"add_operator_to_label(account,string)void\", method \"remove_operator_from_label(account,string)void\", method \"get_operator_labels(account)string[]\", method \"add_label_to_asset(string,asset)void\", method \"remove_label_from_asset(string,asset)void\", method \"get_asset_labels(asset)string[]\", method \"get_assets_labels(uint64[])string[][]\", method \"get_asset_micro(uint64)(string,uint8)\", method \"get_assets_micro(uint64[])void\", method \"get_asset_micro_labels(uint64)(string,uint8,string[])\", method \"get_assets_micro_labels(uint64[])void\", method \"get_asset_text(uint64)(string,string,string[],string)\", method \"get_assets_text(uint64[])void\", method \"get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[])\", method \"get_assets_small(uint64[])void\", method \"get_asset_full(uint64)(string,string,string,uint64,uint8,address,address,address,address,byte[],uint64,string[])\", method \"get_assets_full(uint64[])void\"",
       "defined_out": [
         "Method(add_label(string,string)void)",
         "Method(add_label_to_asset(string,asset)void)",
@@ -80,7 +80,7 @@
         "Method(get_asset_micro(uint64)(string,uint8))",
         "Method(get_asset_micro_labels(uint64)(string,uint8,string[]))",
         "Method(get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[]))",
-        "Method(get_asset_text(uint64)(string,string,string,string[]))",
+        "Method(get_asset_text(uint64)(string,string,string[],string))",
         "Method(get_assets_full(uint64[])void)",
         "Method(get_assets_labels(uint64[])string[][])",
         "Method(get_assets_micro(uint64[])void)",
@@ -111,7 +111,7 @@
         "Method(get_assets_micro(uint64[])void)",
         "Method(get_asset_micro_labels(uint64)(string,uint8,string[]))",
         "Method(get_assets_micro_labels(uint64[])void)",
-        "Method(get_asset_text(uint64)(string,string,string,string[]))",
+        "Method(get_asset_text(uint64)(string,string,string[],string))",
         "Method(get_assets_text(uint64[])void)",
         "Method(get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[]))",
         "Method(get_assets_small(uint64[])void)",
@@ -131,7 +131,7 @@
         "Method(get_asset_micro(uint64)(string,uint8))",
         "Method(get_asset_micro_labels(uint64)(string,uint8,string[]))",
         "Method(get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[]))",
-        "Method(get_asset_text(uint64)(string,string,string,string[]))",
+        "Method(get_asset_text(uint64)(string,string,string[],string))",
         "Method(get_assets_full(uint64[])void)",
         "Method(get_assets_labels(uint64[])string[][])",
         "Method(get_assets_micro(uint64[])void)",
@@ -163,7 +163,7 @@
         "Method(get_assets_micro(uint64[])void)",
         "Method(get_asset_micro_labels(uint64)(string,uint8,string[]))",
         "Method(get_assets_micro_labels(uint64[])void)",
-        "Method(get_asset_text(uint64)(string,string,string,string[]))",
+        "Method(get_asset_text(uint64)(string,string,string[],string))",
         "Method(get_assets_text(uint64[])void)",
         "Method(get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[]))",
         "Method(get_assets_small(uint64[])void)",
@@ -16076,187 +16076,180 @@
       ]
     },
     "2492": {
-      "op": "asset_params_get AssetURL",
-      "defined_out": [
-        "check%2#0",
-        "tmp%0#0",
-        "tmp%1#0",
-        "value%2#0"
-      ],
-      "stack_out": [
-        "tmp%0#0",
-        "tmp%1#0",
-        "value%2#0",
-        "check%2#0"
-      ]
-    },
-    "2494": {
-      "error": "asset exists",
-      "op": "assert // asset exists",
-      "stack_out": [
-        "tmp%0#0",
-        "tmp%1#0",
-        "value%2#0"
-      ]
-    },
-    "2495": {
-      "callsub": "smart_contracts.asset_labeling.contract.b2str",
-      "op": "callsub b2str",
-      "defined_out": [
-        "tmp%0#0",
-        "tmp%1#0",
-        "tmp%2#0"
-      ],
-      "stack_out": [
-        "tmp%0#0",
-        "tmp%1#0",
-        "tmp%2#0"
-      ]
-    },
-    "2498": {
-      "op": "frame_dig -1",
-      "stack_out": [
-        "tmp%0#0",
-        "tmp%1#0",
-        "tmp%2#0",
-        "asset_id#0 (copy)"
-      ]
-    },
-    "2500": {
       "op": "itob",
       "defined_out": [
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ]
     },
-    "2501": {
+    "2493": {
       "op": "dup",
       "defined_out": [
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ]
     },
-    "2502": {
+    "2494": {
       "op": "box_len",
       "defined_out": [
         "maybe_exists%0#0",
         "maybe_value%0#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "maybe_value%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "2503": {
+    "2495": {
       "op": "bury 1",
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "maybe_exists%0#0"
       ]
     },
-    "2505": {
+    "2497": {
       "op": "bz _get_asset_text_ternary_false@2",
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ]
     },
-    "2508": {
-      "op": "frame_dig 3",
+    "2500": {
+      "op": "frame_dig 2",
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ]
     },
-    "2510": {
+    "2502": {
       "op": "box_get",
       "defined_out": [
         "maybe_exists%1#0",
         "maybe_value%1#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "maybe_value%1#0",
         "maybe_exists%1#0"
       ]
     },
-    "2511": {
+    "2503": {
       "error": "check self.assets entry exists",
       "op": "assert // check self.assets entry exists",
       "defined_out": [
         "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1"
       ]
     },
-    "2512": {
+    "2504": {
       "block": "_get_asset_text_ternary_merge@3",
       "stack_in": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1"
       ],
-      "op": "frame_dig 0",
+      "op": "frame_dig -1",
       "defined_out": [
-        "tmp%0#0"
+        "asset_id#0 (copy)"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "asset_id#0 (copy)"
+      ]
+    },
+    "2506": {
+      "op": "asset_params_get AssetURL",
+      "defined_out": [
+        "check%2#0",
+        "value%2#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%1#0",
+        "tmp%2#0",
+        "ternary_result%0#1",
+        "value%2#0",
+        "check%2#0"
+      ]
+    },
+    "2508": {
+      "error": "asset exists",
+      "op": "assert // asset exists",
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%1#0",
+        "tmp%2#0",
+        "ternary_result%0#1",
+        "value%2#0"
+      ]
+    },
+    "2509": {
+      "callsub": "smart_contracts.asset_labeling.contract.b2str",
+      "op": "callsub b2str",
+      "defined_out": [
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%1#0",
+        "tmp%2#0",
+        "ternary_result%0#1",
+        "tmp%6#0"
+      ]
+    },
+    "2512": {
+      "op": "frame_dig 0",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%1#0",
+        "tmp%2#0",
+        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0"
       ]
     },
@@ -16264,14 +16257,15 @@
       "op": "dup",
       "defined_out": [
         "tmp%0#0",
-        "tmp%0#0 (copy)"
+        "tmp%0#0 (copy)",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%0#0 (copy)"
       ]
@@ -16280,14 +16274,15 @@
       "op": "len",
       "defined_out": [
         "data_length%0#0",
-        "tmp%0#0"
+        "tmp%0#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "data_length%0#0"
       ]
@@ -16297,14 +16292,15 @@
       "defined_out": [
         "8",
         "data_length%0#0",
-        "tmp%0#0"
+        "tmp%0#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "data_length%0#0",
         "8"
@@ -16314,14 +16310,15 @@
       "op": "+",
       "defined_out": [
         "current_tail_offset%1#0",
-        "tmp%0#0"
+        "tmp%0#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0"
       ]
@@ -16331,14 +16328,15 @@
       "defined_out": [
         "current_tail_offset%1#0",
         "current_tail_offset%1#0 (copy)",
-        "tmp%0#0"
+        "tmp%0#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0",
         "current_tail_offset%1#0 (copy)"
@@ -16349,14 +16347,15 @@
       "defined_out": [
         "as_bytes%1#0",
         "current_tail_offset%1#0",
-        "tmp%0#0"
+        "tmp%0#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0",
         "as_bytes%1#0"
@@ -16367,14 +16366,15 @@
       "defined_out": [
         "current_tail_offset%1#0",
         "offset_as_uint16%1#0",
-        "tmp%0#0"
+        "tmp%0#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0",
         "offset_as_uint16%1#0"
@@ -16386,14 +16386,15 @@
         "0x0008",
         "current_tail_offset%1#0",
         "offset_as_uint16%1#0",
-        "tmp%0#0"
+        "tmp%0#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0",
         "offset_as_uint16%1#0",
@@ -16406,8 +16407,8 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0",
         "0x0008",
@@ -16419,14 +16420,15 @@
       "defined_out": [
         "current_tail_offset%1#0",
         "encoded_tuple_buffer%2#0",
-        "tmp%0#0"
+        "tmp%0#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0",
         "encoded_tuple_buffer%2#0"
@@ -16438,14 +16440,15 @@
         "current_tail_offset%1#0",
         "encoded_tuple_buffer%2#0",
         "tmp%0#0",
-        "tmp%1#0"
+        "tmp%1#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0",
         "encoded_tuple_buffer%2#0",
@@ -16459,14 +16462,15 @@
         "encoded_tuple_buffer%2#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%1#0 (copy)"
+        "tmp%1#0 (copy)",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "current_tail_offset%1#0",
         "encoded_tuple_buffer%2#0",
@@ -16480,8 +16484,8 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "current_tail_offset%1#0",
@@ -16496,14 +16500,15 @@
         "data_length%1#0",
         "encoded_tuple_buffer%2#0",
         "tmp%0#0",
-        "tmp%1#0"
+        "tmp%1#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "current_tail_offset%1#0",
@@ -16517,8 +16522,8 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "encoded_tuple_buffer%2#0",
@@ -16532,14 +16537,15 @@
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%2#0",
         "tmp%0#0",
-        "tmp%1#0"
+        "tmp%1#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "encoded_tuple_buffer%2#0",
@@ -16553,14 +16559,15 @@
         "current_tail_offset%2#0 (copy)",
         "encoded_tuple_buffer%2#0",
         "tmp%0#0",
-        "tmp%1#0"
+        "tmp%1#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "encoded_tuple_buffer%2#0",
@@ -16575,14 +16582,15 @@
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%2#0",
         "tmp%0#0",
-        "tmp%1#0"
+        "tmp%1#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "encoded_tuple_buffer%2#0",
@@ -16597,14 +16605,15 @@
         "encoded_tuple_buffer%2#0",
         "offset_as_uint16%2#0",
         "tmp%0#0",
-        "tmp%1#0"
+        "tmp%1#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "encoded_tuple_buffer%2#0",
@@ -16618,8 +16627,8 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "current_tail_offset%2#0",
@@ -16633,8 +16642,8 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "current_tail_offset%2#0",
@@ -16648,14 +16657,15 @@
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%3#0",
         "tmp%0#0",
-        "tmp%1#0"
+        "tmp%1#0",
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "current_tail_offset%2#0",
@@ -16663,25 +16673,25 @@
       ]
     },
     "2547": {
-      "op": "frame_dig 2",
+      "op": "uncover 5",
       "defined_out": [
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%3#0",
+        "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%3#0",
-        "tmp%2#0"
+        "ternary_result%0#1"
       ]
     },
     "2549": {
@@ -16689,23 +16699,22 @@
       "defined_out": [
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%3#0",
+        "ternary_result%0#1 (copy)",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%2#0 (copy)"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%3#0",
-        "tmp%2#0 (copy)",
-        "tmp%2#0 (copy)"
+        "ternary_result%0#1 (copy)",
+        "ternary_result%0#1 (copy)"
       ]
     },
     "2550": {
@@ -16714,14 +16723,13 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%3#0",
-        "tmp%2#0 (copy)"
+        "ternary_result%0#1 (copy)"
       ]
     },
     "2552": {
@@ -16730,19 +16738,19 @@
         "current_tail_offset%2#0",
         "data_length%2#0",
         "encoded_tuple_buffer%3#0",
+        "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "current_tail_offset%2#0",
         "encoded_tuple_buffer%3#0",
         "data_length%2#0"
@@ -16754,11 +16762,10 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "encoded_tuple_buffer%3#0",
         "data_length%2#0",
         "current_tail_offset%2#0"
@@ -16769,19 +16776,19 @@
       "defined_out": [
         "current_tail_offset%3#0",
         "encoded_tuple_buffer%3#0",
+        "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "encoded_tuple_buffer%3#0",
         "current_tail_offset%3#0"
       ]
@@ -16791,19 +16798,19 @@
       "defined_out": [
         "as_bytes%3#0",
         "encoded_tuple_buffer%3#0",
+        "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "encoded_tuple_buffer%3#0",
         "as_bytes%3#0"
       ]
@@ -16813,19 +16820,19 @@
       "defined_out": [
         "encoded_tuple_buffer%3#0",
         "offset_as_uint16%3#0",
+        "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "encoded_tuple_buffer%3#0",
         "offset_as_uint16%3#0"
       ]
@@ -16834,19 +16841,19 @@
       "op": "concat",
       "defined_out": [
         "encoded_tuple_buffer%4#0",
+        "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "encoded_tuple_buffer%4#0"
       ]
     },
@@ -16856,10 +16863,9 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "encoded_tuple_buffer%4#0",
         "tmp%0#0"
       ]
@@ -16868,18 +16874,18 @@
       "op": "concat",
       "defined_out": [
         "encoded_tuple_buffer%5#0",
+        "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "tmp%1#0",
-        "tmp%2#0",
+        "ternary_result%0#1",
         "encoded_tuple_buffer%5#0"
       ]
     },
@@ -16889,9 +16895,8 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
+        "tmp%6#0",
         "ternary_result%0#1",
-        "tmp%2#0",
         "encoded_tuple_buffer%5#0",
         "tmp%1#0"
       ]
@@ -16900,17 +16905,17 @@
       "op": "concat",
       "defined_out": [
         "encoded_tuple_buffer%6#0",
+        "ternary_result%0#1",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
+        "tmp%6#0",
         "ternary_result%0#1",
-        "tmp%2#0",
         "encoded_tuple_buffer%6#0"
       ]
     },
@@ -16920,10 +16925,9 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "encoded_tuple_buffer%6#0",
-        "tmp%2#0"
+        "ternary_result%0#1"
       ]
     },
     "2568": {
@@ -16932,33 +16936,24 @@
         "encoded_tuple_buffer%7#0",
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0"
+        "tmp%6#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
-        "ternary_result%0#1",
+        "tmp%6#0",
         "encoded_tuple_buffer%7#0"
       ]
     },
     "2569": {
       "op": "swap",
-      "defined_out": [
-        "encoded_tuple_buffer%7#0",
-        "ternary_result%0#1",
-        "tmp%0#0",
-        "tmp%1#0",
-        "tmp%2#0"
-      ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "encoded_tuple_buffer%7#0",
-        "ternary_result%0#1"
+        "tmp%6#0"
       ]
     },
     "2570": {
@@ -16966,14 +16961,12 @@
       "defined_out": [
         "encoded_tuple_buffer%8#0",
         "tmp%0#0",
-        "tmp%1#0",
-        "tmp%2#0"
+        "tmp%1#0"
       ],
       "stack_out": [
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "encoded_tuple_buffer%8#0"
       ]
     },
@@ -16989,8 +16982,7 @@
       "stack_in": [
         "tmp%0#0",
         "tmp%1#0",
-        "tmp%2#0",
-        "tmp%3#0"
+        "tmp%2#0"
       ],
       "op": "bytec_2 // 0x0000",
       "defined_out": [
@@ -17000,7 +16992,6 @@
         "tmp%0#0",
         "tmp%1#0",
         "tmp%2#0",
-        "tmp%3#0",
         "ternary_result%0#1"
       ]
     },

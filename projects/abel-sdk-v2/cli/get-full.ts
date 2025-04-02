@@ -36,7 +36,7 @@ const sdk = new AbelSDK({ algorand, appId, writeAccount: deployer, concurrency }
 
 const aids = new Array(len).fill(0).map((_, i) => start+BigInt(i))
 const startTs = Date.now();
-const assets = await sdk.getAssetsMicro(aids);
+const assets = await sdk.getAssetsFull(aids);
 const endTs = Date.now()
 console.log(...assets.values());
 console.log(endTs - startTs, 'ms');

@@ -28,8 +28,8 @@ class AssetMicroLabels(arc4.Struct):
 class AssetText(arc4.Struct):
     name: arc4.String
     unit_name: arc4.String
-    url: arc4.String
     labels: LabelList
+    url: arc4.String
 
 
 # Small view, what a hover card on an explorer may show

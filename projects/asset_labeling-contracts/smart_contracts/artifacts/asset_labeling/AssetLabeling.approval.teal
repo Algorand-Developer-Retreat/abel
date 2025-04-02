@@ -18,7 +18,7 @@ main_after_if_else@2:
     // class AssetLabeling(ARC4Contract):
     txn NumAppArgs
     bz main_bare_routing@27
-    pushbytess 0x8f0d7d8e 0x7c1b32f6 0x17e691ae 0x33d0ffdc 0x725616e7 0xfac1cf1b 0xb4c50b9f 0xa2dd2247 0xa37dea11 0x68f18efa 0xc2ed743f 0xa67f03c2 0xaaee0c61 0xb6c39f68 0x635be362 0x7093b10d 0xe1bb95fc 0x5540b80a 0x7a4ce4b9 0x366c51af 0xd5d3bad3 0x03ba98db // method "change_admin(account)void", method "add_label(string,string)void", method "remove_label(string)void", method "get_label(string)(string,uint64,uint64)", method "log_labels(string[])void", method "add_operator_to_label(account,string)void", method "remove_operator_from_label(account,string)void", method "get_operator_labels(account)string[]", method "add_label_to_asset(string,asset)void", method "remove_label_from_asset(string,asset)void", method "get_asset_labels(asset)string[]", method "get_assets_labels(uint64[])string[][]", method "get_asset_micro(uint64)(string,uint8)", method "get_assets_micro(uint64[])void", method "get_asset_micro_labels(uint64)(string,uint8,string[])", method "get_assets_micro_labels(uint64[])void", method "get_asset_text(uint64)(string,string,string,string[])", method "get_assets_text(uint64[])void", method "get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[])", method "get_assets_small(uint64[])void", method "get_asset_full(uint64)(string,string,string,uint64,uint8,address,address,address,address,byte[],uint64,string[])", method "get_assets_full(uint64[])void"
+    pushbytess 0x8f0d7d8e 0x7c1b32f6 0x17e691ae 0x33d0ffdc 0x725616e7 0xfac1cf1b 0xb4c50b9f 0xa2dd2247 0xa37dea11 0x68f18efa 0xc2ed743f 0xa67f03c2 0xaaee0c61 0xb6c39f68 0x635be362 0x7093b10d 0x4f53c25d 0x5540b80a 0x7a4ce4b9 0x366c51af 0xd5d3bad3 0x03ba98db // method "change_admin(account)void", method "add_label(string,string)void", method "remove_label(string)void", method "get_label(string)(string,uint64,uint64)", method "log_labels(string[])void", method "add_operator_to_label(account,string)void", method "remove_operator_from_label(account,string)void", method "get_operator_labels(account)string[]", method "add_label_to_asset(string,asset)void", method "remove_label_from_asset(string,asset)void", method "get_asset_labels(asset)string[]", method "get_assets_labels(uint64[])string[][]", method "get_asset_micro(uint64)(string,uint8)", method "get_assets_micro(uint64[])void", method "get_asset_micro_labels(uint64)(string,uint8,string[])", method "get_assets_micro_labels(uint64[])void", method "get_asset_text(uint64)(string,string,string[],string)", method "get_assets_text(uint64[])void", method "get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[])", method "get_assets_small(uint64[])void", method "get_asset_full(uint64)(string,string,string,uint64,uint8,address,address,address,address,byte[],uint64,string[])", method "get_assets_full(uint64[])void"
     txna ApplicationArgs 0
     match main_change_admin_route@5 main_add_label_route@6 main_remove_label_route@7 main_get_label_route@8 main_log_labels_route@9 main_add_operator_to_label_route@10 main_remove_operator_from_label_route@11 main_get_operator_labels_route@12 main_add_label_to_asset_route@13 main_remove_label_from_asset_route@14 main_get_asset_labels_route@15 main_get_assets_labels_route@16 main_get_asset_micro_route@17 main_get_assets_micro_route@18 main_get_asset_micro_labels_route@19 main_get_assets_micro_labels_route@20 main_get_asset_text_route@21 main_get_assets_text_route@22 main_get_asset_small_route@23 main_get_assets_small_route@24 main_get_asset_full_route@25 main_get_assets_full_route@26
 
@@ -2352,12 +2352,6 @@ _get_asset_text:
     asset_params_get AssetUnitName
     assert // asset exists
     callsub b2str
-    // smart_contracts/asset_labeling/contract.py:341
-    // url=b2str(asset.url),
-    frame_dig -1
-    asset_params_get AssetURL
-    assert // asset exists
-    callsub b2str
     // smart_contracts/asset_labeling/contract.py:342
     // labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
     frame_dig -1
@@ -2366,11 +2360,17 @@ _get_asset_text:
     box_len
     bury 1
     bz _get_asset_text_ternary_false@2
-    frame_dig 3
+    frame_dig 2
     box_get
     assert // check self.assets entry exists
 
 _get_asset_text_ternary_merge@3:
+    // smart_contracts/asset_labeling/contract.py:341
+    // url=b2str(asset.url),
+    frame_dig -1
+    asset_params_get AssetURL
+    assert // asset exists
+    callsub b2str
     // smart_contracts/asset_labeling/contract.py:338-343
     // return AssetText(
     //     name=b2str(asset.name),
@@ -2401,7 +2401,7 @@ _get_asset_text_ternary_merge@3:
     uncover 2
     swap
     concat
-    frame_dig 2
+    uncover 5
     dup
     cover 3
     len
