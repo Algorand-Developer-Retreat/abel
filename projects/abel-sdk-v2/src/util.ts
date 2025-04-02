@@ -13,3 +13,29 @@ export async function wrapErrors<T>(a: T) {
     throw e;
   }
 }
+
+export function chunk<T>(array: T[], chunkSize: number): T[][] {
+  if (chunkSize <= 0) {
+    throw new Error("Chunk size must be greater than 0");
+  }
+
+  const result: T[][] = [];
+
+  for (let i = 0; i < array.length; i += chunkSize) {
+    result.push(array.slice(i, i + chunkSize));
+  }
+
+  return result;
+}
+
+export function mergeMapsArr<K, V>(maps: Map<K, V>[]): Map<K, V> {
+  const mergedMap = new Map<K, V>(maps[0]);
+
+  for (const map of maps.slice(1)) {
+    map.forEach((value, key) => {
+      mergedMap.set(key, value); // Overwrites or adds new key-value pairs
+    });
+  }
+
+  return mergedMap;
+}

@@ -12,3 +12,5 @@ export type AnyFn = (...args: any[]) => any;
 export interface AssetMicro extends AssetMicroValue {
   id: bigint;
 }
+
+export type FirstArgument<T extends (...args: any[]) => any> = T extends (arg1: infer U, ...args: any[]) => any ? U : never;

@@ -2,6 +2,7 @@ import { TransactionSignerAccount } from "@algorandfoundation/algokit-utils/type
 import { decodeAddress, decodeUint64, encodeAddress, encodeUint64, makeEmptyTransactionSigner } from "algosdk";
 import { AlgorandClient } from "@algorandfoundation/algokit-utils";
 import { BoxName } from "@algorandfoundation/algokit-utils/types/app";
+import pMap from "p-map";
 import {
   AssetLabelingClient,
   AssetLabelingFactory,
@@ -9,8 +10,8 @@ import {
   AssetMicroFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
-import { AnyFn, LabelDescriptor } from "./types.js";
-import { wrapErrors } from "./util.js";
+import { AnyFn, FirstArgument, LabelDescriptor } from "./types.js";
+import { chunk, mergeMapsArr, wrapErrors } from "./util.js";
 
 export * from "./types.js";
 export { AssetLabelingClient, AssetLabelingFactory };
@@ -28,17 +29,20 @@ export class AbelSDK {
   readClient: AssetLabelingClient;
   writeClient: AssetLabelingClient | undefined;
   writeAccount?: TransactionSignerAccount | undefined;
+  private concurrency: number = 2;
 
   constructor({
     algorand,
     appId,
     readAccount = DEFAULT_READ_ACCOUNT,
     writeAccount,
+    concurrency,
   }: {
     algorand: AlgorandClient;
     appId: bigint;
     writeAccount?: TransactionSignerAccount;
     readAccount?: string;
+    concurrency?: number;
   }) {
     // Client used for read queries. Sender can be any funded address.
     // Default read is the A7N.. fee sink which is funded on all public ALGO networks incl. localnet
@@ -56,6 +60,10 @@ export class AbelSDK {
         defaultSigner: writeAccount.signer,
       });
       this.writeAccount = writeAccount;
+    }
+
+    if (concurrency !== undefined) {
+      this.concurrency = concurrency;
     }
   }
 
@@ -126,12 +134,7 @@ export class AbelSDK {
   async getOperatorLabels(operator: string): Promise<string[]> {
     const {
       returns: [operatorLabels],
-    } = await wrapErrors(
-      this.readClient
-        .newGroup()
-        .getOperatorLabels({ args: { operator } })
-        .simulate(SIMULATE_PARAMS)
-    );
+    } = await wrapErrors(this.readClient.newGroup().getOperatorLabels({ args: { operator } }).simulate(SIMULATE_PARAMS));
 
     return operatorLabels!;
   }
@@ -248,7 +251,11 @@ export class AbelSDK {
   }
 
   /* Batch fetch asset views */
-  async getAssetsMicro(assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> {
+
+  getAssetsMicro = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+    const METHOD_MAX = 128;
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicro, assetIds, METHOD_MAX);
+
     const { confirmations } = await wrapErrors(
       this.readClient
         .newGroup()
@@ -257,12 +264,8 @@ export class AbelSDK {
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroFromTuple, "get_asset_micro");
-
-    return new Map(assetValues.map((descriptorValue, idx) => {
-      const id = assetIds[idx];
-      return [id, { id, ...descriptorValue }]
-    }));
-  }
+    return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
+  };
 
   /* Utils */
 
@@ -296,5 +299,15 @@ export class AbelSDK {
     if (this.writeAccount === undefined || this.writeClient === undefined) {
       throw new Error(`A transaction operation was issued on a read-only client`);
     }
+  }
+
+  /*
+   * pMap batcher, merge maps after
+   */
+  async batchCall<T extends AnyFn>(method: T, args: FirstArgument<T>, methodMax: number): Promise<ReturnType<T>> {
+    const chunked = chunk(args, methodMax);
+    const res: ReturnType<T>[] = await pMap(chunked, (arg) => method(arg), { concurrency: this.concurrency });
+    // @ts-ignore
+    return mergeMapsArr(res);
   }
 }
