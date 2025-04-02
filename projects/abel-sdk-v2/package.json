@@ -14,13 +14,13 @@
   "license": "ISC",
   "devDependencies": {
     "@algorandfoundation/algokit-client-generator": "^4.0.9",
-    "@types/node": "^22.13.17"
+    "@types/node": "^22.13.17",
+    "tsx": "^4.19.3"
   },
   "peerDependencies": {
     "@algorandfoundation/algokit-utils": "=7.0.2",
-    "algosdk": "^2.8.0"
-  },
-  "dependencies": {
+    "algosdk": "^2.8.0",
     "buffer": "^6.0.3"
-  }
+  },
+  "type": "module"
 }

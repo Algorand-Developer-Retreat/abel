@@ -75,6 +75,11 @@ class AssetLabeling(ARC4Contract):
         ensure(id in self.labels, S("ERR:NOEXIST"))
         return self.labels[id]
 
+    @abimethod(readonly=True)
+    def log_labels(self, ids: arc4.DynamicArray[arc4.String]) -> None:
+        for _idx, label_id in uenumerate(ids):
+            log(self.labels[label_id.native])
+
     # operator<>label access ops. admin and operators
 
     @subroutine
