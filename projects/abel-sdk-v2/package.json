@@ -2,7 +2,29 @@
   "name": "abel-sdk-v2",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tasosbit/abel.git",
+    "directory": "projects/abel-sdk-v2"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/generated/abel-contract-client.d.ts",
+      "default": "./dist/generated/abel-contract-client.js"
+    },
+    "./arc32.json": "./dist/artifacts/AssetLabeling.arc32.json"
+  },
   "scripts": {
     "clean": "rm -rf dist/ artifacts/ src/generated/",
     "prebuild": "npm run clean && scripts/update-artifacts.sh",
@@ -15,12 +37,12 @@
   "devDependencies": {
     "@algorandfoundation/algokit-client-generator": "^4.0.9",
     "@types/node": "^22.13.17",
+    "buffer": "^6.0.3",
     "tsx": "^4.19.3"
   },
   "peerDependencies": {
-    "@algorandfoundation/algokit-utils": "=7.0.2",
-    "algosdk": "^2.8.0",
-    "buffer": "^6.0.3"
+    "@algorandfoundation/algokit-utils": "^7.0.2",
+    "algosdk": "^2.8.0"
   },
   "type": "module"
 }
