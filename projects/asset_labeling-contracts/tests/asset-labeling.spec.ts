@@ -16,27 +16,17 @@ import {
   removeLabel,
   removeOperatorFromLabel,
   removeLabelFromAsset,
-} from './sdk'
-
-// TODO:
-// add_label as nonadmin (operator?) should fail
-// remove_label as nonadmin (operator?) should fail
-// add_op as operator
-// remove_op as operator
-// add_op nonexist label should fail
-// remove_op nonexist label should fail
-
-const config = {
-  populateAppCallResources: true,
-  debug: false,
-  traceAll: false,
-}
+} from './helpers'
 
 describe('asset labeling contract', () => {
   const localnet = algorandFixture()
 
   beforeAll(() => {
-    Config.configure(config)
+    Config.configure({
+      populateAppCallResources: true,
+      debug: false,
+      traceAll: false,
+    })
   })
   beforeEach(localnet.newScope)
 

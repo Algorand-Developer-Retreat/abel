@@ -1,17 +1,23 @@
-import { TransactionSignerAccount } from "@algorandfoundation/algokit-utils/types/account";
-import { decodeAddress, decodeUint64, encodeAddress, encodeUint64, makeEmptyTransactionSigner } from "algosdk";
 import { AlgorandClient } from "@algorandfoundation/algokit-utils";
+import { TransactionSignerAccount } from "@algorandfoundation/algokit-utils/types/account";
 import { BoxName } from "@algorandfoundation/algokit-utils/types/app";
+import { decodeAddress, decodeUint64, encodeAddress, encodeUint64, makeEmptyTransactionSigner } from "algosdk";
 import pMap from "p-map";
 import {
+  AssetFull,
+  AssetFullFromTuple,
   AssetLabelingClient,
   AssetLabelingFactory,
   AssetMicro,
   AssetMicroFromTuple,
+  AssetMicroLabels,
   AssetMicroLabelsFromTuple,
+  AssetSmall,
   AssetSmallFromTuple,
+  AssetText,
   AssetTextFromTuple,
-  AssetFullFromTuple,
+  AssetTextLabels,
+  AssetTextLabelsFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
 import { AnyFn, FirstArgument, LabelDescriptor } from "./types.js";
@@ -49,7 +55,8 @@ export class AbelSDK {
     concurrency?: number;
   }) {
     // Client used for read queries. Sender can be any funded address.
-    // Default read is the A7N.. fee sink which is funded on all public ALGO networks incl. localnet
+    // Default read is the A7N.. fee sink which is funded on all public ALGO networks
+    // (localnet may be zero or at min balance though)
     this.readClient = algorand.client.getTypedAppClientById(AssetLabelingClient, {
       appId,
       defaultSender: readAccount,
@@ -199,6 +206,7 @@ export class AbelSDK {
 
   async removeLabel(labelId: string) {
     this.requireWriteClient();
+
     const query = this.writeClient.send.removeLabel({
       args: {
         id: labelId,
@@ -210,6 +218,7 @@ export class AbelSDK {
 
   async addOperatorToLabel(operator: string, labelId: string) {
     this.requireWriteClient();
+
     const query = this.writeClient.send.addOperatorToLabel({
       args: {
         operator,
@@ -223,15 +232,18 @@ export class AbelSDK {
 
   async removeOperatorFromLabel(operator: string, labelId: string) {
     this.requireWriteClient();
+
     const query = await this.writeClient.send.removeOperatorFromLabel({
       args: { operator, label: labelId },
       boxReferences: [decodeAddress(operator).publicKey, labelId],
     });
+
     return wrapErrors(query);
   }
 
   async addLabelToAsset(assetId: bigint, labelId: string) {
     this.requireWriteClient();
+
     const query = this.writeClient.send.addLabelToAsset({
       args: {
         asset: assetId,
@@ -244,6 +256,7 @@ export class AbelSDK {
 
   async removeLabelFromAsset(assetId: bigint, labelId: string) {
     this.requireWriteClient();
+
     const query = this.writeClient.send.removeLabelFromAsset({
       args: {
         asset: assetId,
@@ -251,6 +264,7 @@ export class AbelSDK {
       },
       boxReferences: [labelId, encodeUint64(assetId), decodeAddress(this.writeAccount.addr).publicKey],
     });
+
     return wrapErrors(query);
   }
 
@@ -271,7 +285,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+  getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicroLabels & { id: bigint }>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicroLabels, assetIds, METHOD_MAX);
 
@@ -286,8 +300,8 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsText = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
-    const METHOD_MAX = 64;
+  getAssetsText = async (assetIds: bigint[]): Promise<Map<bigint, AssetText & { id: bigint }>> => {
+    const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsText, assetIds, METHOD_MAX);
 
     const { confirmations } = await wrapErrors(
@@ -297,11 +311,26 @@ export class AbelSDK {
         .simulate(SIMULATE_PARAMS)
     );
 
-    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroLabelsFromTuple, "get_asset_text");
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetTextFromTuple, "get_asset_text");
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsSmall = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+  getAssetsTextLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTextLabels & { id: bigint }>> => {
+    const METHOD_MAX = 64;
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTextLabels, assetIds, METHOD_MAX);
+
+    const { confirmations } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsTextLabels({ args: { assets: assetIds } })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetTextLabelsFromTuple, "get_asset_text_labels");
+    return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
+  };
+
+  getAssetsSmall = async (assetIds: bigint[]): Promise<Map<bigint, AssetSmall & { id: bigint }>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsSmall, assetIds, METHOD_MAX);
 
@@ -316,7 +345,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsFull = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+  getAssetsFull = async (assetIds: bigint[]): Promise<Map<bigint, AssetFull & { id: bigint }>> => {
     const METHOD_MAX = 42;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsFull, assetIds, METHOD_MAX);
 

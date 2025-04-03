@@ -28,7 +28,14 @@ class AssetMicroLabels(arc4.Struct):
 class AssetText(arc4.Struct):
     name: arc4.String
     unit_name: arc4.String
+    url: arc4.String
     labels: LabelList
+
+
+# Searchable text view plusllabels
+class AssetTextLabels(arc4.Struct):
+    name: arc4.String
+    unit_name: arc4.String
     url: arc4.String
 
 
@@ -58,7 +65,5 @@ class AssetFull(arc4.Struct):
     reserve: arc4.Address
 
     metadata_hash: arc4.DynamicBytes
-
     reserve_balance: arc4.UInt64
-
     labels: LabelList

@@ -22,13 +22,17 @@ from .types import (
     AssetMicroLabels,
     AssetSmall,
     AssetText,
+    AssetTextLabels,
     LabelDescriptor,
     LabelList,
     S,
 )
 
-NOT_FOUND_KEY = 2**32  # magic constant for "list not found"
-NOT_FOUND_VALUE = 2**32 - 1  # magic constant for "not found in list"
+# constants used to return from index-finding functions. zero is a truthy return, so:
+NOT_FOUND_KEY = (
+    2**32
+)  # magic constant for "list not found" (e.g. box key missing entirely)
+NOT_FOUND_VALUE = 2**32 - 1  # magic constant for "value not found in list"
 
 
 @subroutine
@@ -56,6 +60,14 @@ class AssetLabeling(ARC4Contract):
         self.assets = BoxMap(Asset, LabelList, key_prefix=b"")
         self.operators = BoxMap(Account, LabelList, key_prefix=b"")
 
+    @arc4.baremethod(allow_actions=("UpdateApplication",))
+    def update(self) -> None:
+        self.admin_only()
+
+    @arc4.baremethod(allow_actions=("DeleteApplication",))
+    def delete(self) -> None:
+        self.admin_only()
+
     @subroutine
     def admin_only(self) -> None:
         ensure(Txn.sender == self.admin, S("ERR:UNAUTH"))
@@ -80,7 +92,6 @@ class AssetLabeling(ARC4Contract):
     def remove_label(self, id: String) -> None:
         self.admin_only()
         ensure(id in self.labels, S("ERR:NOEXIST"))
-        ensure(id.bytes.length == 2, S("ERR:LENGTH"))
         ensure(self.labels[id].num_assets == 0, S("ERR:NOEMPTY"))
         del self.labels[id]
 
@@ -94,6 +105,8 @@ class AssetLabeling(ARC4Contract):
         for _idx, label_id in uenumerate(ids):
             log(self.labels[label_id.native])
 
+    # TODO change label names?
+
     # operator<>label access ops. admin and operators
 
     @subroutine
@@ -104,10 +117,10 @@ class AssetLabeling(ARC4Contract):
 
     @subroutine
     def operator_only(self, label: String) -> None:
+        operator_index = self.get_operator_label_index(Txn.sender, label)
         ensure(
-            self.get_operator_label_index(Txn.sender, label) != UInt64(NOT_FOUND_KEY)
-            and self.get_operator_label_index(Txn.sender, label)
-            != UInt64(NOT_FOUND_VALUE),
+            operator_index != UInt64(NOT_FOUND_KEY)
+            and operator_index != UInt64(NOT_FOUND_VALUE),
             S("ERR:UNAUTH"),
         )
 
@@ -330,7 +343,7 @@ class AssetLabeling(ARC4Contract):
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_micro_labels(asset_id.native))
 
-    # Text: Searchable - Asset name, Unit Name, URL, Labels (2 refs, max 64)
+    # Text: Searchable - Asset name, Unit Name, URL (1 ref, max 128)
 
     @subroutine
     def _get_asset_text(self, asset_id: UInt64) -> AssetText:
@@ -350,6 +363,26 @@ class AssetLabeling(ARC4Contract):
     def get_assets_text(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_text(asset_id.native))
+
+    # TextLabels: Searchable - Asset name, Unit Name, URL, Labels (2 refs, max 64)
+
+    @subroutine
+    def _get_asset_text_labels(self, asset_id: UInt64) -> AssetTextLabels:
+        asset = Asset(asset_id)
+        return AssetTextLabels(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            url=b2str(asset.url),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_text_labels(self, asset: UInt64) -> AssetTextLabels:
+        return self._get_asset_text_labels(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_text_labels(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_text_labels(asset_id.native))
 
     # small (2 refs, max 64)
 
