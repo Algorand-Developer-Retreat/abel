@@ -162,7 +162,7 @@ export class AbelSDK {
     return assetLabels!;
   }
 
-  async getAssetsLabels(assetIds: bigint[]): Promise<Map<bigint, string[]>> {
+  getAssetsLabels = async (assetIds: bigint[]): Promise<Map<bigint, string[]>> => {
     const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsLabels, [assetIds], METHOD_MAX);
 

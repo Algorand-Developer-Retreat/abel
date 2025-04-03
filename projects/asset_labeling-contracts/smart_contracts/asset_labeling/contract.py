@@ -218,25 +218,21 @@ class AssetLabeling(ARC4Contract):
                 return idx
         return UInt64(NOT_FOUND_VALUE)
 
-    @abimethod()
-    def add_label_to_asset(self, label: String, asset: Asset) -> None:
+    @subroutine
+    def _add_label_to_asset(self, label: String, asset: Asset) -> None:
         ensure(label in self.labels, S("ERR:NOEXIST"))
-
-        self.operator_only(label)
-
         if asset in self.assets:
             # existing operator, check for duplicate
             ensure(
                 self.get_asset_label_index(asset, label) == UInt64(NOT_FOUND_VALUE),
                 S("ERR:EXISTS"),
             )
-
-            # add label to operator
+            # add label to asset
             existing = self.assets[asset].copy()
             existing.append(arc4.String(label))
             self.assets[asset] = existing.copy()
         else:
-            # new operator, create new box
+            # new asset, create new box
             self.assets[asset] = arc4.DynamicArray(arc4.String(label))
 
         # incr asset count
@@ -245,6 +241,19 @@ class AssetLabeling(ARC4Contract):
             label_descriptor.num_assets.native + UInt64(1)
         )
         self.labels[label] = label_descriptor.copy()
+
+    @abimethod()
+    def add_label_to_asset(self, label: String, asset: Asset) -> None:
+        self.operator_only(label)
+        self._add_label_to_asset(label, asset)
+
+    @abimethod()
+    def add_label_to_assets(
+        self, label: String, assets: arc4.DynamicArray[arc4.UInt64]
+    ) -> None:
+        self.operator_only(label)
+        for _i, asset in uenumerate(assets):
+            self._add_label_to_asset(label, Asset(asset.native))
 
     @abimethod()
     def remove_label_from_asset(self, label: String, asset: Asset) -> None:

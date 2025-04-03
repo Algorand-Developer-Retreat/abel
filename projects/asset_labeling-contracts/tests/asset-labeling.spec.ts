@@ -16,6 +16,7 @@ import {
   removeLabel,
   removeOperatorFromLabel,
   removeLabelFromAsset,
+  addLabelToAssets,
 } from './helpers'
 
 describe('asset labeling contract', () => {
@@ -358,6 +359,34 @@ describe('asset labeling contract', () => {
     expect(assetLabels).toStrictEqual([label])
   })
 
+  test('add label to 6 assets', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetIds = [13n, 14n, 15n, 16n, 17n, 18n]
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+
+    await addLabelToAssets(operatorClient, assetIds, label)
+
+    const labelDescriptor = await getLabelDescriptor(operatorClient, label)
+    expect(labelDescriptor.numAssets).toBe(6n)
+
+    for (const assetId of assetIds) {
+      const assetLabels = await getAssetLabels(operatorClient, assetId)
+      expect(assetLabels).toStrictEqual([label])
+    }
+  })
+
   test('add label twice should fail', async () => {
     const { testAccount: adminAccount } = localnet.context
     const { adminClient } = await deploy(adminAccount)
@@ -397,8 +426,8 @@ describe('asset labeling contract', () => {
     })
 
     const nonLabel = 'oh'
-    await expect(() => addLabelToAsset(adminClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
-    await expect(() => addLabelToAsset(operatorClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(() => addLabelToAsset(adminClient, assetId, nonLabel)).rejects.toThrow(/ERR:UNAUTH/)
+    await expect(() => addLabelToAsset(operatorClient, assetId, nonLabel)).rejects.toThrow(/ERR:UNAUTH/)
   })
 
   test('add label by non-operator should fail', async () => {
