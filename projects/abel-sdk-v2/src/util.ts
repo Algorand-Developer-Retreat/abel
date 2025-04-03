@@ -1,3 +1,5 @@
+import { encodeUint64 } from "algosdk";
+
 export async function wrapErrors<T>(a: T) {
   try {
     return await a;
@@ -12,6 +14,10 @@ export async function wrapErrors<T>(a: T) {
     }
     throw e;
   }
+}
+
+export function encodeUint64Arr(nums: number[] | bigint[]): Uint8Array[] {
+  return nums.map(num => encodeUint64(num))
 }
 
 export function chunk<T>(array: T[], chunkSize: number): T[][] {

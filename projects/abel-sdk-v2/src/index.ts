@@ -20,8 +20,8 @@ import {
   AssetTextLabelsFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
-import { AnyFn, FirstArgument, LabelDescriptor } from "./types.js";
-import { chunk, mergeMapsArr, wrapErrors } from "./util.js";
+import { AnyFn, FirstArgument, LabelDescriptor, QueryReturn } from "./types.js";
+import { chunk, encodeUint64Arr, mergeMapsArr, wrapErrors } from "./util.js";
 
 export * from "./types.js";
 export { AssetLabelingClient, AssetLabelingFactory };
@@ -129,7 +129,6 @@ export class AbelSDK {
         .logLabels({ args: { ids: labelIds } })
         .simulate(SIMULATE_PARAMS)
     );
-
     const logs = confirmations[0]!.logs ?? [];
     const descriptorValues = this.parseLogsAs(logs, LabelDescriptorBoxValueFromTuple, "get_label");
 
@@ -165,7 +164,7 @@ export class AbelSDK {
 
   async getAssetsLabels(assetIds: bigint[]): Promise<Map<bigint, string[]>> {
     const METHOD_MAX = 128;
-    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsLabels, assetIds, METHOD_MAX);
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsLabels, [assetIds], METHOD_MAX);
 
     const {
       returns: [assetsLabels],
@@ -257,6 +256,41 @@ export class AbelSDK {
     return wrapErrors(query);
   }
 
+  addLabelToAssets = async (assetIds: bigint[], labelId: string): Promise<QueryReturn | QueryReturn[]> => {
+    this.requireWriteClient();
+
+    const METHOD_MAX = 6 + 8 * 15;
+    if (assetIds.length > METHOD_MAX) {
+      const chunked = chunk(assetIds, METHOD_MAX);
+      return pMap(chunked, (assetIds) => this.addLabelToAssets(assetIds, labelId) as Promise<QueryReturn>, {
+        concurrency: this.concurrency,
+      });
+    }
+
+    let query = this.writeClient.newGroup();
+
+    const operatorBox = decodeAddress(this.writeAccount.addr).publicKey;
+    // we need 2 refs for the first call only
+    // we push two zero and adapt boxRefs in first call
+    const AssetChunks = chunk([0n, 0n, ...assetIds], 8);
+
+    for (let i = 0; i < AssetChunks.length; i++) {
+      // first box ref has label and acct. rest are all asset IDs
+      const assetIds = i === 0 ? AssetChunks[i].slice(2) : AssetChunks[i];
+      const boxReferences = i === 0 ? [labelId, operatorBox, ...encodeUint64Arr(assetIds)] : encodeUint64Arr(assetIds);
+
+      query.addLabelToAssets({
+        args: {
+          assets: assetIds,
+          label: labelId,
+        },
+        boxReferences,
+      });
+    }
+
+    return await wrapErrors(query.send());
+  };
+
   async removeLabelFromAsset(assetId: bigint, labelId: string) {
     this.requireWriteClient();
 
@@ -275,7 +309,7 @@ export class AbelSDK {
 
   getAssetsMicro = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
     const METHOD_MAX = 128;
-    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicro, assetIds, METHOD_MAX);
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicro, [assetIds], METHOD_MAX);
 
     const { confirmations } = await wrapErrors(
       this.readClient
@@ -290,7 +324,7 @@ export class AbelSDK {
 
   getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicroLabels & { id: bigint }>> => {
     const METHOD_MAX = 64;
-    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicroLabels, assetIds, METHOD_MAX);
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicroLabels, [assetIds], METHOD_MAX);
 
     const { confirmations } = await wrapErrors(
       this.readClient
@@ -305,7 +339,7 @@ export class AbelSDK {
 
   getAssetsText = async (assetIds: bigint[]): Promise<Map<bigint, AssetText & { id: bigint }>> => {
     const METHOD_MAX = 128;
-    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsText, assetIds, METHOD_MAX);
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsText, [assetIds], METHOD_MAX);
 
     const { confirmations } = await wrapErrors(
       this.readClient
@@ -320,7 +354,7 @@ export class AbelSDK {
 
   getAssetsTextLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTextLabels & { id: bigint }>> => {
     const METHOD_MAX = 64;
-    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTextLabels, assetIds, METHOD_MAX);
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTextLabels, [assetIds], METHOD_MAX);
 
     const { confirmations } = await wrapErrors(
       this.readClient
@@ -335,7 +369,7 @@ export class AbelSDK {
 
   getAssetsSmall = async (assetIds: bigint[]): Promise<Map<bigint, AssetSmall & { id: bigint }>> => {
     const METHOD_MAX = 64;
-    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsSmall, assetIds, METHOD_MAX);
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsSmall, [assetIds], METHOD_MAX);
 
     const { confirmations } = await wrapErrors(
       this.readClient
@@ -350,7 +384,7 @@ export class AbelSDK {
 
   getAssetsFull = async (assetIds: bigint[]): Promise<Map<bigint, AssetFull & { id: bigint }>> => {
     const METHOD_MAX = 42;
-    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsFull, assetIds, METHOD_MAX);
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsFull, [assetIds], METHOD_MAX);
 
     const { confirmations } = await wrapErrors(
       this.readClient
@@ -402,10 +436,10 @@ export class AbelSDK {
    *
    * decorator pattern instead would be nice but ... eh
    */
-  async batchCall<T extends AnyFn>(method: T, args: FirstArgument<T>, methodMax: number): Promise<ReturnType<T>> {
-    const chunked = chunk(args, methodMax);
-    const res = (await pMap(chunked, (arg) => method(arg), { concurrency: this.concurrency }));
+  async batchCall<T extends AnyFn>(method: T, [assetIDs, ...rest]: Parameters<T>, methodMax: number): Promise<ReturnType<T>> {
+    const chunkedAssetIds = chunk(assetIDs, methodMax);
+    const res = await pMap(chunkedAssetIds, (assetIDs) => method(assetIDs, ...rest), { concurrency: this.concurrency });
     // @ts-ignore
-    return mergeMapsArr(res);
+    return res[0] instanceof Map ? mergeMapsArr(res) : undefined;
   }
 }
