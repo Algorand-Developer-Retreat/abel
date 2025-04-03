@@ -2,12 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { AlgorandClient } from '@algorandfoundation/algokit-utils'
 import { AbelSDK } from 'abel-sdk'
 import { getAlgodConfigFromViteEnvironment } from './config'
+import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { AssetSmall } from 'abel-sdk/dist/generated/abel-contract-client'
+
+const DEFAULT_APP_ID = 2888048711n
+const PAGE_SIZE = 100
 
 type IdProps = {
   id: bigint | null // The App ID for the AbelSDK
 }
 
-const AssetImage: React.FC<IdProps & {className?: string;}> = ({ id: assetId, className }) => {
+const AssetImage: React.FC<IdProps & { className?: string }> = ({ id: assetId, className }) => {
   if (!assetId) return null
   const logo = `https://asa-list.tinyman.org/assets/${assetId.toString()}/icon.png`
   return (
@@ -62,27 +67,65 @@ const AssetModal: React.FC<IdProps & { onClose: () => void }> = ({ id: assetId, 
   )
 }
 
-const AssetList: React.FC<IdProps> = ({ id: appId }) => {
+
+const AssetTable: React.FC<IdProps> = ({ id: appId }) => {
+  const [abelSdk] = useState(
+    () =>
+      new AbelSDK({
+        algorand: AlgorandClient.fromConfig({ algodConfig: getAlgodConfigFromViteEnvironment() }),
+        appId: appId || DEFAULT_APP_ID,
+      }),
+  )
+
   const [currentAsset, setCurrentAsset] = useState<bigint | null>(null)
   const [assets, setAssets] = useState<bigint[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize AbelSDK
+  const [assetRows, setAssetRows] = useState<(AssetSmall & { id: bigint })[]>([])
+  const [paginationModel, setPaginationModel] = React.useState({
+    pageSize: PAGE_SIZE,
+    page: 0,
+  });
+
+  const columns: GridColDef[] = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 100,
+      valueGetter: (v: bigint) => v.toString(),
+    },
+    { field: 'unitName', headerName: 'UNIT', width: 100 },
+    { field: 'name', headerName: 'Name', width: 300 },
+    { field: 'decimals', headerName: 'Decimals', width: 80, valueGetter: (v: bigint) => v.toString() },
+    { field: 'total', headerName: 'Total', width: 150 },
+    { field: 'hasClawback', headerName: 'CB - Clawback', width: 55, type: 'boolean' },
+    { field: 'hasFreeze', headerName: 'FR - Freeze', width: 55, type: 'boolean' },
+    { field: 'labels', headerName: 'Labels', width: 150, type: 'custom', valueGetter: (v: string[]) => v.join(', ') },
+
+  ]
+
+  useEffect(() => {
+    if (!appId || !assets.length) return
+    async function fetchDetails() {
+      const start = paginationModel.page * paginationModel.pageSize
+      const end = start + paginationModel.pageSize
+      try {
+        setAssetRows(Array.from(await abelSdk.getAssetsSmall(assets.slice(start, end))).map((kv) => kv[1]))
+      } catch (err) {
+        setError('Failed to fetch assets details. Please try again later.')
+      }
+    }
+    fetchDetails()
+  }, [appId, assets, paginationModel])
+
+  // Fetch Assets
   useEffect(() => {
     if (!appId) return
     const fetchAssets = async () => {
       try {
         setLoading(true)
-
-        const abelSdk = new AbelSDK({
-          algorand: AlgorandClient.fromConfig({ algodConfig: getAlgodConfigFromViteEnvironment() }),
-          appId: appId,
-        })
-
-        const assetIDs = await abelSdk.getAllAssetIDs() // Fetch all asset IDs
-
-        setAssets(assetIDs)
+        setAssets(await abelSdk.getAllAssetIDs())
       } catch (err) {
         setError('Failed to fetch assets. Please try again later.')
         console.error(err)
@@ -92,7 +135,7 @@ const AssetList: React.FC<IdProps> = ({ id: appId }) => {
     }
 
     fetchAssets()
-  }, [appId])
+  }, [appId, paginationModel])
   if (!appId)
     return (
       <div className="p-4 bg-gray-100 rounded-lg shadow">
@@ -108,17 +151,12 @@ const AssetList: React.FC<IdProps> = ({ id: appId }) => {
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : assets.length > 0 ? (
-        <ul className="divide-y divide-gray-300">
-          {assets.map((assetId, index) => (
-            <li key={index} className="py-2">
-              <button className="text-blue-500 hover:underline flex" onClick={() => setCurrentAsset(assetId)}>
-                <span className="text-gray-700">Verified ID:</span>
-                <span className="font-mono font-bold flex-1">{assetId.toString()}</span>
-                <AssetImage id={assetId} className={'ml-1 mt-1 w-4 h-4'} />
-              </button>
-            </li>
-          ))}
-        </ul>
+        <DataGrid
+          paginationMode="server"
+          rowCount={assets.length}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          pageSizeOptions={[PAGE_SIZE]} rows={assetRows} columns={columns} />
       ) : (
         <p className="text-gray-500">No assets found.</p>
       )}
@@ -127,4 +165,4 @@ const AssetList: React.FC<IdProps> = ({ id: appId }) => {
   )
 }
 
-export default AssetList
+export default AssetTable
