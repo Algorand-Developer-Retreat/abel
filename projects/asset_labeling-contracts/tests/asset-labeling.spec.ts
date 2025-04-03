@@ -16,27 +16,17 @@ import {
   removeLabel,
   removeOperatorFromLabel,
   removeLabelFromAsset,
-} from './sdk'
-
-// TODO:
-// add_label as nonadmin (operator?) should fail
-// remove_label as nonadmin (operator?) should fail
-// add_op as operator
-// remove_op as operator
-// add_op nonexist label should fail
-// remove_op nonexist label should fail
-
-const config = {
-  populateAppCallResources: true,
-  debug: false,
-  traceAll: false,
-}
+} from './helpers'
 
 describe('asset labeling contract', () => {
   const localnet = algorandFixture()
 
   beforeAll(() => {
-    Config.configure(config)
+    Config.configure({
+      populateAppCallResources: true,
+      debug: false,
+      traceAll: false,
+    })
   })
   beforeEach(localnet.newScope)
 
@@ -266,7 +256,8 @@ describe('asset labeling contract', () => {
     await addOperatorToLabel(adminClient, adminAccount, id)
     await removeOperatorFromLabel(adminClient, adminAccount, id)
 
-    await expect(() => getOperatorLabels(adminClient, adminAccount)).rejects.toThrow(/ERR:NOEXIST/)
+    const emptyLabels = await getOperatorLabels(adminClient, adminAccount)
+    expect(emptyLabels).toEqual([])
 
     const { numOperators } = await getLabelDescriptor(adminClient, id)
     expect(numOperators).toBe(0n)
@@ -291,7 +282,6 @@ describe('asset labeling contract', () => {
     expect(operatorLabel).toBe(id2)
 
     await removeOperatorFromLabel(adminClient, adminAccount, id2)
-    await expect(() => getOperatorLabels(adminClient, adminAccount)).rejects.toThrow(/ERR:NOEXIST/)
 
     const { numOperators } = await getLabelDescriptor(adminClient, id)
     expect(numOperators).toBe(0n)
@@ -316,7 +306,6 @@ describe('asset labeling contract', () => {
     expect(operatorLabel).toBe(id)
 
     await removeOperatorFromLabel(adminClient, adminAccount, id)
-    await expect(() => getOperatorLabels(adminClient, adminAccount)).rejects.toThrow(/ERR:NOEXIST/)
 
     const { numOperators } = await getLabelDescriptor(adminClient, id)
     expect(numOperators).toBe(0n)
@@ -448,7 +437,8 @@ describe('asset labeling contract', () => {
     const labelDescriptor = await getLabelDescriptor(operatorClient, label)
     expect(labelDescriptor.numAssets).toBe(0n)
 
-    await expect(() => getAssetLabels(operatorClient, assetId)).rejects.toThrow(/ERR:NOEXIST/)
+    const emptyLabels = await getAssetLabels(operatorClient, assetId)
+    expect(emptyLabels).toEqual([])
   })
 
   test('remove non-existent label should fail', async () => {

@@ -3,6 +3,8 @@ from algopy import (
     ARC4Contract,
     Asset,
     BoxMap,
+    Bytes,
+    Global,
     String,
     Txn,
     UInt64,
@@ -14,12 +16,23 @@ from algopy import (
 )
 from algopy.arc4 import abimethod
 
-S = String
+from .types import (
+    AssetFull,
+    AssetMicro,
+    AssetMicroLabels,
+    AssetSmall,
+    AssetText,
+    AssetTextLabels,
+    LabelDescriptor,
+    LabelList,
+    S,
+)
 
-LabelList = arc4.DynamicArray[arc4.String]
-
-NOT_FOUND_KEY = 2**32  # magic constant for "list not found"
-NOT_FOUND_VALUE = 2**32 - 1  # magic constant for "not found in list"
+# constants used to return from index-finding functions. zero is a truthy return, so:
+NOT_FOUND_KEY = (
+    2**32
+)  # magic constant for "list not found" (e.g. box key missing entirely)
+NOT_FOUND_VALUE = 2**32 - 1  # magic constant for "value not found in list"
 
 
 @subroutine
@@ -29,18 +42,31 @@ def ensure(cond: bool, msg: String) -> None:  # noqa: FBT001
         op.err()
 
 
-class LabelDescriptor(arc4.Struct):
-    name: arc4.String
-    num_assets: arc4.UInt64
-    num_operators: arc4.UInt64
+@subroutine
+def empty_list() -> LabelList:
+    return arc4.DynamicArray[arc4.String]()
+
+
+@subroutine
+def b2str(b: Bytes) -> arc4.String:
+    return arc4.String(String.from_bytes(b))
 
 
 class AssetLabeling(ARC4Contract):
     def __init__(self) -> None:
         self.admin = Txn.sender
         self.labels = BoxMap(String, LabelDescriptor, key_prefix=b"")
+        # TODO does this need to be an asset? Uint64 could be better
         self.assets = BoxMap(Asset, LabelList, key_prefix=b"")
         self.operators = BoxMap(Account, LabelList, key_prefix=b"")
+
+    @arc4.baremethod(allow_actions=("UpdateApplication",))
+    def update(self) -> None:
+        self.admin_only()
+
+    @arc4.baremethod(allow_actions=("DeleteApplication",))
+    def delete(self) -> None:
+        self.admin_only()
 
     @subroutine
     def admin_only(self) -> None:
@@ -66,7 +92,6 @@ class AssetLabeling(ARC4Contract):
     def remove_label(self, id: String) -> None:
         self.admin_only()
         ensure(id in self.labels, S("ERR:NOEXIST"))
-        ensure(id.bytes.length == 2, S("ERR:LENGTH"))
         ensure(self.labels[id].num_assets == 0, S("ERR:NOEMPTY"))
         del self.labels[id]
 
@@ -74,6 +99,13 @@ class AssetLabeling(ARC4Contract):
     def get_label(self, id: String) -> LabelDescriptor:
         ensure(id in self.labels, S("ERR:NOEXIST"))
         return self.labels[id]
+
+    @abimethod(readonly=True)
+    def log_labels(self, ids: arc4.DynamicArray[arc4.String]) -> None:
+        for _idx, label_id in uenumerate(ids):
+            log(self.labels[label_id.native])
+
+    # TODO change label names?
 
     # operator<>label access ops. admin and operators
 
@@ -85,10 +117,10 @@ class AssetLabeling(ARC4Contract):
 
     @subroutine
     def operator_only(self, label: String) -> None:
+        operator_index = self.get_operator_label_index(Txn.sender, label)
         ensure(
-            self.get_operator_label_index(Txn.sender, label) != UInt64(NOT_FOUND_KEY)
-            and self.get_operator_label_index(Txn.sender, label)
-            != UInt64(NOT_FOUND_VALUE),
+            operator_index != UInt64(NOT_FOUND_KEY)
+            and operator_index != UInt64(NOT_FOUND_VALUE),
             S("ERR:UNAUTH"),
         )
 
@@ -172,8 +204,10 @@ class AssetLabeling(ARC4Contract):
 
     @abimethod(readonly=True)
     def get_operator_labels(self, operator: Account) -> LabelList:
-        ensure(operator in self.operators, S("ERR:NOEXIST"))
-        return self.operators[operator]
+        if operator in self.operators:
+            return self.operators[operator]
+        # return empty list
+        return empty_list()
 
     @subroutine
     def get_asset_label_index(self, asset: Asset, label: String) -> UInt64:
@@ -248,5 +282,163 @@ class AssetLabeling(ARC4Contract):
 
     @abimethod(readonly=True)
     def get_asset_labels(self, asset: Asset) -> LabelList:
-        ensure(asset in self.assets, S("ERR:NOEXIST"))
-        return self.assets[asset]
+        if asset in self.assets:
+            return self.assets[asset]
+        # return empty
+        return empty_list()
+
+    @abimethod(readonly=True)
+    def get_assets_labels(
+        self, assets: arc4.DynamicArray[arc4.UInt64]
+    ) -> arc4.DynamicArray[LabelList]:
+        out = arc4.DynamicArray[LabelList]()
+        for _i, asset_id in uenumerate(assets):
+            asset = Asset(asset_id.native)
+            if asset in self.assets:
+                out.append(self.assets[asset].copy())
+            else:
+                out.append(empty_list())
+        return out
+
+    #
+    # Batch asset data fetch methods
+    #
+
+    # Micro: Unit Name, Decimals (1 ref, max 128)
+
+    @subroutine
+    def _get_asset_micro(self, asset_id: UInt64) -> AssetMicro:
+        asset = Asset(asset_id)
+        return AssetMicro(
+            unit_name=b2str(asset.unit_name),
+            decimals=arc4.UInt8(asset.decimals),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_micro(self, asset: UInt64) -> AssetMicro:
+        return self._get_asset_micro(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_micro(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_micro(asset_id.native))
+
+    # Micro+Label: Unit Name, Decimals, Labels (2 refs, max 64)
+
+    @subroutine
+    def _get_asset_micro_labels(self, asset_id: UInt64) -> AssetMicroLabels:
+        asset = Asset(asset_id)
+        return AssetMicroLabels(
+            unit_name=b2str(asset.unit_name),
+            decimals=arc4.UInt8(asset.decimals),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_micro_labels(self, asset: UInt64) -> AssetMicroLabels:
+        return self._get_asset_micro_labels(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_micro_labels(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_micro_labels(asset_id.native))
+
+    # Text: Searchable - Asset name, Unit Name, URL (1 ref, max 128)
+
+    @subroutine
+    def _get_asset_text(self, asset_id: UInt64) -> AssetText:
+        asset = Asset(asset_id)
+        return AssetText(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            url=b2str(asset.url),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_text(self, asset: UInt64) -> AssetText:
+        return self._get_asset_text(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_text(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_text(asset_id.native))
+
+    # TextLabels: Searchable - Asset name, Unit Name, URL, Labels (2 refs, max 64)
+
+    @subroutine
+    def _get_asset_text_labels(self, asset_id: UInt64) -> AssetTextLabels:
+        asset = Asset(asset_id)
+        return AssetTextLabels(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            url=b2str(asset.url),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_text_labels(self, asset: UInt64) -> AssetTextLabels:
+        return self._get_asset_text_labels(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_text_labels(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_text_labels(asset_id.native))
+
+    # small (2 refs, max 64)
+
+    @subroutine
+    def _get_asset_small(self, asset_id: UInt64) -> AssetSmall:
+        asset = Asset(asset_id)
+        return AssetSmall(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            decimals=arc4.UInt8(asset.decimals),
+            total=arc4.UInt64(asset.total),
+            has_freeze=arc4.Bool(asset.freeze != Global.zero_address),
+            has_clawback=arc4.Bool(asset.clawback != Global.zero_address),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_small(self, asset: UInt64) -> AssetSmall:
+        return self._get_asset_small(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_small(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_small(asset_id.native))
+
+    # full (3 refs, max 42)
+
+    @subroutine
+    def _get_asset_full(self, asset_id: UInt64) -> AssetFull:
+        asset = Asset(asset_id)
+        reserve_acct = Account(asset.reserve.bytes)
+        reserve_balance = (
+            asset.balance(reserve_acct)
+            if reserve_acct.is_opted_in(asset)
+            else UInt64(0)
+        )
+        return AssetFull(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            url=b2str(asset.url),
+            total=arc4.UInt64(asset.total),
+            decimals=arc4.UInt8(asset.decimals),
+            manager=arc4.Address(asset.manager),
+            freeze=arc4.Address(asset.freeze),
+            clawback=arc4.Address(asset.clawback),
+            reserve=arc4.Address(asset.reserve),
+            reserve_balance=arc4.UInt64(reserve_balance),
+            metadata_hash=arc4.DynamicBytes(asset.metadata_hash),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_full(self, asset: UInt64) -> AssetFull:
+        return self._get_asset_full(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_full(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_full(asset_id.native))

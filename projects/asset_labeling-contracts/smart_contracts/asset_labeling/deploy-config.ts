@@ -12,7 +12,7 @@ export async function deploy() {
     defaultSender: deployer.addr,
   })
 
-  const { appClient, result } = await factory.deploy({ onUpdate: 'append', onSchemaBreak: 'append' })
+  const { appClient, result } = await factory.deploy({ onUpdate: 'update', onSchemaBreak: 'append' })
 
   // If app was just created fund the app account
   if (['create', 'replace'].includes(result.operationPerformed)) {
