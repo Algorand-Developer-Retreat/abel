@@ -1,6 +1,6 @@
 {
-  "name": "abel-sdk-v2",
-  "version": "1.0.0",
+  "name": "abel-sdk",
+  "version": "0.0.0-a",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

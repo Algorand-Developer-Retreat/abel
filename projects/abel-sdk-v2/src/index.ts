@@ -372,7 +372,7 @@ export class AbelSDK {
    */
   async batchCall<T extends AnyFn>(method: T, args: FirstArgument<T>, methodMax: number): Promise<ReturnType<T>> {
     const chunked = chunk(args, methodMax);
-    const res: ReturnType<T>[] = await pMap(chunked, (arg) => method(arg), { concurrency: this.concurrency });
+    const res = (await pMap(chunked, (arg) => method(arg), { concurrency: this.concurrency }));
     // @ts-ignore
     return mergeMapsArr(res);
   }
