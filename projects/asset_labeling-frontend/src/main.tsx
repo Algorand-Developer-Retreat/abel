@@ -1,13 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
+import App from './Assets'
 import './styles/main.css'
-import ErrorBoundary from './components/ErrorBoundary'
+import ErrorBoundary from './layout/ErrorBoundary'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <App />
+      <App id={BigInt(import.meta.env.VITE_APP_ID || 2888048711n)} />
     </ErrorBoundary>
   </React.StrictMode>,
 )
