@@ -2,12 +2,7 @@
 
 **Impatient? Jump to [setup](#Setup).**
 
-**Status: Alpha**
-
-- Registry contract is feature complete
-- Registry tests are almost done
-- Registry SDK is in PoC state (for tests)
-- Asset views are in development
+**Status: PoC/Alpha**
 
 _Disclaimer: This is a proof of concept developer for the 2025 Algorand Developer Retreat. Not endorsed by the Algorand Foundation or Pera._
 
@@ -18,7 +13,6 @@ Registry contract to provide:
 1) on- and off-chain verification status ("label") for ASAs
 2) supporting multiple providers & labels, and
 3) bonus: enable efficiently fetching (broader) asset information (off-chain, batching via simulate)
-
 
 ## Objectives
 
@@ -108,6 +102,9 @@ Operator: 32 bytes pk
 
 ## Registry Methods
 
+> [!WARNING]
+> Section may differ from implementation
+
 ### Admin access
 
 ```python
@@ -150,9 +147,14 @@ _Note: in methods that operate on multiple assets, inputs are mapped to outputs 
 
 ## Data fetcher design
 
-On top of verification labels, this contract will enable efficient off-chain querying of asset data. This enables batch asset lookups that include not only label data, but also core asset data, like unit name.
+On top of verification labels, this contract will enable efficient off-chain querying of asset data.
+
+Abel provides readonly ABI methods as a simulate target to enable batch asset lookups that include not only label data, but also core asset data, like unit name.
 
 ### Asset Views/Structs
+
+> [!CAUTION]
+> Section differs from implementation
 
 We define 4 asset views that will be returned (or logged) as arc4 structs.
 
@@ -228,6 +230,9 @@ max assets per simulate: 128
 
 ## View methods
 
+> [!CAUTION]
+> Section differs from implementation
+>
 Each view above would have three corresponding read methods. E.g. for the full view:
 
 ```python
