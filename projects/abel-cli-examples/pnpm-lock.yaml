@@ -1,0 +1,186 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@algorandfoundation/algokit-utils':
+        specifier: ^7.0.2
+        version: 7.1.0(algosdk@2.11.0)
+      abel-sdk:
+        specifier: ^0.0.4
+        version: 0.0.4(@algorandfoundation/algokit-utils@7.1.0(algosdk@2.11.0))(algosdk@2.11.0)(p-map@7.0.3)
+      algosdk:
+        specifier: ^2.8.0
+        version: 2.11.0
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
+      p-map:
+        specifier: ^7.0.3
+        version: 7.0.3
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
+    devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.14.0
+      '@types/yargs':
+        specifier: ^17.0.33
+        version: 17.0.33
+
+packages:
+
+  '@algorandfoundation/algokit-utils@7.1.0':
+    resolution: {integrity: sha512-cetYNuqdxuWt3CyNcWPU1HWoPcsoCi4xkUD1u0/YTMSc+ttiEvPJBu2p6eS1MvCkVleG3h0N3ycEXpyS9Ox0bg==}
+    engines: {node: '>=20.0'}
+    peerDependencies:
+      algosdk: '>=2.9.0 <3.0'
+
+  '@types/node@22.14.0':
+    resolution: {integrity: sha512-Kmpl+z84ILoG+3T/zQFyAJsU6EPTmOCj8/2+83fSN6djd6I4o7uOuGIH6vq3PrjY5BGitSbFuMN18j3iknubbA==}
+
+  '@types/yargs-parser@21.0.3':
+    resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
+
+  '@types/yargs@17.0.33':
+    resolution: {integrity: sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==}
+
+  abel-sdk@0.0.4:
+    resolution: {integrity: sha512-l5U2GmYOisyeEdFklS/Tjc4rQK33smCBWHTROBwhTlYmONP/iGmOLhAxYG/td7CbM1A+5Mt5vuCVb4aITxNoYA==}
+    peerDependencies:
+      '@algorandfoundation/algokit-utils': ^7.0.2
+      algosdk: ^2.8.0
+      p-map: ^7.0.3
+
+  algo-msgpack-with-bigint@2.1.1:
+    resolution: {integrity: sha512-F1tGh056XczEaEAqu7s+hlZUDWwOBT70Eq0lfMpBP2YguSQVyxRbprLq5rELXKQOyOaixTWYhMeMQMzP0U5FoQ==}
+    engines: {node: '>= 10'}
+
+  algosdk@2.11.0:
+    resolution: {integrity: sha512-MJ9xrjBKqG6ItCAR0Z974DG7nvifXsQxlj7HbWkBat4+h/IygwKPEH/v0dQPOYWdTcf5/5lfu+OyEVOsjxvyRQ==}
+    engines: {node: '>=18.0.0'}
+
+  base64-js@1.5.1:
+    resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
+
+  bignumber.js@9.1.2:
+    resolution: {integrity: sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==}
+
+  buffer@6.0.3:
+    resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
+
+  dotenv@16.4.7:
+    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
+    engines: {node: '>=12'}
+
+  hi-base32@0.5.1:
+    resolution: {integrity: sha512-EmBBpvdYh/4XxsnUybsPag6VikPYnN30td+vQk+GI3qpahVEG9+gTkG0aXVxTjBqQ5T6ijbWIu77O+C5WFWsnA==}
+
+  ieee754@1.2.1:
+    resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
+
+  js-sha256@0.9.0:
+    resolution: {integrity: sha512-sga3MHh9sgQN2+pJ9VYZ+1LPwXOxuBJBA5nrR5/ofPfuiJBE2hnjsaN8se8JznOmGLN2p49Pe5U/ttafcs/apA==}
+
+  js-sha3@0.8.0:
+    resolution: {integrity: sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q==}
+
+  js-sha512@0.8.0:
+    resolution: {integrity: sha512-PWsmefG6Jkodqt+ePTvBZCSMFgN7Clckjd0O7su3I0+BW2QWUTJNzjktHsztGLhncP2h8mcF9V9Y2Ha59pAViQ==}
+
+  json-bigint@1.0.0:
+    resolution: {integrity: sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==}
+
+  p-map@7.0.3:
+    resolution: {integrity: sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA==}
+    engines: {node: '>=18'}
+
+  tweetnacl@1.0.3:
+    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
+
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
+  vlq@2.0.4:
+    resolution: {integrity: sha512-aodjPa2wPQFkra1G8CzJBTHXhgk3EVSwxSWXNPr1fgdFLUb8kvLV1iEb6rFgasIsjP82HWI6dsb5Io26DDnasA==}
+
+  zod@3.24.2:
+    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
+
+snapshots:
+
+  '@algorandfoundation/algokit-utils@7.1.0(algosdk@2.11.0)':
+    dependencies:
+      algosdk: 2.11.0
+      buffer: 6.0.3
+
+  '@types/node@22.14.0':
+    dependencies:
+      undici-types: 6.21.0
+
+  '@types/yargs-parser@21.0.3': {}
+
+  '@types/yargs@17.0.33':
+    dependencies:
+      '@types/yargs-parser': 21.0.3
+
+  abel-sdk@0.0.4(@algorandfoundation/algokit-utils@7.1.0(algosdk@2.11.0))(algosdk@2.11.0)(p-map@7.0.3):
+    dependencies:
+      '@algorandfoundation/algokit-utils': 7.1.0(algosdk@2.11.0)
+      algosdk: 2.11.0
+      p-map: 7.0.3
+
+  algo-msgpack-with-bigint@2.1.1: {}
+
+  algosdk@2.11.0:
+    dependencies:
+      algo-msgpack-with-bigint: 2.1.1
+      buffer: 6.0.3
+      hi-base32: 0.5.1
+      js-sha256: 0.9.0
+      js-sha3: 0.8.0
+      js-sha512: 0.8.0
+      json-bigint: 1.0.0
+      tweetnacl: 1.0.3
+      vlq: 2.0.4
+
+  base64-js@1.5.1: {}
+
+  bignumber.js@9.1.2: {}
+
+  buffer@6.0.3:
+    dependencies:
+      base64-js: 1.5.1
+      ieee754: 1.2.1
+
+  dotenv@16.4.7: {}
+
+  hi-base32@0.5.1: {}
+
+  ieee754@1.2.1: {}
+
+  js-sha256@0.9.0: {}
+
+  js-sha3@0.8.0: {}
+
+  js-sha512@0.8.0: {}
+
+  json-bigint@1.0.0:
+    dependencies:
+      bignumber.js: 9.1.2
+
+  p-map@7.0.3: {}
+
+  tweetnacl@1.0.3: {}
+
+  undici-types@6.21.0: {}
+
+  vlq@2.0.4: {}
+
+  zod@3.24.2: {}

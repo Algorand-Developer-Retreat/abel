@@ -1,0 +1,25 @@
+{
+  "name": "abel-cli-examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@algorandfoundation/algokit-utils": "^7.0.2",
+    "abel-sdk": "^0.0.4",
+    "algosdk": "^2.8.0",
+    "dotenv": "^16.4.7",
+    "p-map": "^7.0.3",
+    "zod": "^3.24.2"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/yargs": "^17.0.33"
+  }
+}

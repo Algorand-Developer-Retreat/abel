@@ -1,0 +1,3 @@
+- load node, writeAccount mnemonic from config or env
+- get pera verified assets from API
+- get 
