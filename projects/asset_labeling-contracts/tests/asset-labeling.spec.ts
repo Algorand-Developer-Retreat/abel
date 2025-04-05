@@ -492,6 +492,21 @@ describe('asset labeling contract', () => {
     await expect(() => removeLabelFromAsset(operatorClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
   })
 
+  test('remove label with operator should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    await expect(() => removeLabel(adminClient, label)).rejects.toThrow(/ERR:NOEMPTY/)
+  })
+
   test('remove label by non-operator should fail', async () => {
     const { testAccount: adminAccount } = localnet.context
     const { adminClient } = await deploy(adminAccount)

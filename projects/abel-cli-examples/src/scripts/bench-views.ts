@@ -1,9 +1,7 @@
-import { abel } from "./lib/config.js";
-import { die, printView } from "./lib/util.js";
+import { abel } from "../lib/config.js";
+import { die, parseArgvBigints, printView } from "../lib/util.js";
 
-const aids = process.argv.slice(2).map(n => BigInt(n))
-if (!aids.length)
-  die("Provide asset IDs as arguments")
+const aids = parseArgvBigints()
 
 await printView(aids, "micro", aids => abel.getAssetsMicro(aids))
 await printView(aids, "micro+labels", aids => abel.getAssetsMicroLabels(aids))

@@ -95,6 +95,7 @@ class AssetLabeling(ARC4Contract):
         self.admin_only()
         ensure(id in self.labels, S("ERR:NOEXIST"))
         ensure(self.labels[id].num_assets == 0, S("ERR:NOEMPTY"))
+        ensure(self.labels[id].num_operators == 0, S("ERR:NOEMPTY"))
         del self.labels[id]
 
     @abimethod(readonly=True)
