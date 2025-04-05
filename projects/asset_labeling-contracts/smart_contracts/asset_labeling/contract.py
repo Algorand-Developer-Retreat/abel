@@ -404,7 +404,6 @@ class AssetLabeling(ARC4Contract):
             name=b2str(asset.name),
             unit_name=b2str(asset.unit_name),
             url=b2str(asset.url),
-            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
         )
 
     @abimethod(readonly=True)
@@ -425,6 +424,7 @@ class AssetLabeling(ARC4Contract):
             name=b2str(asset.name),
             unit_name=b2str(asset.unit_name),
             url=b2str(asset.url),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
         )
 
     @abimethod(readonly=True)
@@ -477,10 +477,12 @@ class AssetLabeling(ARC4Contract):
             url=b2str(asset.url),
             total=arc4.UInt64(asset.total),
             decimals=arc4.UInt8(asset.decimals),
+            creator=arc4.Address(asset.creator),
             manager=arc4.Address(asset.manager),
             freeze=arc4.Address(asset.freeze),
             clawback=arc4.Address(asset.clawback),
             reserve=arc4.Address(asset.reserve),
+            default_frozen=arc4.Bool(asset.default_frozen),
             reserve_balance=arc4.UInt64(reserve_balance),
             metadata_hash=arc4.DynamicBytes(asset.metadata_hash),
             labels=self.assets[asset].copy() if asset in self.assets else empty_list(),

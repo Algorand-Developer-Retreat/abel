@@ -4,7 +4,7 @@
 // smart_contracts.asset_labeling.contract.AssetLabeling.__algopy_entrypoint_with_init() -> uint64:
 main:
     intcblock 1 0 2 8 4294967295 4294967296
-    bytecblock 0x151f7c75 0x0000 "ERR:NOEXIST" "" "admin" "ERR:EXISTS" 0x0002 "ERR:UNAUTH" 0x0000000000000000 "ERR:NOEMPTY" 0x0001 0x0005
+    bytecblock 0x151f7c75 0x0000 "ERR:NOEXIST" "" "admin" "ERR:EXISTS" 0x0002 0x00 "ERR:UNAUTH" 0x0000000000000000 "ERR:NOEMPTY" 0x0001 0x0005
     txn ApplicationID
     bnz main_after_if_else@2
     // smart_contracts/asset_labeling/contract.py:59
@@ -18,7 +18,7 @@ main_after_if_else@2:
     // class AssetLabeling(ARC4Contract):
     txn NumAppArgs
     bz main_bare_routing@34
-    pushbytess 0x8f0d7d8e 0x7c1b32f6 0x17e691ae 0x33d0ffdc 0x725616e7 0xfac1cf1b 0xb4c50b9f 0xa2dd2247 0xa37dea11 0x135ab21e 0x68f18efa 0xc2ed743f 0xa67f03c2 0xaaee0c61 0xb6c39f68 0x635be362 0x7093b10d 0x70ac99ad 0xd9a2bd9c 0x76c6528e 0x51f77bff 0xe1bb95fc 0x5540b80a 0x8a412f93 0x6f17cdd5 0x7a4ce4b9 0x366c51af 0xd5d3bad3 0x03ba98db // method "change_admin(account)void", method "add_label(string,string)void", method "remove_label(string)void", method "get_label(string)(string,uint64,uint64)", method "log_labels(string[])void", method "add_operator_to_label(account,string)void", method "remove_operator_from_label(account,string)void", method "get_operator_labels(account)string[]", method "add_label_to_asset(string,asset)void", method "add_label_to_assets(string,uint64[])void", method "remove_label_from_asset(string,asset)void", method "get_asset_labels(asset)string[]", method "get_assets_labels(uint64[])string[][]", method "get_asset_micro(uint64)(string,uint8)", method "get_assets_micro(uint64[])void", method "get_asset_micro_labels(uint64)(string,uint8,string[])", method "get_assets_micro_labels(uint64[])void", method "get_asset_tiny(uint64)(string,string,uint8)", method "get_assets_tiny(uint64[])void", method "get_asset_tiny_labels(uint64)(string,string,uint8,string[])", method "get_assets_tiny_labels(uint64[])void", method "get_asset_text(uint64)(string,string,string,string[])", method "get_assets_text(uint64[])void", method "get_asset_text_labels(uint64)(string,string,string)", method "get_assets_text_labels(uint64[])void", method "get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[])", method "get_assets_small(uint64[])void", method "get_asset_full(uint64)(string,string,string,uint64,uint8,address,address,address,address,byte[],uint64,string[])", method "get_assets_full(uint64[])void"
+    pushbytess 0x8f0d7d8e 0x7c1b32f6 0x17e691ae 0x33d0ffdc 0x725616e7 0xfac1cf1b 0xb4c50b9f 0xa2dd2247 0xa37dea11 0x135ab21e 0x68f18efa 0xc2ed743f 0xa67f03c2 0xaaee0c61 0xb6c39f68 0x635be362 0x7093b10d 0x70ac99ad 0xd9a2bd9c 0x76c6528e 0x51f77bff 0x20d9f24c 0x5540b80a 0x0710e5c4 0x6f17cdd5 0x7a4ce4b9 0x366c51af 0x34a48fbc 0x03ba98db // method "change_admin(account)void", method "add_label(string,string)void", method "remove_label(string)void", method "get_label(string)(string,uint64,uint64)", method "log_labels(string[])void", method "add_operator_to_label(account,string)void", method "remove_operator_from_label(account,string)void", method "get_operator_labels(account)string[]", method "add_label_to_asset(string,asset)void", method "add_label_to_assets(string,uint64[])void", method "remove_label_from_asset(string,asset)void", method "get_asset_labels(asset)string[]", method "get_assets_labels(uint64[])string[][]", method "get_asset_micro(uint64)(string,uint8)", method "get_assets_micro(uint64[])void", method "get_asset_micro_labels(uint64)(string,uint8,string[])", method "get_assets_micro_labels(uint64[])void", method "get_asset_tiny(uint64)(string,string,uint8)", method "get_assets_tiny(uint64[])void", method "get_asset_tiny_labels(uint64)(string,string,uint8,string[])", method "get_assets_tiny_labels(uint64[])void", method "get_asset_text(uint64)(string,string,string)", method "get_assets_text(uint64[])void", method "get_asset_text_labels(uint64)(string,string,string,string[])", method "get_assets_text_labels(uint64[])void", method "get_asset_small(uint64)(string,string,uint8,uint64,bool,bool,string[])", method "get_assets_small(uint64[])void", method "get_asset_full(uint64)(string,string,string,uint64,uint8,address,address,address,address,address,bool,byte[],uint64,string[])", method "get_assets_full(uint64[])void"
     txna ApplicationArgs 0
     match main_change_admin_route@5 main_add_label_route@6 main_remove_label_route@7 main_get_label_route@8 main_log_labels_route@9 main_add_operator_to_label_route@10 main_remove_operator_from_label_route@11 main_get_operator_labels_route@12 main_add_label_to_asset_route@13 main_add_label_to_assets_route@14 main_remove_label_from_asset_route@15 main_get_asset_labels_route@16 main_get_assets_labels_route@17 main_get_asset_micro_route@18 main_get_assets_micro_route@19 main_get_asset_micro_labels_route@20 main_get_assets_micro_labels_route@21 main_get_asset_tiny_route@22 main_get_assets_tiny_route@23 main_get_asset_tiny_labels_route@24 main_get_assets_tiny_labels_route@25 main_get_asset_text_route@26 main_get_assets_text_route@27 main_get_asset_text_labels_route@28 main_get_assets_text_labels_route@29 main_get_asset_small_route@30 main_get_assets_small_route@31 main_get_asset_full_route@32 main_get_assets_full_route@33
 
@@ -29,7 +29,7 @@ main_after_if_else@38:
     return
 
 main_get_assets_full_route@33:
-    // smart_contracts/asset_labeling/contract.py:493
+    // smart_contracts/asset_labeling/contract.py:495
     // @abimethod(readonly=True)
     txn OnCompletion
     !
@@ -39,14 +39,14 @@ main_get_assets_full_route@33:
     // smart_contracts/asset_labeling/contract.py:57
     // class AssetLabeling(ARC4Contract):
     txna ApplicationArgs 1
-    // smart_contracts/asset_labeling/contract.py:493
+    // smart_contracts/asset_labeling/contract.py:495
     // @abimethod(readonly=True)
     callsub get_assets_full
     intc_0 // 1
     return
 
 main_get_asset_full_route@32:
-    // smart_contracts/asset_labeling/contract.py:489
+    // smart_contracts/asset_labeling/contract.py:491
     // @abimethod(readonly=True)
     txn OnCompletion
     !
@@ -57,7 +57,7 @@ main_get_asset_full_route@32:
     // class AssetLabeling(ARC4Contract):
     txna ApplicationArgs 1
     btoi
-    // smart_contracts/asset_labeling/contract.py:489
+    // smart_contracts/asset_labeling/contract.py:491
     // @abimethod(readonly=True)
     callsub get_asset_full
     bytec_0 // 0x151f7c75
@@ -146,7 +146,7 @@ main_get_asset_text_labels_route@28:
     return
 
 main_get_assets_text_route@27:
-    // smart_contracts/asset_labeling/contract.py:414
+    // smart_contracts/asset_labeling/contract.py:413
     // @abimethod(readonly=True)
     txn OnCompletion
     !
@@ -156,14 +156,14 @@ main_get_assets_text_route@27:
     // smart_contracts/asset_labeling/contract.py:57
     // class AssetLabeling(ARC4Contract):
     txna ApplicationArgs 1
-    // smart_contracts/asset_labeling/contract.py:414
+    // smart_contracts/asset_labeling/contract.py:413
     // @abimethod(readonly=True)
     callsub get_assets_text
     intc_0 // 1
     return
 
 main_get_asset_text_route@26:
-    // smart_contracts/asset_labeling/contract.py:410
+    // smart_contracts/asset_labeling/contract.py:409
     // @abimethod(readonly=True)
     txn OnCompletion
     !
@@ -174,7 +174,7 @@ main_get_asset_text_route@26:
     // class AssetLabeling(ARC4Contract):
     txna ApplicationArgs 1
     btoi
-    // smart_contracts/asset_labeling/contract.py:410
+    // smart_contracts/asset_labeling/contract.py:409
     // @abimethod(readonly=True)
     callsub get_asset_text
     bytec_0 // 0x151f7c75
@@ -856,7 +856,7 @@ admin_only:
     bnz admin_only_after_if_else@3
     // smart_contracts/asset_labeling/contract.py:75
     // ensure(Txn.sender == self.admin, S("ERR:UNAUTH"))
-    bytec 7 // "ERR:UNAUTH"
+    bytec 8 // "ERR:UNAUTH"
     // smart_contracts/asset_labeling/contract.py:43
     // log(msg)
     log
@@ -993,14 +993,14 @@ remove_label_after_if_else@3:
     box_get
     assert // check self.labels entry exists
     extract 2 8 // on error: Index access is out of bounds
-    bytec 8 // 0x0000000000000000
+    bytec 9 // 0x0000000000000000
     b==
     // smart_contracts/asset_labeling/contract.py:42
     // if not cond:
     bnz remove_label_after_if_else@7
     // smart_contracts/asset_labeling/contract.py:97
     // ensure(self.labels[id].num_assets == 0, S("ERR:NOEMPTY"))
-    bytec 9 // "ERR:NOEMPTY"
+    bytec 10 // "ERR:NOEMPTY"
     // smart_contracts/asset_labeling/contract.py:43
     // log(msg)
     log
@@ -1164,7 +1164,7 @@ operator_only_bool_merge@4:
     bnz operator_only_after_if_else@7
     // smart_contracts/asset_labeling/contract.py:126
     // S("ERR:UNAUTH"),
-    bytec 7 // "ERR:UNAUTH"
+    bytec 8 // "ERR:UNAUTH"
     // smart_contracts/asset_labeling/contract.py:43
     // log(msg)
     log
@@ -1394,7 +1394,7 @@ add_operator_to_label_else_body@2:
     bytec 6 // 0x0002
     swap
     concat
-    bytec 10 // 0x0001
+    bytec 11 // 0x0001
     swap
     concat
     frame_dig -2
@@ -1526,7 +1526,7 @@ remove_operator_from_label_after_if_else@24:
     bnz remove_operator_from_label_bool_true@6
     frame_dig 0
     extract 2 8 // on error: Index access is out of bounds
-    bytec 8 // 0x0000000000000000
+    bytec 9 // 0x0000000000000000
     b==
     bz remove_operator_from_label_bool_false@7
 
@@ -1539,7 +1539,7 @@ remove_operator_from_label_bool_merge@8:
     bnz remove_operator_from_label_after_if_else@20
     // smart_contracts/asset_labeling/contract.py:186
     // S("ERR:NOEMPTY"),
-    bytec 9 // "ERR:NOEMPTY"
+    bytec 10 // "ERR:NOEMPTY"
     // smart_contracts/asset_labeling/contract.py:43
     // log(msg)
     log
@@ -1906,7 +1906,7 @@ _add_label_to_asset_else_body@2:
     bytec 6 // 0x0002
     swap
     concat
-    bytec 10 // 0x0001
+    bytec 11 // 0x0001
     swap
     concat
     frame_dig 1
@@ -2468,7 +2468,7 @@ _get_asset_micro_labels_ternary_merge@3:
     len
     pushint 5 // 5
     +
-    bytec 11 // 0x0005
+    bytec 12 // 0x0005
     frame_dig 1
     concat
     swap
@@ -2585,7 +2585,7 @@ _get_asset_tiny:
     +
     itob
     extract 6 2
-    bytec 11 // 0x0005
+    bytec 12 // 0x0005
     swap
     concat
     swap
@@ -2819,21 +2819,131 @@ _get_asset_text:
     asset_params_get AssetURL
     assert // asset exists
     callsub b2str
-    // smart_contracts/asset_labeling/contract.py:407
+    // smart_contracts/asset_labeling/contract.py:403-407
+    // return AssetText(
+    //     name=b2str(asset.name),
+    //     unit_name=b2str(asset.unit_name),
+    //     url=b2str(asset.url),
+    // )
+    dig 2
+    len
+    pushint 6 // 6
+    +
+    dup
+    itob
+    extract 6 2
+    pushbytes 0x0006
+    swap
+    concat
+    dig 3
+    len
+    uncover 2
+    +
+    itob
+    extract 6 2
+    concat
+    uncover 3
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    retsub
+
+
+// smart_contracts.asset_labeling.contract.AssetLabeling.get_asset_text(asset: uint64) -> bytes:
+get_asset_text:
+    // smart_contracts/asset_labeling/contract.py:409-410
+    // @abimethod(readonly=True)
+    // def get_asset_text(self, asset: UInt64) -> AssetText:
+    proto 1 1
+    // smart_contracts/asset_labeling/contract.py:411
+    // return self._get_asset_text(asset)
+    frame_dig -1
+    callsub _get_asset_text
+    retsub
+
+
+// smart_contracts.asset_labeling.contract.AssetLabeling.get_assets_text(assets: bytes) -> void:
+get_assets_text:
+    // smart_contracts/asset_labeling/contract.py:413-414
+    // @abimethod(readonly=True)
+    // def get_assets_text(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+    proto 1 0
+    // smart_contracts/asset_labeling/contract.py:415
+    // for _i, asset_id in uenumerate(assets):
+    frame_dig -1
+    intc_1 // 0
+    extract_uint16
+    intc_1 // 0
+
+get_assets_text_for_header@1:
+    // smart_contracts/asset_labeling/contract.py:415
+    // for _i, asset_id in uenumerate(assets):
+    frame_dig 1
+    frame_dig 0
+    <
+    bz get_assets_text_after_for@4
+    frame_dig -1
+    extract 2 0
+    frame_dig 1
+    dup
+    cover 2
+    intc_3 // 8
+    *
+    // smart_contracts/asset_labeling/contract.py:416
+    // log(self._get_asset_text(asset_id.native))
+    extract_uint64
+    callsub _get_asset_text
+    log
+    intc_0 // 1
+    +
+    frame_bury 1
+    b get_assets_text_for_header@1
+
+get_assets_text_after_for@4:
+    retsub
+
+
+// smart_contracts.asset_labeling.contract.AssetLabeling._get_asset_text_labels(asset_id: uint64) -> bytes:
+_get_asset_text_labels:
+    // smart_contracts/asset_labeling/contract.py:420-421
+    // @subroutine
+    // def _get_asset_text_labels(self, asset_id: UInt64) -> AssetTextLabels:
+    proto 1 1
+    // smart_contracts/asset_labeling/contract.py:424
+    // name=b2str(asset.name),
+    frame_dig -1
+    asset_params_get AssetName
+    assert // asset exists
+    callsub b2str
+    // smart_contracts/asset_labeling/contract.py:425
+    // unit_name=b2str(asset.unit_name),
+    frame_dig -1
+    asset_params_get AssetUnitName
+    assert // asset exists
+    callsub b2str
+    // smart_contracts/asset_labeling/contract.py:426
+    // url=b2str(asset.url),
+    frame_dig -1
+    asset_params_get AssetURL
+    assert // asset exists
+    callsub b2str
+    // smart_contracts/asset_labeling/contract.py:427
     // labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
     frame_dig -1
     itob
     dup
     box_len
     bury 1
-    bz _get_asset_text_ternary_false@2
+    bz _get_asset_text_labels_ternary_false@2
     frame_dig 3
     box_get
     assert // check self.assets entry exists
 
-_get_asset_text_ternary_merge@3:
-    // smart_contracts/asset_labeling/contract.py:403-408
-    // return AssetText(
+_get_asset_text_labels_ternary_merge@3:
+    // smart_contracts/asset_labeling/contract.py:423-428
+    // return AssetTextLabels(
     //     name=b2str(asset.name),
     //     unit_name=b2str(asset.unit_name),
     //     url=b2str(asset.url),
@@ -2882,121 +2992,11 @@ _get_asset_text_ternary_merge@3:
     frame_bury 0
     retsub
 
-_get_asset_text_ternary_false@2:
+_get_asset_text_labels_ternary_false@2:
     // smart_contracts/asset_labeling/contract.py:49
     // return arc4.DynamicArray[arc4.String]()
     bytec_1 // 0x0000
-    b _get_asset_text_ternary_merge@3
-
-
-// smart_contracts.asset_labeling.contract.AssetLabeling.get_asset_text(asset: uint64) -> bytes:
-get_asset_text:
-    // smart_contracts/asset_labeling/contract.py:410-411
-    // @abimethod(readonly=True)
-    // def get_asset_text(self, asset: UInt64) -> AssetText:
-    proto 1 1
-    // smart_contracts/asset_labeling/contract.py:412
-    // return self._get_asset_text(asset)
-    frame_dig -1
-    callsub _get_asset_text
-    retsub
-
-
-// smart_contracts.asset_labeling.contract.AssetLabeling.get_assets_text(assets: bytes) -> void:
-get_assets_text:
-    // smart_contracts/asset_labeling/contract.py:414-415
-    // @abimethod(readonly=True)
-    // def get_assets_text(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
-    proto 1 0
-    // smart_contracts/asset_labeling/contract.py:416
-    // for _i, asset_id in uenumerate(assets):
-    frame_dig -1
-    intc_1 // 0
-    extract_uint16
-    intc_1 // 0
-
-get_assets_text_for_header@1:
-    // smart_contracts/asset_labeling/contract.py:416
-    // for _i, asset_id in uenumerate(assets):
-    frame_dig 1
-    frame_dig 0
-    <
-    bz get_assets_text_after_for@4
-    frame_dig -1
-    extract 2 0
-    frame_dig 1
-    dup
-    cover 2
-    intc_3 // 8
-    *
-    // smart_contracts/asset_labeling/contract.py:417
-    // log(self._get_asset_text(asset_id.native))
-    extract_uint64
-    callsub _get_asset_text
-    log
-    intc_0 // 1
-    +
-    frame_bury 1
-    b get_assets_text_for_header@1
-
-get_assets_text_after_for@4:
-    retsub
-
-
-// smart_contracts.asset_labeling.contract.AssetLabeling._get_asset_text_labels(asset_id: uint64) -> bytes:
-_get_asset_text_labels:
-    // smart_contracts/asset_labeling/contract.py:421-422
-    // @subroutine
-    // def _get_asset_text_labels(self, asset_id: UInt64) -> AssetTextLabels:
-    proto 1 1
-    // smart_contracts/asset_labeling/contract.py:425
-    // name=b2str(asset.name),
-    frame_dig -1
-    asset_params_get AssetName
-    assert // asset exists
-    callsub b2str
-    // smart_contracts/asset_labeling/contract.py:426
-    // unit_name=b2str(asset.unit_name),
-    frame_dig -1
-    asset_params_get AssetUnitName
-    assert // asset exists
-    callsub b2str
-    // smart_contracts/asset_labeling/contract.py:427
-    // url=b2str(asset.url),
-    frame_dig -1
-    asset_params_get AssetURL
-    assert // asset exists
-    callsub b2str
-    // smart_contracts/asset_labeling/contract.py:424-428
-    // return AssetTextLabels(
-    //     name=b2str(asset.name),
-    //     unit_name=b2str(asset.unit_name),
-    //     url=b2str(asset.url),
-    // )
-    dig 2
-    len
-    pushint 6 // 6
-    +
-    dup
-    itob
-    extract 6 2
-    pushbytes 0x0006
-    swap
-    concat
-    dig 3
-    len
-    uncover 2
-    +
-    itob
-    extract 6 2
-    concat
-    uncover 3
-    concat
-    uncover 2
-    concat
-    swap
-    concat
-    retsub
+    b _get_asset_text_labels_ternary_merge@3
 
 
 // smart_contracts.asset_labeling.contract.AssetLabeling.get_asset_text_labels(asset: uint64) -> bytes:
@@ -3096,7 +3096,7 @@ _get_asset_small:
     assert // asset exists
     global ZeroAddress
     !=
-    pushbytes 0x00
+    bytec 7 // 0x00
     intc_1 // 0
     uncover 2
     setbit
@@ -3107,7 +3107,7 @@ _get_asset_small:
     assert // asset exists
     global ZeroAddress
     !=
-    pushbytes 0x00
+    bytec 7 // 0x00
     intc_1 // 0
     uncover 2
     setbit
@@ -3245,7 +3245,7 @@ _get_asset_full:
     // def _get_asset_full(self, asset_id: UInt64) -> AssetFull:
     proto 1 1
     intc_1 // 0
-    dupn 11
+    dupn 13
     // smart_contracts/asset_labeling/contract.py:468
     // reserve_acct = Account(asset.reserve.bytes)
     frame_dig -1
@@ -3266,7 +3266,7 @@ _get_asset_full:
     bz _get_asset_full_ternary_false@2
     // smart_contracts/asset_labeling/contract.py:470
     // asset.balance(reserve_acct)
-    frame_dig 12
+    frame_dig 14
     frame_dig -1
     asset_holding_get AssetBalance
     assert // account opted into asset
@@ -3278,28 +3278,28 @@ _get_asset_full_ternary_merge@3:
     asset_params_get AssetName
     assert // asset exists
     callsub b2str
-    frame_bury 1
+    frame_bury 2
     // smart_contracts/asset_labeling/contract.py:476
     // unit_name=b2str(asset.unit_name),
     frame_dig -1
     asset_params_get AssetUnitName
     assert // asset exists
     callsub b2str
-    frame_bury 2
+    frame_bury 3
     // smart_contracts/asset_labeling/contract.py:477
     // url=b2str(asset.url),
     frame_dig -1
     asset_params_get AssetURL
     assert // asset exists
     callsub b2str
-    frame_bury 3
+    frame_bury 4
     // smart_contracts/asset_labeling/contract.py:478
     // total=arc4.UInt64(asset.total),
     frame_dig -1
     asset_params_get AssetTotal
     assert // asset exists
     itob
-    frame_bury 6
+    frame_bury 7
     // smart_contracts/asset_labeling/contract.py:479
     // decimals=arc4.UInt8(asset.decimals),
     frame_dig -1
@@ -3312,36 +3312,53 @@ _get_asset_full_ternary_merge@3:
     <=
     assert // overflow
     extract 7 1
-    frame_bury 5
+    frame_bury 6
     // smart_contracts/asset_labeling/contract.py:480
+    // creator=arc4.Address(asset.creator),
+    frame_dig -1
+    asset_params_get AssetCreator
+    swap
+    frame_bury 11
+    assert // asset exists
+    // smart_contracts/asset_labeling/contract.py:481
     // manager=arc4.Address(asset.manager),
     frame_dig -1
     asset_params_get AssetManager
     swap
-    frame_bury 9
+    frame_bury 12
     assert // asset exists
-    // smart_contracts/asset_labeling/contract.py:481
+    // smart_contracts/asset_labeling/contract.py:482
     // freeze=arc4.Address(asset.freeze),
     frame_dig -1
     asset_params_get AssetFreeze
     swap
-    frame_bury 10
+    frame_bury 13
     assert // asset exists
-    // smart_contracts/asset_labeling/contract.py:482
+    // smart_contracts/asset_labeling/contract.py:483
     // clawback=arc4.Address(asset.clawback),
     frame_dig -1
     asset_params_get AssetClawback
     swap
-    frame_bury 11
+    frame_bury 9
     assert // asset exists
-    // smart_contracts/asset_labeling/contract.py:483
+    // smart_contracts/asset_labeling/contract.py:484
     // reserve=arc4.Address(asset.reserve),
     frame_dig -1
     asset_params_get AssetReserve
     swap
-    frame_bury 8
+    frame_bury 10
     assert // asset exists
     // smart_contracts/asset_labeling/contract.py:485
+    // default_frozen=arc4.Bool(asset.default_frozen),
+    frame_dig -1
+    asset_params_get AssetDefaultFrozen
+    assert // asset exists
+    bytec 7 // 0x00
+    intc_1 // 0
+    uncover 2
+    setbit
+    frame_bury 0
+    // smart_contracts/asset_labeling/contract.py:487
     // metadata_hash=arc4.DynamicBytes(asset.metadata_hash),
     frame_dig -1
     asset_params_get AssetMetadataHash
@@ -3352,61 +3369,51 @@ _get_asset_full_ternary_merge@3:
     extract 6 2
     swap
     concat
-    frame_bury 0
-    // smart_contracts/asset_labeling/contract.py:484
+    frame_bury 1
+    // smart_contracts/asset_labeling/contract.py:486
     // reserve_balance=arc4.UInt64(reserve_balance),
     itob
-    frame_bury 7
-    // smart_contracts/asset_labeling/contract.py:486
+    frame_bury 8
+    // smart_contracts/asset_labeling/contract.py:488
     // labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
     frame_dig -1
     itob
     dup
-    frame_bury 4
+    frame_bury 5
     box_len
     bury 1
     bz _get_asset_full_ternary_false@5
-    frame_dig 4
+    frame_dig 5
     box_get
     assert // check self.assets entry exists
 
 _get_asset_full_ternary_merge@6:
-    // smart_contracts/asset_labeling/contract.py:474-487
+    // smart_contracts/asset_labeling/contract.py:474-489
     // return AssetFull(
     //     name=b2str(asset.name),
     //     unit_name=b2str(asset.unit_name),
     //     url=b2str(asset.url),
     //     total=arc4.UInt64(asset.total),
     //     decimals=arc4.UInt8(asset.decimals),
+    //     creator=arc4.Address(asset.creator),
     //     manager=arc4.Address(asset.manager),
     //     freeze=arc4.Address(asset.freeze),
     //     clawback=arc4.Address(asset.clawback),
     //     reserve=arc4.Address(asset.reserve),
+    //     default_frozen=arc4.Bool(asset.default_frozen),
     //     reserve_balance=arc4.UInt64(reserve_balance),
     //     metadata_hash=arc4.DynamicBytes(asset.metadata_hash),
     //     labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
     // )
-    frame_dig 1
-    dup
-    len
-    pushint 155 // 155
-    +
-    dup
-    itob
-    extract 6 2
-    pushbytes 0x009b
-    swap
-    concat
     frame_dig 2
     dup
-    cover 3
     len
-    uncover 2
+    pushint 188 // 188
     +
     dup
     itob
     extract 6 2
-    uncover 2
+    pushbytes 0x00bc
     swap
     concat
     frame_dig 3
@@ -3415,24 +3422,13 @@ _get_asset_full_ternary_merge@6:
     len
     uncover 2
     +
-    swap
-    frame_dig 6
-    concat
-    frame_dig 5
-    concat
-    frame_dig 9
-    concat
-    frame_dig 10
-    concat
-    frame_dig 11
-    concat
-    frame_dig 8
-    concat
-    dig 1
+    dup
     itob
     extract 6 2
+    uncover 2
+    swap
     concat
-    frame_dig 0
+    frame_dig 4
     dup
     cover 3
     len
@@ -3440,6 +3436,33 @@ _get_asset_full_ternary_merge@6:
     +
     swap
     frame_dig 7
+    concat
+    frame_dig 6
+    concat
+    frame_dig 11
+    concat
+    frame_dig 12
+    concat
+    frame_dig 13
+    concat
+    frame_dig 9
+    concat
+    frame_dig 10
+    concat
+    frame_dig 0
+    concat
+    dig 1
+    itob
+    extract 6 2
+    concat
+    frame_dig 1
+    dup
+    cover 3
+    len
+    uncover 2
+    +
+    swap
+    frame_dig 8
     concat
     swap
     itob
@@ -3473,11 +3496,11 @@ _get_asset_full_ternary_false@2:
 
 // smart_contracts.asset_labeling.contract.AssetLabeling.get_asset_full(asset: uint64) -> bytes:
 get_asset_full:
-    // smart_contracts/asset_labeling/contract.py:489-490
+    // smart_contracts/asset_labeling/contract.py:491-492
     // @abimethod(readonly=True)
     // def get_asset_full(self, asset: UInt64) -> AssetFull:
     proto 1 1
-    // smart_contracts/asset_labeling/contract.py:491
+    // smart_contracts/asset_labeling/contract.py:493
     // return self._get_asset_full(asset)
     frame_dig -1
     callsub _get_asset_full
@@ -3486,11 +3509,11 @@ get_asset_full:
 
 // smart_contracts.asset_labeling.contract.AssetLabeling.get_assets_full(assets: bytes) -> void:
 get_assets_full:
-    // smart_contracts/asset_labeling/contract.py:493-494
+    // smart_contracts/asset_labeling/contract.py:495-496
     // @abimethod(readonly=True)
     // def get_assets_full(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
     proto 1 0
-    // smart_contracts/asset_labeling/contract.py:495
+    // smart_contracts/asset_labeling/contract.py:497
     // for _i, asset_id in uenumerate(assets):
     frame_dig -1
     intc_1 // 0
@@ -3498,7 +3521,7 @@ get_assets_full:
     intc_1 // 0
 
 get_assets_full_for_header@1:
-    // smart_contracts/asset_labeling/contract.py:495
+    // smart_contracts/asset_labeling/contract.py:497
     // for _i, asset_id in uenumerate(assets):
     frame_dig 1
     frame_dig 0
@@ -3511,7 +3534,7 @@ get_assets_full_for_header@1:
     cover 2
     intc_3 // 8
     *
-    // smart_contracts/asset_labeling/contract.py:496
+    // smart_contracts/asset_labeling/contract.py:498
     // log(self._get_asset_full(asset_id.native))
     extract_uint64
     callsub _get_asset_full

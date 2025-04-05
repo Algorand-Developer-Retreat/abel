@@ -44,7 +44,6 @@ class AssetText(arc4.Struct):
     name: arc4.String
     unit_name: arc4.String
     url: arc4.String
-    labels: LabelList
 
 
 # Searchable text view plusllabels
@@ -52,6 +51,7 @@ class AssetTextLabels(arc4.Struct):
     name: arc4.String
     unit_name: arc4.String
     url: arc4.String
+    labels: LabelList
 
 
 # Small view, what a hover card on an explorer may show
@@ -74,10 +74,13 @@ class AssetFull(arc4.Struct):
     total: arc4.UInt64
     decimals: arc4.UInt8
 
+    creator: arc4.Address
     manager: arc4.Address
     freeze: arc4.Address
     clawback: arc4.Address
     reserve: arc4.Address
+
+    default_frozen: arc4.Bool
 
     metadata_hash: arc4.DynamicBytes
     reserve_balance: arc4.UInt64
