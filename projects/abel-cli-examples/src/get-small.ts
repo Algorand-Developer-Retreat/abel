@@ -3,4 +3,4 @@ import { printView, parseArgvBigints } from "./lib/util.js";
 
 const aids = parseArgvBigints()
 
-await printView(aids, "Micro", aids => abel.getAssetsMicro(aids), false)
+await printView(aids, "Small", aids => abel.getAssetsSmall(aids), false)

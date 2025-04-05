@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@algorandfoundation/algokit-utils": "^7.0.2",
-    "abel-sdk": "^0.0.4",
+    "abel-sdk": "../abel-sdk-v2",
     "algosdk": "^2.8.0",
     "dotenv": "^16.4.7",
     "p-map": "^7.0.3",
