@@ -24,6 +24,21 @@ class AssetMicroLabels(arc4.Struct):
     labels: LabelList
 
 
+# Tiny view = micro+name
+class AssetTiny(arc4.Struct):
+    name: arc4.String
+    unit_name: arc4.String
+    decimals: arc4.UInt8
+
+
+# Above plus labels
+class AssetTinyLabels(arc4.Struct):
+    name: arc4.String
+    unit_name: arc4.String
+    decimals: arc4.UInt8
+    labels: LabelList
+
+
 # Searchable text view
 class AssetText(arc4.Struct):
     name: arc4.String

@@ -23,6 +23,8 @@ from .types import (
     AssetSmall,
     AssetText,
     AssetTextLabels,
+    AssetTiny,
+    AssetTinyLabels,
     LabelDescriptor,
     LabelList,
     S,
@@ -351,6 +353,47 @@ class AssetLabeling(ARC4Contract):
     def get_assets_micro_labels(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
         for _i, asset_id in uenumerate(assets):
             log(self._get_asset_micro_labels(asset_id.native))
+
+    # Tiny: name+unit+decimals (1 ref, 128 max)
+
+    @subroutine
+    def _get_asset_tiny(self, asset_id: UInt64) -> AssetTiny:
+        asset = Asset(asset_id)
+        return AssetTiny(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            decimals=arc4.UInt8(asset.decimals),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_tiny(self, asset: UInt64) -> AssetTiny:
+        return self._get_asset_tiny(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_tiny(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_tiny(asset_id.native))
+
+    # Tiny+Label: Name, Unit Name, Decimals, Labels (2 refs, max 64)
+
+    @subroutine
+    def _get_asset_tiny_labels(self, asset_id: UInt64) -> AssetTinyLabels:
+        asset = Asset(asset_id)
+        return AssetTinyLabels(
+            name=b2str(asset.name),
+            unit_name=b2str(asset.unit_name),
+            decimals=arc4.UInt8(asset.decimals),
+            labels=self.assets[asset].copy() if asset in self.assets else empty_list(),
+        )
+
+    @abimethod(readonly=True)
+    def get_asset_tiny_labels(self, asset: UInt64) -> AssetTinyLabels:
+        return self._get_asset_tiny_labels(asset)
+
+    @abimethod(readonly=True)
+    def get_assets_tiny_labels(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            log(self._get_asset_tiny_labels(asset_id.native))
 
     # Text: Searchable - Asset name, Unit Name, URL (1 ref, max 128)
 
