@@ -18,6 +18,10 @@ import {
   AssetTextFromTuple,
   AssetTextLabels,
   AssetTextLabelsFromTuple,
+  AssetTiny,
+  AssetTinyFromTuple,
+  AssetTinyLabels,
+  AssetTinyLabelsFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
 import { AnyFn, FirstArgument, LabelDescriptor, QueryReturn } from "./types.js";
@@ -334,6 +338,36 @@ export class AbelSDK {
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroLabelsFromTuple, "get_asset_micro_labels");
+    return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
+  };
+
+  getAssetsTiny = async (assetIds: bigint[]): Promise<Map<bigint, AssetTiny & { id: bigint }>> => {
+    const METHOD_MAX = 128;
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTiny, [assetIds], METHOD_MAX);
+
+    const { confirmations } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsTiny({ args: { assets: assetIds } })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetTinyFromTuple, "get_asset_tiny");
+    return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
+  };
+
+  getAssetsTinyLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTinyLabels & { id: bigint }>> => {
+    const METHOD_MAX = 64;
+    if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTinyLabels, [assetIds], METHOD_MAX);
+
+    const { confirmations } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .getAssetsTinyLabels({ args: { assets: assetIds } })
+        .simulate(SIMULATE_PARAMS)
+    );
+
+    const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetTinyLabelsFromTuple, "get_asset_tiny_labels");
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
