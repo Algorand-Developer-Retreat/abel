@@ -97,6 +97,15 @@ class AssetLabeling(ARC4Contract):
         return UInt64(id in self.labels)
 
     @abimethod()
+    def change_label(self, id: String, name: String, url: String) -> None:  # noqa A002
+        self.admin_only()
+        ensure(id in self.labels, S("ERR:NOEXIST"))
+        label_descriptor = self.labels[id].copy()
+        label_descriptor.name = arc4.String(name)
+        label_descriptor.url = arc4.String(url)
+        self.labels[id] = label_descriptor.copy()
+
+    @abimethod()
     def remove_label(self, id: String) -> None:  # noqa A002
         self.admin_only()
         ensure(id in self.labels, S("ERR:NOEXIST"))

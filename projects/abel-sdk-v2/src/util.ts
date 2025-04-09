@@ -62,3 +62,7 @@ export function mergeMapsArr<K, V>(maps: Map<K, V>[]): Map<K, V> {
 
   return mergedMap;
 }
+
+export function isNullish(str: string) {
+  return str === undefined || str === null
+}

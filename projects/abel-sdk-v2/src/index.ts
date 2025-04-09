@@ -25,7 +25,7 @@ import {
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
 import { AnyFn, FirstArgument, LabelDescriptor, QueryReturn } from "./types.js";
-import { chunk, encodeUint64Arr, mergeMapsArr, wrapErrors } from "./util.js";
+import { chunk, encodeUint64Arr, isNullish, mergeMapsArr, wrapErrors } from "./util.js";
 
 export * from "./types.js";
 export { AssetLabelingClient, AssetLabelingFactory };
@@ -235,6 +235,20 @@ export class AbelSDK {
         this.writeAccount.signer
       )
       .addLabel({ args: { id: labelId, name, url }, boxReferences: [labelId] })
+      .send();
+
+    return wrapErrors(query);
+  }
+
+  async changeLabel(labelId: string, name: string, url: string) {
+    this.requireWriteClient();
+
+    if (isNullish(name)) throw new Error("name must be defined");
+    if (isNullish(url)) throw new Error("url must be defined");
+
+    const query = this.writeClient
+      .newGroup()
+      .changeLabel({ args: { id: labelId, name, url }, boxReferences: [labelId] })
       .send();
 
     return wrapErrors(query);

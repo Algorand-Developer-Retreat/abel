@@ -20,8 +20,19 @@ export async function addLabel(
     )
     .addLabel({ args: { id: labelId, name: labelName, url: labelUrl }, boxReferences: [labelId] })
     .send()
+  return txIds[0]
+}
 
-  // client.algorand.client.getAppFactory()
+export async function changeLabel(
+  client: AssetLabelingClient,
+  labelId: string,
+  labelName: string,
+  labelUrl: string,
+): Promise<string> {
+  const { txIds } = await client.send.changeLabel({
+    args: { id: labelId, name: labelName, url: labelUrl },
+    boxReferences: [labelId],
+  })
   return txIds[0]
 }
 
