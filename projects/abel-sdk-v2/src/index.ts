@@ -34,7 +34,7 @@ const DEFAULT_READ_ACCOUNT = "A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUI
 const SIMULATE_PARAMS = {
   allowMoreLogging: true,
   allowUnnamedResources: true,
-  extraOpcodeBudget: 130013,
+  extraOpcodeBudget: 179200,
   fixSigners: true,
   allowEmptySignatures: true,
 };
@@ -106,6 +106,18 @@ export class AbelSDK {
    * We simulate from a client configured with a (theoretically) known-good account on all networks, default dev fee sink
    */
 
+  async hasLabel(labelId: string): Promise<boolean> {
+    const {
+      returns: [hasLabel],
+    } = await wrapErrors(
+      this.readClient
+        .newGroup()
+        .hasLabel({ args: { id: labelId } })
+        .simulate(SIMULATE_PARAMS)
+    );
+    return Boolean(hasLabel);
+  }
+
   async getLabelDescriptor(labelId: string): Promise<LabelDescriptor | null> {
     try {
       const {
@@ -145,12 +157,26 @@ export class AbelSDK {
     return labelDescriptors;
   }
 
+  async hasOperatorLabel(operator: string, label: string): Promise<boolean> {
+    const {
+      returns: [hasLabel],
+    } = await wrapErrors(this.readClient.newGroup().hasOperatorLabel({ args: { operator, label } }).simulate(SIMULATE_PARAMS));
+    return Boolean(hasLabel);
+  }
+
   async getOperatorLabels(operator: string): Promise<string[]> {
     const {
       returns: [operatorLabels],
     } = await wrapErrors(this.readClient.newGroup().getOperatorLabels({ args: { operator } }).simulate(SIMULATE_PARAMS));
 
     return operatorLabels!;
+  }
+
+  async hasAssetLabel(assetId: bigint, label: string): Promise<boolean> {
+    const {
+      returns: [hasLabel],
+    } = await wrapErrors(this.readClient.newGroup().hasAssetLabel({ args: { assetId, label } }).simulate(SIMULATE_PARAMS));
+    return Boolean(hasLabel);
   }
 
   async getAssetLabels(assetId: bigint): Promise<string[]> {
@@ -162,7 +188,6 @@ export class AbelSDK {
         .getAssetLabels({ args: { asset: assetId } })
         .simulate(SIMULATE_PARAMS)
     );
-
     return assetLabels!;
   }
 
@@ -170,22 +195,27 @@ export class AbelSDK {
     const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsLabels, [assetIds], METHOD_MAX);
 
-    const {
-      returns: [assetsLabels],
-    } = await wrapErrors(
+    const { confirmations } = await wrapErrors(
       this.readClient
         .newGroup()
-        .getAssetsLabels({ args: { assets: assetIds } })
+        .logAssetsLabels({ args: { assets: assetIds } })
         .simulate(SIMULATE_PARAMS)
     );
 
     const map: Map<bigint, string[]> = new Map();
-    assetsLabels?.forEach((assetLabels, idx) => {
-      map.set(assetIds[idx], assetLabels);
+
+    const labelValues = this.parseLogsAs(
+      confirmations[0]!.logs ?? [],
+      (arrs: Uint8Array[]) => arrs.map((arr) => Buffer.from(arr).toString()),
+      "get_asset_labels"
+    );
+
+    assetIds.forEach((assetId, idx) => {
+      map.set(assetId, labelValues[idx]);
     });
 
     return map;
-  }
+  };
 
   /*
    * Write methods = transactions
