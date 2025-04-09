@@ -80,12 +80,13 @@ class AssetLabeling(ARC4Contract):
         self.admin = new_admin
 
     @abimethod()
-    def add_label(self, id: String, name: String) -> None:  # noqa A002
+    def add_label(self, id: String, name: String, url: String) -> None:  # noqa A002
         self.admin_only()
         ensure(id not in self.labels, S("ERR:EXISTS"))
         ensure(id.bytes.length == 2, S("ERR:LENGTH"))
         self.labels[id] = LabelDescriptor(
             arc4.String(name),
+            arc4.String(url),
             arc4.UInt64(0),
             arc4.UInt64(0),
         )

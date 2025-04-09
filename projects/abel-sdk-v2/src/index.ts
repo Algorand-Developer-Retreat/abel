@@ -221,7 +221,7 @@ export class AbelSDK {
    * Write methods = transactions
    */
 
-  async addLabel(labelId: string, name: string) {
+  async addLabel(labelId: string, name: string, url: string) {
     this.requireWriteClient();
 
     const query = this.writeClient
@@ -234,7 +234,7 @@ export class AbelSDK {
         }),
         this.writeAccount.signer
       )
-      .addLabel({ args: { id: labelId, name }, boxReferences: [labelId] })
+      .addLabel({ args: { id: labelId, name, url }, boxReferences: [labelId] })
       .send();
 
     return wrapErrors(query);

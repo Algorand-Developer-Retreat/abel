@@ -7,6 +7,7 @@ export async function addLabel(
   account: Address & TransactionSignerAccount & Account,
   labelId: string,
   labelName: string,
+  labelUrl: string,
 ): Promise<string> {
   const { txIds } = await client
     .newGroup()
@@ -17,7 +18,7 @@ export async function addLabel(
         amount: (0.2).algos(),
       }),
     )
-    .addLabel({ args: { id: labelId, name: labelName }, boxReferences: [labelId] })
+    .addLabel({ args: { id: labelId, name: labelName, url: labelUrl }, boxReferences: [labelId] })
     .send()
 
   // client.algorand.client.getAppFactory()

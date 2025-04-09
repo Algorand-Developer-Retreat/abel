@@ -55,3 +55,5 @@ if (toRemove.length) {
   console.log(`Removing (${toRemove.length})`);
   await pMap(toRemove, (id) => abel.removeLabelFromAsset(id, LABEL_ID), { concurrency: config.CONCURRENCY });
 }
+
+console.log("Done");
