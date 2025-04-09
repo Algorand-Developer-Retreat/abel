@@ -80,7 +80,7 @@ class AssetLabeling(ARC4Contract):
         self.admin = new_admin
 
     @abimethod()
-    def add_label(self, id: String, name: String) -> None:
+    def add_label(self, id: String, name: String) -> None:  # noqa A002
         self.admin_only()
         ensure(id not in self.labels, S("ERR:EXISTS"))
         ensure(id.bytes.length == 2, S("ERR:LENGTH"))
@@ -90,16 +90,21 @@ class AssetLabeling(ARC4Contract):
             arc4.UInt64(0),
         )
 
+    @abimethod(readonly=True)
+    def has_label(self, id: String) -> UInt64:  # noqa A002
+        ensure(id.bytes.length == 2, S("ERR:LENGTH"))
+        return UInt64(id in self.labels)
+
     @abimethod()
-    def remove_label(self, id: String) -> None:
+    def remove_label(self, id: String) -> None:  # noqa A002
         self.admin_only()
         ensure(id in self.labels, S("ERR:NOEXIST"))
-        ensure(self.labels[id].num_assets == 0, S("ERR:NOEMPTY"))
         ensure(self.labels[id].num_operators == 0, S("ERR:NOEMPTY"))
+        ensure(self.labels[id].num_assets == 0, S("ERR:NOEMPTY"))
         del self.labels[id]
 
     @abimethod(readonly=True)
-    def get_label(self, id: String) -> LabelDescriptor:
+    def get_label(self, id: String) -> LabelDescriptor:  # noqa A002
         ensure(id in self.labels, S("ERR:NOEXIST"))
         return self.labels[id]
 
@@ -164,6 +169,12 @@ class AssetLabeling(ARC4Contract):
         )
         self.labels[label] = label_descriptor.copy()
 
+    @abimethod(readonly=True)
+    def has_operator_label(self, operator: Account, label: String) -> UInt64:
+        ensure(label.bytes.length == 2, S("ERR:LENGTH"))
+        idx = self.get_operator_label_index(operator, label)
+        return UInt64(idx != NOT_FOUND_KEY and idx != NOT_FOUND_VALUE)
+
     @abimethod()
     def remove_operator_from_label(self, operator: Account, label: String) -> None:
         self.admin_or_operator_only(label)
@@ -214,6 +225,7 @@ class AssetLabeling(ARC4Contract):
 
     @subroutine
     def get_asset_label_index(self, asset: Asset, label: String) -> UInt64:
+        ensure(label.bytes.length == 2, S("ERR:LENGTH"))
         if asset not in self.assets:
             return UInt64(NOT_FOUND_KEY)
         for idx, stored_label in uenumerate(self.assets[asset]):
@@ -275,7 +287,7 @@ class AssetLabeling(ARC4Contract):
             next_list = arc4.DynamicArray[arc4.String]()
             # walk, push everything to new box except label
             # save $found to throw if not found
-            for idx, stored_label in uenumerate(self.assets[asset]):
+            for _idx, stored_label in uenumerate(self.assets[asset]):
                 if stored_label != label:
                     next_list.append(stored_label)
                 else:
@@ -291,6 +303,14 @@ class AssetLabeling(ARC4Contract):
             label_descriptor.num_assets.native - UInt64(1)
         )
         self.labels[label] = label_descriptor.copy()
+
+    @abimethod(readonly=True)
+    def has_asset_label(self, asset_id: UInt64, label: String) -> UInt64:
+        asset = Asset(asset_id)
+        idx = self.get_asset_label_index(asset, label)
+        if idx != NOT_FOUND_KEY and idx != NOT_FOUND_VALUE:
+            return UInt64(1)
+        return UInt64(0)
 
     @abimethod(readonly=True)
     def get_asset_labels(self, asset: Asset) -> LabelList:
@@ -311,6 +331,15 @@ class AssetLabeling(ARC4Contract):
             else:
                 out.append(empty_list())
         return out
+
+    @abimethod(readonly=True)
+    def log_assets_labels(self, assets: arc4.DynamicArray[arc4.UInt64]) -> None:
+        for _i, asset_id in uenumerate(assets):
+            asset = Asset(asset_id.native)
+            if asset in self.assets:
+                log(self.assets[asset])
+            else:
+                log(empty_list())
 
     #
     # Batch asset data fetch methods

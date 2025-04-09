@@ -17,6 +17,9 @@ import {
   removeOperatorFromLabel,
   removeLabelFromAsset,
   addLabelToAssets,
+  hasAssetLabel,
+  hasLabel,
+  hasOperatorLabel,
 } from './helpers'
 
 describe('asset labeling contract', () => {
@@ -137,6 +140,26 @@ describe('asset labeling contract', () => {
     })
   }
 
+  test('has label should work', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const id = 'wo'
+    const name = 'world'
+    const notId = 'zz'
+    const invalidLengthId = 'xxx'
+
+    await addLabel(adminClient, adminAccount, id, name)
+
+    const has = await hasLabel(adminClient, id)
+    expect(has).toBe(1n)
+
+    const has2 = await hasLabel(adminClient, notId)
+    expect(has2).toBe(0n)
+
+    await expect(() => hasLabel(adminClient, invalidLengthId)).rejects.toThrow(/ERR:LENGTH/)
+  })
+
   test('add label, remove label', async () => {
     const { testAccount: adminAccount } = localnet.context
     const { adminClient } = await deploy(adminAccount)
@@ -205,6 +228,31 @@ describe('asset labeling contract', () => {
 
     const operator2 = await localnet.context.generateAccount({ initialFunds: (0).algos() })
     await addOperatorToLabel(operatorClient, operator2, id)
+  })
+
+  test('has operator label should work', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const id = 'wo'
+    const name = 'world'
+    const notId = 'zz'
+    const invalidLengthId = 'xxx'
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, id, name)
+    await addOperatorToLabel(adminClient, operator, id)
+
+    const has = await hasOperatorLabel(adminClient, operator, id)
+    expect(has).toBe(1n)
+
+    const has2 = await hasOperatorLabel(adminClient, operator, notId)
+    expect(has2).toBe(0n)
+
+    const has3 = await hasOperatorLabel(adminClient, adminAccount, id)
+    expect(has3).toBe(0n)
+
+    await expect(() => hasOperatorLabel(adminClient, adminAccount, invalidLengthId)).rejects.toThrow(/ERR:LENGTH/)
   })
 
   test('add 2 labels to operator', async () => {
@@ -405,7 +453,7 @@ describe('asset labeling contract', () => {
     })
 
     await addLabelToAsset(operatorClient, assetId, label)
-    await expect(() => addLabelToAsset(operatorClient, assetId, label)).rejects.toThrow(/ERR:EXIS/)
+    await expect(() => addLabelToAsset(operatorClient, assetId, label)).rejects.toThrow(/ERR:EXISTS/)
   })
 
   test('add non-existent label should fail', async () => {
@@ -443,6 +491,31 @@ describe('asset labeling contract', () => {
     await addOperatorToLabel(adminClient, operator, label)
 
     await expect(() => addLabelToAsset(adminClient, assetId, label)).rejects.toThrow(/ERR:UNAUTH/)
+  })
+
+  test('has asset label should work', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const assetId = 13n
+    const notAssetId = 14n
+
+    const notLabel = 'ii'
+
+    await addLabel(adminClient, adminAccount, label, labelName)
+    await addOperatorToLabel(adminClient, adminAccount, label)
+    await addLabelToAsset(adminClient, assetId, label)
+
+    const hasLabelBigInt = await hasAssetLabel(adminClient, assetId, label)
+    expect(hasLabelBigInt).toBe(1n)
+
+    const noHasLabelBigInt = await hasAssetLabel(adminClient, assetId, notLabel)
+    expect(noHasLabelBigInt).toBe(0n)
+
+    const noHasLabelBigInt2 = await hasAssetLabel(adminClient, notAssetId, label)
+    expect(noHasLabelBigInt2).toBe(0n)
   })
 
   test('remove label from asset', async () => {

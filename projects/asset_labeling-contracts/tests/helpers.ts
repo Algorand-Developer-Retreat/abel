@@ -24,6 +24,16 @@ export async function addLabel(
   return txIds[0]
 }
 
+export async function hasLabel(client: AssetLabelingClient, labelId: string): Promise<BigInt> {
+  const {
+    returns: [retVal],
+  } = await client
+    .newGroup()
+    .hasLabel({ args: { id: labelId }, boxReferences: [labelId] })
+    .send()
+  return retVal!
+}
+
 export async function removeLabel(client: AssetLabelingClient, labelId: string): Promise<string> {
   const { txIds } = await client
     .newGroup()
@@ -55,6 +65,14 @@ export async function addOperatorToLabel(
   return txIds[0]
 }
 
+export async function hasOperatorLabel(client: AssetLabelingClient, operator: Account, label: string): Promise<BigInt> {
+  const { return: retVal } = await client.send.hasOperatorLabel({
+    args: { operator: operator.addr.toString(), label },
+    boxReferences: [operator.addr.publicKey, label],
+  })
+  return retVal!
+}
+
 export async function removeOperatorFromLabel(
   client: AssetLabelingClient,
   operator: Account,
@@ -84,6 +102,14 @@ export async function addLabelToAsset(client: AssetLabelingClient, asset: bigint
     boxReferences: [label],
   })
   return txIds[0]
+}
+
+export async function hasAssetLabel(client: AssetLabelingClient, asset: bigint, label: string): Promise<BigInt> {
+  const { return: retVal } = await client.send.hasAssetLabel({
+    args: { assetId: asset, label },
+    boxReferences: [encodeUint64(asset)],
+  })
+  return retVal!
 }
 
 export async function addLabelToAssets(client: AssetLabelingClient, assets: bigint[], label: string): Promise<string> {
