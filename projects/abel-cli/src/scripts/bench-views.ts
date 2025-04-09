@@ -1,5 +1,6 @@
 import { abel } from "../lib/config.js";
-import { die, parseArgvBigints, printView } from "../lib/util.js";
+import { die, parseArgvBigints } from "../lib/util.js";
+import { printView } from "../lib/printView.js";
 
 const aids = parseArgvBigints()
 
