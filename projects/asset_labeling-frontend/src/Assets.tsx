@@ -10,7 +10,7 @@ import ErrorIcon from '@mui/icons-material/Error'
 import InfoIcon from '@mui/icons-material/Info'
 import { Container } from '@mui/material'
 
-const DEFAULT_APP_ID = 2888048711n
+const DEFAULT_APP_ID = 2914159523n
 const PAGE_SIZE = 100
 
 type IdProps = {

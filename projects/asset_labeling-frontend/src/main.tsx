@@ -7,7 +7,7 @@ import ErrorBoundary from './layout/ErrorBoundary'
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <App id={BigInt(import.meta.env.VITE_APP_ID || 2888048711n)} />
+      <App id={BigInt(import.meta.env.VITE_APP_ID || 2914159523n)} />
     </ErrorBoundary>
   </React.StrictMode>,
 )
