@@ -4,27 +4,31 @@ import { BoxName } from "@algorandfoundation/algokit-utils/types/app";
 import { decodeAddress, decodeUint64, encodeAddress, encodeUint64, makeEmptyTransactionSigner } from "algosdk";
 import pMap from "p-map";
 import {
-  AssetFull,
   AssetFullFromTuple,
   AssetLabelingClient,
   AssetLabelingFactory,
-  AssetMicro,
   AssetMicroFromTuple,
-  AssetMicroLabels,
   AssetMicroLabelsFromTuple,
-  AssetSmall,
   AssetSmallFromTuple,
-  AssetText,
   AssetTextFromTuple,
-  AssetTextLabels,
   AssetTextLabelsFromTuple,
-  AssetTiny,
   AssetTinyFromTuple,
-  AssetTinyLabels,
   AssetTinyLabelsFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
-import { AnyFn, FirstArgument, LabelDescriptor, QueryReturn } from "./types.js";
+import {
+  AnyFn,
+  AssetFull,
+  AssetMicro,
+  AssetMicroLabels,
+  AssetSmall,
+  AssetText,
+  AssetTextLabels,
+  AssetTiny,
+  AssetTinyLabels,
+  LabelDescriptor,
+  QueryReturn,
+} from "./types.js";
 import { chunk, encodeUint64Arr, isNullish, mergeMapsArr, wrapErrors } from "./util.js";
 
 export * from "./types.js";
@@ -43,7 +47,7 @@ export class AbelSDK {
   readClient: AssetLabelingClient;
   writeClient: AssetLabelingClient | undefined;
   writeAccount?: TransactionSignerAccount | undefined;
-  private concurrency: number = 2;
+  private concurrency: number = 4;
 
   constructor({
     algorand,
@@ -88,14 +92,29 @@ export class AbelSDK {
 
   //  Box bead wrappers
 
+  /**
+   * Return all label IDs available on the contract
+   *
+   * @returns Label IDs
+   */
   async getAllLabels(): Promise<string[]> {
     return (await this.getBoxesByLength(2)).map((boxName) => boxName.name);
   }
 
+  /**
+   * Return all operator addresses on the contract
+   *
+   * @returns Operator addresses
+   */
   async getAllOperators(): Promise<string[]> {
     return (await this.getBoxesByLength(32)).map((boxName) => encodeAddress(boxName.nameRaw));
   }
 
+  /**
+   * Return all asset IDs available on the contract
+   *
+   * @returns Asset IDs
+   */
   async getAllAssetIDs(): Promise<bigint[]> {
     return (await this.getBoxesByLength(8)).map((boxName) => decodeUint64(boxName.nameRaw, "bigint"));
   }
@@ -106,6 +125,12 @@ export class AbelSDK {
    * We simulate from a client configured with a (theoretically) known-good account on all networks, default dev fee sink
    */
 
+  /**
+   * Returns whether a specific label ID exists or not
+   *
+   * @param labelId label ID
+   * @returns Whether the label exists or not
+   */
   async hasLabel(labelId: string): Promise<boolean> {
     const {
       returns: [hasLabel],
@@ -118,6 +143,12 @@ export class AbelSDK {
     return Boolean(hasLabel);
   }
 
+  /**
+   * Get a label descriptor for a label by its ID.
+   *
+   * @param labelId The label to look up by label ID
+   * @returns A label descriptor
+   */
   async getLabelDescriptor(labelId: string): Promise<LabelDescriptor | null> {
     try {
       const {
@@ -138,6 +169,12 @@ export class AbelSDK {
     }
   }
 
+  /**
+   * Get multiple label descriptors for labels, by their IDs.
+   *
+   * @param {string} labelIds The label IDs to look up
+   * @returns Result wap with label IDs as keys and LabelDescriptors as values.
+   */
   async getLabelDescriptors(labelIds: string[]): Promise<Map<string, LabelDescriptor>> {
     const { confirmations } = await wrapErrors(
       this.readClient
@@ -157,6 +194,13 @@ export class AbelSDK {
     return labelDescriptors;
   }
 
+  /**
+   * Returns whether or not an operator has access to a label
+   *
+   * @param operator The operator address to query
+   * @param {string} label The label ID to look up
+   * @returns
+   */
   async hasOperatorLabel(operator: string, label: string): Promise<boolean> {
     const {
       returns: [hasLabel],
@@ -164,6 +208,12 @@ export class AbelSDK {
     return Boolean(hasLabel);
   }
 
+  /**
+   * Get all labels for an operator
+   *
+   * @param operator The operator address to query
+   * @returns Labels that this account can operate on
+   */
   async getOperatorLabels(operator: string): Promise<string[]> {
     const {
       returns: [operatorLabels],
@@ -172,6 +222,13 @@ export class AbelSDK {
     return operatorLabels!;
   }
 
+  /**
+   * Return whether an asset has a specific label
+   *
+   * @param assetId Asset to look up, by asset ID
+   * @param label label to query for, by label ID
+   * @returns
+   */
   async hasAssetLabel(assetId: bigint, label: string): Promise<boolean> {
     const {
       returns: [hasLabel],
@@ -266,6 +323,14 @@ export class AbelSDK {
     return wrapErrors(query);
   }
 
+  /**
+   * Add a label to an operator.
+   * This allows the operator address to add/remove operators to the label, as well as label assets with this label.
+   *
+   * @param operator Operator address
+   * @param labelId Label to add to operator
+   * @returns
+   */
   async addOperatorToLabel(operator: string, labelId: string) {
     this.requireWriteClient();
 
@@ -355,7 +420,7 @@ export class AbelSDK {
 
   /* Batch fetch asset views */
 
-  getAssetsMicro = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+  getAssetsMicro = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro>> => {
     const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicro, [assetIds], METHOD_MAX);
 
@@ -370,7 +435,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicroLabels & { id: bigint }>> => {
+  getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicroLabels>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicroLabels, [assetIds], METHOD_MAX);
 
@@ -385,7 +450,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsTiny = async (assetIds: bigint[]): Promise<Map<bigint, AssetTiny & { id: bigint }>> => {
+  getAssetsTiny = async (assetIds: bigint[]): Promise<Map<bigint, AssetTiny>> => {
     const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTiny, [assetIds], METHOD_MAX);
 
@@ -400,7 +465,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsTinyLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTinyLabels & { id: bigint }>> => {
+  getAssetsTinyLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTinyLabels>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTinyLabels, [assetIds], METHOD_MAX);
 
@@ -415,7 +480,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsText = async (assetIds: bigint[]): Promise<Map<bigint, AssetText & { id: bigint }>> => {
+  getAssetsText = async (assetIds: bigint[]): Promise<Map<bigint, AssetText>> => {
     const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsText, [assetIds], METHOD_MAX);
 
@@ -430,7 +495,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsTextLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTextLabels & { id: bigint }>> => {
+  getAssetsTextLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTextLabels>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTextLabels, [assetIds], METHOD_MAX);
 
@@ -445,7 +510,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsSmall = async (assetIds: bigint[]): Promise<Map<bigint, AssetSmall & { id: bigint }>> => {
+  getAssetsSmall = async (assetIds: bigint[]): Promise<Map<bigint, AssetSmall>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsSmall, [assetIds], METHOD_MAX);
 
@@ -460,7 +525,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsFull = async (assetIds: bigint[]): Promise<Map<bigint, AssetFull & { id: bigint }>> => {
+  getAssetsFull = async (assetIds: bigint[]): Promise<Map<bigint, AssetFull>> => {
     const METHOD_MAX = 42;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsFull, [assetIds], METHOD_MAX);
 
@@ -482,7 +547,7 @@ export class AbelSDK {
     return boxNames.filter((boxName) => boxName.nameRaw.length === length);
   }
 
-  /*
+  /**
    * parse typed arc4 structs from logs
    *
    * tupleParser is like generated clients' xyzArcStructFromTuple
@@ -503,7 +568,7 @@ export class AbelSDK {
   /*
    * ts guard for write clients only
    */
-  requireWriteClient(): asserts this is this & { writeAccount: TransactionSignerAccount } & { writeClient: AssetLabelingClient } {
+  private requireWriteClient(): asserts this is this & { writeAccount: TransactionSignerAccount } & { writeClient: AssetLabelingClient } {
     if (this.writeAccount === undefined || this.writeClient === undefined) {
       throw new Error(`A transaction operation was issued on a read-only client`);
     }
@@ -514,7 +579,7 @@ export class AbelSDK {
    *
    * decorator pattern instead would be nice but ... eh
    */
-  async batchCall<T extends AnyFn>(method: T, [assetIDs, ...rest]: Parameters<T>, methodMax: number): Promise<ReturnType<T>> {
+  private async batchCall<T extends AnyFn>(method: T, [assetIDs, ...rest]: Parameters<T>, methodMax: number): Promise<ReturnType<T>> {
     const chunkedAssetIds = chunk(assetIDs, methodMax);
     const res = await pMap(chunkedAssetIds, (assetIDs) => method(assetIDs, ...rest), { concurrency: this.concurrency });
     // @ts-ignore
