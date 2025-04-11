@@ -251,6 +251,7 @@ class AssetLabeling(ARC4Contract):
 
     @subroutine
     def _add_label_to_asset(self, label: String, asset: Asset) -> None:
+        ensure(not asset_is_deleted(asset.id), S("ERR:NOEXIST"))
         ensure(label in self.labels, S("ERR:NOEXIST"))
         if asset in self.assets:
             # existing operator, check for duplicate
