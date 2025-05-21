@@ -491,7 +491,7 @@ export class AbelSDK {
 
   /* Batch fetch asset views */
 
-  getAssetsMicro = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro & { id: bigint }>> => {
+  getAssetsMicro = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicro>> => {
     const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicro, [assetIds], METHOD_MAX);
 
@@ -506,7 +506,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicroLabels & { id: bigint }>> => {
+  getAssetsMicroLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetMicroLabels>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsMicroLabels, [assetIds], METHOD_MAX);
 
@@ -521,7 +521,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsTiny = async (assetIds: bigint[]): Promise<Map<bigint, AssetTiny & { id: bigint }>> => {
+  getAssetsTiny = async (assetIds: bigint[]): Promise<Map<bigint, AssetTiny>> => {
     const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTiny, [assetIds], METHOD_MAX);
 
@@ -536,7 +536,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsTinyLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTinyLabels & { id: bigint }>> => {
+  getAssetsTinyLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTinyLabels>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTinyLabels, [assetIds], METHOD_MAX);
 
@@ -551,7 +551,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsText = async (assetIds: bigint[]): Promise<Map<bigint, AssetText & { id: bigint }>> => {
+  getAssetsText = async (assetIds: bigint[]): Promise<Map<bigint, AssetText>> => {
     const METHOD_MAX = 128;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsText, [assetIds], METHOD_MAX);
 
@@ -566,7 +566,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsTextLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTextLabels & { id: bigint }>> => {
+  getAssetsTextLabels = async (assetIds: bigint[]): Promise<Map<bigint, AssetTextLabels>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsTextLabels, [assetIds], METHOD_MAX);
 
@@ -581,7 +581,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsSmall = async (assetIds: bigint[]): Promise<Map<bigint, AssetSmall & { id: bigint }>> => {
+  getAssetsSmall = async (assetIds: bigint[]): Promise<Map<bigint, AssetSmall>> => {
     const METHOD_MAX = 64;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsSmall, [assetIds], METHOD_MAX);
 
@@ -596,7 +596,7 @@ export class AbelSDK {
     return new Map(assetValues.map((descriptorValue, idx) => [assetIds[idx], { id: assetIds[idx], ...descriptorValue }]));
   };
 
-  getAssetsFull = async (assetIds: bigint[]): Promise<Map<bigint, AssetFull & { id: bigint }>> => {
+  getAssetsFull = async (assetIds: bigint[]): Promise<Map<bigint, AssetFull>> => {
     const METHOD_MAX = 42;
     if (assetIds.length > METHOD_MAX) return this.batchCall(this.getAssetsFull, [assetIds], METHOD_MAX);
 
