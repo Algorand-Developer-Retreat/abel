@@ -151,7 +151,7 @@ export class AbelSDK {
   }
 
   /**
-   * Retrieves all operator names by processing and encoding box names with a specified length.
+   * Retrieves all operator names by processing and encoding box names with a specified length (32).
    *
    * @return {Promise<string[]>} A promise that resolves to an array of encoded operator names.
    */
@@ -160,7 +160,7 @@ export class AbelSDK {
   }
 
   /**
-   * Retrieves all asset IDs by fetching boxes of a specific length
+   * Retrieves all asset IDs by fetching boxes of a specific length (8)
    * and decoding their names into 64-bit unsigned integers.
    *
    * @return {Promise<bigint[]>} A promise that resolves to an array of 64-bit unsigned integer asset IDs.
@@ -170,15 +170,11 @@ export class AbelSDK {
   }
 
   /**
-   * Retrieves the label descriptor for the specified label ID.
-   *
-   * We simulate from a client configured with a (theoretically) known-good account on all networks, default dev fee sink
+   * Retrieves the existence of label by ID.
    *
    * @param {string} labelId - The unique identifier for the label.
-   * @return {Promise<LabelDescriptor | null>} A promise that resolves to the label descriptor object if found,
-   * or null if the label does not exist.
+   * @return {Promise<boolean>} A promise that resolves to true if a label with the provided ID exists, or false otherwise.
    */
-
   async hasLabel(labelId: string): Promise<boolean> {
     const {
       returns: [hasLabel],
@@ -191,6 +187,15 @@ export class AbelSDK {
     return Boolean(hasLabel);
   }
 
+  /**
+   * Retrieves the label descriptor for the specified label ID.
+   *
+   * We simulate from a client configured with a (theoretically) known-good account on all networks, default dev fee sink
+   *
+   * @param {string} labelId - The unique identifier for the label.
+   * @return {Promise<LabelDescriptor | null>} A promise that resolves to the label descriptor object if found,
+   * or null if the label does not exist.
+   */
   async getLabelDescriptor(labelId: string): Promise<LabelDescriptor | null> {
     try {
       const {
