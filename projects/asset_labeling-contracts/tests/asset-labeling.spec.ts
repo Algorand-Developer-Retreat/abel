@@ -16,27 +16,22 @@ import {
   removeLabel,
   removeOperatorFromLabel,
   removeLabelFromAsset,
-} from './sdk'
-
-// TODO:
-// add_label as nonadmin (operator?) should fail
-// remove_label as nonadmin (operator?) should fail
-// add_op as operator
-// remove_op as operator
-// add_op nonexist label should fail
-// remove_op nonexist label should fail
-
-const config = {
-  populateAppCallResources: true,
-  debug: false,
-  traceAll: false,
-}
+  addLabelToAssets,
+  hasAssetLabel,
+  hasLabel,
+  hasOperatorLabel,
+  changeLabel,
+} from './helpers'
 
 describe('asset labeling contract', () => {
   const localnet = algorandFixture()
 
   beforeAll(() => {
-    Config.configure(config)
+    Config.configure({
+      populateAppCallResources: true,
+      debug: false,
+      traceAll: false,
+    })
   })
   beforeEach(localnet.newScope)
 
@@ -98,12 +93,14 @@ describe('asset labeling contract', () => {
 
     const id = 'wo'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
 
     const labelDescriptor = await getLabelDescriptor(adminClient, id)
 
     expect(labelDescriptor?.name).toBe(name)
+    expect(labelDescriptor?.url).toBe(url)
     expect(labelDescriptor?.numAssets).toBe(0n)
     expect(labelDescriptor?.numOperators).toBe(0n)
   })
@@ -114,6 +111,7 @@ describe('asset labeling contract', () => {
 
     const id = 'wo'
     const name = 'world'
+    const url = 'http://'
 
     const rando = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
     const randoClient = adminClient.clone({
@@ -121,7 +119,7 @@ describe('asset labeling contract', () => {
       defaultSigner: rando.signer,
     })
 
-    await expect(() => addLabel(randoClient, adminAccount, id, name)).rejects.toThrow(/ERR:UNAUTH/)
+    await expect(() => addLabel(randoClient, adminAccount, id, name, url)).rejects.toThrow(/ERR:UNAUTH/)
   })
 
   test('re-add existing label should fail', async () => {
@@ -130,9 +128,10 @@ describe('asset labeling contract', () => {
 
     const id = 'wo'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
-    await expect(() => addLabel(adminClient, adminAccount, id, name)).rejects.toThrow(/ERR:EXISTS/)
+    await addLabel(adminClient, adminAccount, id, name, url)
+    await expect(() => addLabel(adminClient, adminAccount, id, name, url)).rejects.toThrow(/ERR:EXISTS/)
   })
 
   for (const id of ['w', 'www']) {
@@ -141,10 +140,76 @@ describe('asset labeling contract', () => {
       const { adminClient } = await deploy(adminAccount)
 
       const name = 'world'
+      const url = 'http://'
 
-      await expect(() => addLabel(adminClient, adminAccount, id, name)).rejects.toThrow(/ERR:LENGTH/)
+      await expect(() => addLabel(adminClient, adminAccount, id, name, url)).rejects.toThrow(/ERR:LENGTH/)
     })
   }
+
+  test('change label should work', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const id = 'wo'
+    const name = 'world'
+    const url = 'http://'
+
+    const name2 = 'new world'
+    const url2 = 'https://'
+
+    await addLabel(adminClient, adminAccount, id, name, url)
+    await changeLabel(adminClient, id, name2, url2)
+
+    const labelDescriptor = await getLabelDescriptor(adminClient, id)
+
+    expect(labelDescriptor?.name).toBe(name2)
+    expect(labelDescriptor?.url).toBe(url2)
+    expect(labelDescriptor?.numAssets).toBe(0n)
+    expect(labelDescriptor?.numOperators).toBe(0n)
+  })
+
+  test('change label should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const id = 'wo'
+    const name = 'world'
+    const url = 'http://'
+    const notId = 'zz'
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+
+    await addLabel(adminClient, adminAccount, id, name, url)
+    await addOperatorToLabel(adminClient, operator, id)
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+
+    await expect(() => changeLabel(operatorClient, id, name, url)).rejects.toThrow(/ERR:UNAUTH/)
+    await expect(() => changeLabel(adminClient, notId, name, url)).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('has label should work', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const id = 'wo'
+    const name = 'world'
+    const url = 'http://'
+    const notId = 'zz'
+    const invalidLengthId = 'xxx'
+
+    await addLabel(adminClient, adminAccount, id, name, url)
+
+    const has = await hasLabel(adminClient, id)
+    expect(has).toBe(1n)
+
+    const has2 = await hasLabel(adminClient, notId)
+    expect(has2).toBe(0n)
+
+    await expect(() => hasLabel(adminClient, invalidLengthId)).rejects.toThrow(/ERR:LENGTH/)
+  })
 
   test('add label, remove label', async () => {
     const { testAccount: adminAccount } = localnet.context
@@ -152,8 +217,9 @@ describe('asset labeling contract', () => {
 
     const id = 'wo'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
 
     await removeLabel(adminClient, id)
 
@@ -175,8 +241,9 @@ describe('asset labeling contract', () => {
 
     const id = 'wo'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
 
     await addOperatorToLabel(adminClient, adminAccount, id)
 
@@ -197,10 +264,11 @@ describe('asset labeling contract', () => {
 
     const id = 'wo'
     const name = 'world'
+    const url = 'http://'
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
 
-    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
 
     await addOperatorToLabel(adminClient, operator, id)
 
@@ -216,15 +284,45 @@ describe('asset labeling contract', () => {
     await addOperatorToLabel(operatorClient, operator2, id)
   })
 
+  test('has operator label should work', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const id = 'wo'
+    const name = 'world'
+    const url = 'http://'
+    const notId = 'zz'
+    const invalidLengthId = 'xxx'
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, id, name, url)
+    await addOperatorToLabel(adminClient, operator, id)
+
+    const has = await hasOperatorLabel(adminClient, operator, id)
+    expect(has).toBe(1n)
+
+    const has2 = await hasOperatorLabel(adminClient, operator, notId)
+    expect(has2).toBe(0n)
+
+    const has3 = await hasOperatorLabel(adminClient, adminAccount, id)
+    expect(has3).toBe(0n)
+
+    await expect(() => hasOperatorLabel(adminClient, adminAccount, invalidLengthId)).rejects.toThrow(/ERR:LENGTH/)
+  })
+
   test('add 2 labels to operator', async () => {
     const { testAccount: adminAccount } = localnet.context
     const { adminClient } = await deploy(adminAccount)
 
     const id = 'wo'
     const name = 'world'
+    const url = 'http://'
     const id2 = 'w2'
 
-    await Promise.all([addLabel(adminClient, adminAccount, id, name), addLabel(adminClient, adminAccount, id2, name)])
+    await Promise.all([
+      addLabel(adminClient, adminAccount, id, name, url),
+      addLabel(adminClient, adminAccount, id2, name, url),
+    ])
 
     await addOperatorToLabel(adminClient, adminAccount, id)
     await addOperatorToLabel(adminClient, adminAccount, id2)
@@ -246,8 +344,9 @@ describe('asset labeling contract', () => {
 
     const id = 'wo'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
     await addOperatorToLabel(adminClient, adminAccount, id)
 
     await expect(() => addOperatorToLabel(adminClient, adminAccount, id)).rejects.toThrow(/ERR:EXISTS/)
@@ -260,8 +359,9 @@ describe('asset labeling contract', () => {
     const id = 'wo'
     const id2 = 'w2'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
 
     await addOperatorToLabel(adminClient, adminAccount, id)
     await removeOperatorFromLabel(adminClient, adminAccount, id)
@@ -280,9 +380,10 @@ describe('asset labeling contract', () => {
     const id = 'wo'
     const id2 = 'w2'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
-    await addLabel(adminClient, adminAccount, id2, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
+    await addLabel(adminClient, adminAccount, id2, name, url)
 
     await addOperatorToLabel(adminClient, adminAccount, id)
     await addOperatorToLabel(adminClient, adminAccount, id2)
@@ -304,9 +405,10 @@ describe('asset labeling contract', () => {
     const id = 'wo'
     const id2 = 'w2'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
-    await addLabel(adminClient, adminAccount, id2, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
+    await addLabel(adminClient, adminAccount, id2, name, url)
 
     await addOperatorToLabel(adminClient, adminAccount, id)
     await addOperatorToLabel(adminClient, adminAccount, id2)
@@ -328,8 +430,9 @@ describe('asset labeling contract', () => {
     const id = 'wo'
     const id2 = 'w2'
     const name = 'world'
+    const url = 'http://'
 
-    await addLabel(adminClient, adminAccount, id, name)
+    await addLabel(adminClient, adminAccount, id, name, url)
 
     await addOperatorToLabel(adminClient, adminAccount, id)
 
@@ -348,10 +451,11 @@ describe('asset labeling contract', () => {
 
     const label = 'wo'
     const labelName = 'world'
+    const labelUrl = 'http://'
     const assetId = 13n
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    await addLabel(adminClient, adminAccount, label, labelName)
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
     await addOperatorToLabel(adminClient, operator, label)
 
     const operatorClient = adminClient.clone({
@@ -368,16 +472,46 @@ describe('asset labeling contract', () => {
     expect(assetLabels).toStrictEqual([label])
   })
 
+  test('add label to 6 assets', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const labelUrl = 'http://'
+    const assetIds = [13n, 14n, 15n, 16n, 17n, 18n]
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+
+    await addLabelToAssets(operatorClient, assetIds, label)
+
+    const labelDescriptor = await getLabelDescriptor(operatorClient, label)
+    expect(labelDescriptor.numAssets).toBe(6n)
+
+    for (const assetId of assetIds) {
+      const assetLabels = await getAssetLabels(operatorClient, assetId)
+      expect(assetLabels).toStrictEqual([label])
+    }
+  })
+
   test('add label twice should fail', async () => {
     const { testAccount: adminAccount } = localnet.context
     const { adminClient } = await deploy(adminAccount)
 
     const label = 'wo'
     const labelName = 'world'
+    const labelUrl = 'http://'
     const assetId = 13n
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    await addLabel(adminClient, adminAccount, label, labelName)
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
     await addOperatorToLabel(adminClient, operator, label)
 
     const operatorClient = adminClient.clone({
@@ -386,7 +520,7 @@ describe('asset labeling contract', () => {
     })
 
     await addLabelToAsset(operatorClient, assetId, label)
-    await expect(() => addLabelToAsset(operatorClient, assetId, label)).rejects.toThrow(/ERR:EXIS/)
+    await expect(() => addLabelToAsset(operatorClient, assetId, label)).rejects.toThrow(/ERR:EXISTS/)
   })
 
   test('add non-existent label should fail', async () => {
@@ -395,10 +529,11 @@ describe('asset labeling contract', () => {
 
     const label = 'wo'
     const labelName = 'world'
+    const labelUrl = 'http://'
     const assetId = 13n
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    await addLabel(adminClient, adminAccount, label, labelName)
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
     await addOperatorToLabel(adminClient, operator, label)
 
     const operatorClient = adminClient.clone({
@@ -407,8 +542,8 @@ describe('asset labeling contract', () => {
     })
 
     const nonLabel = 'oh'
-    await expect(() => addLabelToAsset(adminClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
-    await expect(() => addLabelToAsset(operatorClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
+    await expect(() => addLabelToAsset(adminClient, assetId, nonLabel)).rejects.toThrow(/ERR:UNAUTH/)
+    await expect(() => addLabelToAsset(operatorClient, assetId, nonLabel)).rejects.toThrow(/ERR:UNAUTH/)
   })
 
   test('add label by non-operator should fail', async () => {
@@ -417,13 +552,40 @@ describe('asset labeling contract', () => {
 
     const label = 'wo'
     const labelName = 'world'
+    const labelUrl = 'http://'
     const assetId = 13n
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    await addLabel(adminClient, adminAccount, label, labelName)
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
     await addOperatorToLabel(adminClient, operator, label)
 
     await expect(() => addLabelToAsset(adminClient, assetId, label)).rejects.toThrow(/ERR:UNAUTH/)
+  })
+
+  test('has asset label should work', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const labelUrl = 'http://'
+    const assetId = 13n
+    const notAssetId = 14n
+
+    const notLabel = 'ii'
+
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
+    await addOperatorToLabel(adminClient, adminAccount, label)
+    await addLabelToAsset(adminClient, assetId, label)
+
+    const hasLabelBigInt = await hasAssetLabel(adminClient, assetId, label)
+    expect(hasLabelBigInt).toBe(1n)
+
+    const noHasLabelBigInt = await hasAssetLabel(adminClient, assetId, notLabel)
+    expect(noHasLabelBigInt).toBe(0n)
+
+    const noHasLabelBigInt2 = await hasAssetLabel(adminClient, notAssetId, label)
+    expect(noHasLabelBigInt2).toBe(0n)
   })
 
   test('remove label from asset', async () => {
@@ -432,10 +594,11 @@ describe('asset labeling contract', () => {
 
     const label = 'wo'
     const labelName = 'world'
+    const labelUrl = 'http://'
     const assetId = 13n
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    await addLabel(adminClient, adminAccount, label, labelName)
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
     await addOperatorToLabel(adminClient, operator, label)
     const operatorClient = adminClient.clone({
       defaultSender: operator,
@@ -457,10 +620,11 @@ describe('asset labeling contract', () => {
 
     const label = 'wo'
     const labelName = 'world'
+    const labelUrl = 'http://'
     const assetId = 13n
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    await addLabel(adminClient, adminAccount, label, labelName)
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
     await addOperatorToLabel(adminClient, operator, label)
 
     const operatorClient = adminClient.clone({
@@ -473,16 +637,33 @@ describe('asset labeling contract', () => {
     await expect(() => removeLabelFromAsset(operatorClient, assetId, nonLabel)).rejects.toThrow(/ERR:NOEXIST/)
   })
 
+  test('remove label with operator should fail', async () => {
+    const { testAccount: adminAccount } = localnet.context
+    const { adminClient } = await deploy(adminAccount)
+
+    const label = 'wo'
+    const labelName = 'world'
+    const labelUrl = 'http://'
+    const assetId = 13n
+
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
+    await addOperatorToLabel(adminClient, operator, label)
+
+    await expect(() => removeLabel(adminClient, label)).rejects.toThrow(/ERR:NOEMPTY/)
+  })
+
   test('remove label by non-operator should fail', async () => {
     const { testAccount: adminAccount } = localnet.context
     const { adminClient } = await deploy(adminAccount)
 
     const label = 'wo'
     const labelName = 'world'
+    const labelUrl = 'http://'
     const assetId = 13n
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    await addLabel(adminClient, adminAccount, label, labelName)
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
     await addOperatorToLabel(adminClient, operator, label)
 
     const operatorClient = adminClient.clone({
@@ -501,11 +682,12 @@ describe('asset labeling contract', () => {
     const label1 = 'wo'
     const label2 = 'wi'
     const labelName = 'world'
+    const labelUrl = 'http://'
     const assetId = 13n
 
     const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
-    await addLabel(adminClient, adminAccount, label1, labelName)
-    await addLabel(adminClient, adminAccount, label2, labelName)
+    await addLabel(adminClient, adminAccount, label1, labelName, labelUrl)
+    await addLabel(adminClient, adminAccount, label2, labelName, labelUrl)
     await addOperatorToLabel(adminClient, operator, label1)
     await addOperatorToLabel(adminClient, operator, label2)
 
@@ -516,5 +698,43 @@ describe('asset labeling contract', () => {
     await addLabelToAsset(operatorClient, assetId, label1)
 
     await expect(() => removeLabelFromAsset(operatorClient, assetId, label2)).rejects.toThrow(/ERR:NOEXIST/)
+  })
+
+  test('add label to deleted asset should fail', async () => {
+    const { testAccount: adminAccount, algorand } = localnet.context
+
+    const {assetId} = await algorand.send.assetCreate({
+      sender: adminAccount.addr,
+      total: 1000000n, // Total units of the asset
+      decimals: 0, // Number of decimals for the asset
+      defaultFrozen: false, // Whether the asset is frozen by default
+      manager: adminAccount.addr, // Address for the asset manager
+      reserve: adminAccount.addr, // Address for storing reserve assets
+      freeze: adminAccount.addr, // Address with freezing capabilities
+      clawback: adminAccount.addr, // Address with clawback rights
+      unitName: 'UNIT', // Unit name of the asset
+      assetName: 'TestAsset', // Asset name
+    })
+    await algorand.send.assetDestroy({
+      sender: adminAccount.addr,
+      assetId
+    })
+
+
+    const { adminClient } = await deploy(adminAccount)
+    const label = 'wo'
+    const labelName = 'world'
+    const labelUrl = 'http://'
+
+
+    await addLabel(adminClient, adminAccount, label, labelName, labelUrl)
+    const operator = await localnet.context.generateAccount({ initialFunds: (0.2).algos() })
+    await addOperatorToLabel(adminClient, operator, label)
+    const operatorClient = adminClient.clone({
+      defaultSender: operator,
+      defaultSigner: operator.signer,
+    })
+    // This should throw
+    await expect(()=>addLabelToAsset(operatorClient, assetId, label)).rejects.toThrow(/ERR:NOEXIST/)
   })
 })

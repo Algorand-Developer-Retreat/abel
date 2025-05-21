@@ -1,0 +1,28 @@
+{
+  "name": "abel-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "abel-sdk": "../abel-sdk-v2",
+    "dotenv": "^16.4.7",
+    "p-map": "^7.0.3",
+    "zod": "^3.24.2"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/yargs": "^17.0.33"
+  },
+  "peerDependencies": {
+    "@algorandfoundation/algokit-utils": "^7.0.2",
+    "algosdk": "^2.8.0"
+  }
+}

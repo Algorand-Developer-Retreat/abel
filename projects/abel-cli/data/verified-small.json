@@ -1,0 +1,232 @@
+[
+  {
+    "asset_id": 2155418402,
+    "name": "rug.ninja",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2024/12/30/b81d2dc10f6a44dc9494eb38203a474d.png",
+    "unit_name": "RUGNINJA",
+    "fraction_decimals": 6,
+    "total": "1000000000000000000",
+    "usd_value": "0.000000013082",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2155418402/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2155688884,
+    "name": "BASED",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2024/07/16/94eb4ff35b704f99b5855139007feb83.png",
+    "unit_name": "BASED",
+    "fraction_decimals": 6,
+    "total": "69420000000000000",
+    "usd_value": "0.000000290626",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2155688884/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2155690250,
+    "name": "John Woods",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2024/07/14/422953bb37a440d991293688ff889503.png",
+    "unit_name": "$JAWS",
+    "fraction_decimals": 6,
+    "total": "1000000000000000000",
+    "usd_value": "0.000000018385",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2155690250/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2155822658,
+    "name": "Pheasant Pluckers",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2024/12/17/9be3e5958bd34154a08c16b589f77db6.png",
+    "unit_name": "PHEZZIES",
+    "fraction_decimals": 6,
+    "total": "1000000000000000000",
+    "usd_value": "0.000000010263",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2155822658/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2160577481,
+    "name": "Fry Inu",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2024/07/11/78e2639579994d42a81693041ee5ba2d.png",
+    "unit_name": "FINU",
+    "fraction_decimals": 6,
+    "total": "1000000000000000000",
+    "usd_value": "0.000000010582",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2160577481/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2171798010,
+    "name": "Shinobi",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/assets-logo-png/2024/07/30/374ef7cc236b4dedb23988dd33e5a7bf.png",
+    "unit_name": "SHINO",
+    "fraction_decimals": 6,
+    "total": "1000000000000",
+    "usd_value": "0.005922254616",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2171798010/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2175930910,
+    "name": "Mustard",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2024/10/13/25a294e540da460d87d461647ec09648.png",
+    "unit_name": "MUSTARD",
+    "fraction_decimals": 6,
+    "total": "69420000000",
+    "usd_value": "0.107815178019",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2175930910/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2176744157,
+    "name": "Tiny Dick Lions' Den",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2024/08/12/e8cd73c835c74f99953614053e011a5b.png",
+    "unit_name": "TDLD",
+    "fraction_decimals": 6,
+    "total": "150000000000000000",
+    "usd_value": "0.000000070034",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2176744157/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2211824164,
+    "name": "TINA",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2024/08/10/e862fcabe7df4f2a8ffcbb3218ec14fc.png",
+    "unit_name": "TINA",
+    "fraction_decimals": 6,
+    "total": "1000000000000000000",
+    "usd_value": "0.000000015012",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2211824164/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2350716919,
+    "name": "( . Y . )",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/asset_verification_requests_logo_png/2025/01/04/6c6f54debbdc4ba7ae8424d2c25d0a43.png",
+    "unit_name": "BOOBS",
+    "fraction_decimals": 6,
+    "total": "1000000000000000000",
+    "usd_value": "0.000000021187",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2350716919/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  },
+  {
+    "asset_id": 2494786278,
+    "name": "monko",
+    "logo": "https://algorand-wallet-mainnet.b-cdn.net/media/assets-logo-png/2024/12/04/352e3fde277741059ac13d07e5bded34.png",
+    "unit_name": "$monko",
+    "fraction_decimals": 6,
+    "total": "1000000000000000000",
+    "usd_value": "0.000001297870",
+    "is_verified": true,
+    "is_deleted": false,
+    "verification_tier": "verified",
+    "explorer_url": "https://explorer.perawallet.app/assets/2494786278/",
+    "collectible": null,
+    "creator": {
+      "id": 3605330696867484700,
+      "address": "7TL5PKBGPH4W7LEZW5SW5BGC4TH32XVFV5NVTXE4HTTPVK2JUJODCVTHSU",
+      "is_verified_asset_creator": false
+    },
+    "type": "standard_asset",
+    "category": 1
+  }]

@@ -44,7 +44,8 @@
   },
   "peerDependencies": {
     "@algorandfoundation/algokit-utils": "^7.0.2",
-    "algosdk": "^2.8.0"
+    "algosdk": "^2.8.0",
+    "p-map": "^7.0.3"
   },
   "type": "module"
 }
