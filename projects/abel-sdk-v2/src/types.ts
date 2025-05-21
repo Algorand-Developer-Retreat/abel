@@ -24,7 +24,7 @@ export type ABISendResponse = {groupId: string, txIds: string[], returns?: ABIRe
 /**
  * Represents the response returned after sending a transaction or a set of transactions.
  */
-export type SendResponse = {groupId: string, txIds: string[], returns: ABIReturn[] & [void | undefined], confirmations: PendingTransactionResponse[], transactions: Transaction[]}
+export type SendResponse = {groupId: string, txIds: string[], returns: ABIReturn[], confirmations: PendingTransactionResponse[], transactions: Transaction[]}
 /**
  * Represents a label descriptor with associated properties and metadata.
  * This type combines the properties from `LabelDescriptorBoxValue` and adds

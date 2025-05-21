@@ -438,13 +438,20 @@ export class AbelSDK {
     return wrapErrors(query);
   }
 
-  addLabelToAssets = async (assetIds: bigint[], labelId: string): Promise<QueryReturn | QueryReturn[]> => {
+ /**
+   * Associates a label with a multiple assets.
+   *
+   * @param {bigint[]} assetIds - The asset IDs to which the label will be added.
+   * @param {string} labelId - The identifier of the label to be associated with the assets.
+   * @return {Promise<SendResponse | SendResponse[]>} A promise that resolves to the result(s) of the operation, or rejects with an error if the operation fails.
+   */
+  addLabelToAssets = async (assetIds: bigint[], labelId: string): Promise<SendResponse | SendResponse[]> => {
     this.requireWriteClient();
 
     const METHOD_MAX = 6 + 8 * 15;
     if (assetIds.length > METHOD_MAX) {
       const chunked = chunk(assetIds, METHOD_MAX);
-      return pMap(chunked, (assetIds) => this.addLabelToAssets(assetIds, labelId) as Promise<QueryReturn>, {
+      return pMap(chunked, (assetIds) => this.addLabelToAssets(assetIds, labelId) as Promise<SendResponse>, {
         concurrency: this.concurrency,
       });
     }
@@ -470,7 +477,7 @@ export class AbelSDK {
       });
     }
 
-    return await wrapErrors(query.send());
+    return wrapErrors(query.send());
   };
 
   /**
