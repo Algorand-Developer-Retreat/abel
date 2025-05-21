@@ -17,7 +17,6 @@ import {
   AssetTinyLabelsFromTuple,
   LabelDescriptorFromTuple as LabelDescriptorBoxValueFromTuple,
 } from "./generated/abel-contract-client.js";
-
 import {
   AbelSDKOptions,
   AnyFn,
@@ -776,10 +775,12 @@ export class AbelSDK {
   parseLogsAs<T extends AnyFn>(logs: Uint8Array[], tupleParser: T, abiDecodingMethodName: string): ReturnType<T>[] {
     const decodingMethod = this.readClient.appClient.getABIMethod(abiDecodingMethodName);
     const parsed = logs.map((logValue) =>
-      tupleParser(
-        // @ts-ignore TODO fixable?
-        decodingMethod.returns.type.decode(logValue)
-      )
+      logValue.length
+        ? tupleParser(
+            // @ts-ignore TODO fixable?
+            decodingMethod.returns.type.decode(logValue)
+          )
+        : { deleted: true }
     );
     return parsed;
   }
