@@ -21,14 +21,14 @@ Want to explore with a CLI? Check out <a href="https://github.com/tasosbit/abel/
 
 <p>The available asset views are:</p>
 <ul>
-<li><a href="interfaces/AssetMicro.html">AssetMicro</a> (no labels)</li>
-<li><a href="interfaces/AssetMicroLabels.html">AssetMicroLabels</a></li>
-<li><a href="interfaces/AssetTiny.html">AssetTiny</a>  (no labels)</li>
-<li><a href="interfaces/AssetTinyLabels.html">AssetTinyLabels</a></li>
-<li><a href="interfaces/AssetText.html">AssetText</a>  (no labels)</li>
-<li><a href="interfaces/AssetTextLabels.html">AssetTextLabels</a></li>
-<li><a href="interfaces/AssetSmall.html">AssetSmall</a></li>
-<li><a href="interfaces/AssetFull.html">AssetFull</a></li>
+<li><a href="AssetMicro.html">AssetMicro</a> (no labels)</li>
+<li><a href="AssetMicroLabels.html">AssetMicroLabels</a></li>
+<li><a href="AssetTiny.html">AssetTiny</a>  (no labels)</li>
+<li><a href="AssetTinyLabels.html">AssetTinyLabels</a></li>
+<li><a href="AssetText.html">AssetText</a>  (no labels)</li>
+<li><a href="AssetTextLabels.html">AssetTextLabels</a></li>
+<li><a href="AssetSmall.html">AssetSmall</a></li>
+<li><a href="AssetFull.html">AssetFull</a></li>
 </ul>
 <p>To fetch asset data in these views, use the corresponding <code>getXYZ</code> method of the SDK, e.g. <a href="classes/AbelSDK#getassetsmicrolabels">getAssetMicroLabels</a>.</p>
 <p>You can pass in as many asset IDs as you want.</p>
@@ -36,18 +36,18 @@ Want to explore with a CLI? Check out <a href="https://github.com/tasosbit/abel/
 <p>The number of assets per simulate request depends on how many AVM resources are required to compose it.</p>
 <p>You will get the best performance and efficiency if you use the smallest possible view for your needs.</p>
 <h3 id="128-assets-per-simulate-call" class="tsd-anchor-link">128 assets per simulate call<a href="#128-assets-per-simulate-call" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
-<li><a href="interfaces/AssetMicro.html">AssetMicro</a></li>
-<li><a href="interfaces/AssetTiny.html">AssetTiny</a></li>
-<li><a href="interfaces/AssetText.html">AssetText</a></li>
+<li><a href="AssetMicro.html">AssetMicro</a></li>
+<li><a href="AssetTiny.html">AssetTiny</a></li>
+<li><a href="AssetText.html">AssetText</a></li>
 </ul>
 <h3 id="64-assets-per-simulate-call" class="tsd-anchor-link">64 assets per simulate call<a href="#64-assets-per-simulate-call" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
-<li><a href="interfaces/AssetMicroLabels.html">AssetMicroLabels</a></li>
-<li><a href="interfaces/AssetTinyLabels.html">AssetTinyLabels</a></li>
-<li><a href="interfaces/AssetTextLabels.html">AssetTextLabels</a></li>
-<li><a href="interfaces/AssetSmall.html">AssetSmall</a></li>
+<li><a href="AssetMicroLabels.html">AssetMicroLabels</a></li>
+<li><a href="AssetTinyLabels.html">AssetTinyLabels</a></li>
+<li><a href="AssetTextLabels.html">AssetTextLabels</a></li>
+<li><a href="AssetSmall.html">AssetSmall</a></li>
 </ul>
 <h3 id="42-assets-per-simulate-call" class="tsd-anchor-link">42 assets per simulate call<a href="#42-assets-per-simulate-call" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
-<li><a href="interfaces/AssetFull.html">AssetFull</a></li>
+<li><a href="AssetFull.html">AssetFull</a></li>
 </ul>
 <h3 id="concurrency" class="tsd-anchor-link">Concurrency<a href="#concurrency" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>The Abel SDK supports arbitrarily large asset lookups.</p>
 <p>If you request more assets than a single simulate call can provide for that view, parallel simulate requests will be made in order to fetch your data.</p>

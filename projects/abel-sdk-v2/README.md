@@ -54,14 +54,14 @@ const microData = await abel.getAssetsMicro([312769n, 6547014n, 6587142n, 271659
 
 The available asset views are:
 
-- [AssetMicro](interfaces/AssetMicro.html) (no labels)
-- [AssetMicroLabels](interfaces/AssetMicroLabels.html)
-- [AssetTiny](interfaces/AssetTiny.html)  (no labels)
-- [AssetTinyLabels](interfaces/AssetTinyLabels.html)
-- [AssetText](interfaces/AssetText.html)  (no labels)
-- [AssetTextLabels](interfaces/AssetTextLabels.html)
-- [AssetSmall](interfaces/AssetSmall.html)
-- [AssetFull](interfaces/AssetFull.html)
+- [AssetMicro](AssetMicro.html) (no labels)
+- [AssetMicroLabels](AssetMicroLabels.html)
+- [AssetTiny](AssetTiny.html)  (no labels)
+- [AssetTinyLabels](AssetTinyLabels.html)
+- [AssetText](AssetText.html)  (no labels)
+- [AssetTextLabels](AssetTextLabels.html)
+- [AssetSmall](AssetSmall.html)
+- [AssetFull](AssetFull.html)
 
 To fetch asset data in these views, use the corresponding `getXYZ` method of the SDK, e.g. [getAssetMicroLabels](classes/AbelSDK#getassetsmicrolabels).
 
@@ -77,20 +77,20 @@ You will get the best performance and efficiency if you use the smallest possibl
 
 ### 128 assets per simulate call
 
-- [AssetMicro](interfaces/AssetMicro.html)
-- [AssetTiny](interfaces/AssetTiny.html)
-- [AssetText](interfaces/AssetText.html)
+- [AssetMicro](AssetMicro.html)
+- [AssetTiny](AssetTiny.html)
+- [AssetText](AssetText.html)
 
 ### 64 assets per simulate call
 
-- [AssetMicroLabels](interfaces/AssetMicroLabels.html)
-- [AssetTinyLabels](interfaces/AssetTinyLabels.html)
-- [AssetTextLabels](interfaces/AssetTextLabels.html)
-- [AssetSmall](interfaces/AssetSmall.html)
+- [AssetMicroLabels](AssetMicroLabels.html)
+- [AssetTinyLabels](AssetTinyLabels.html)
+- [AssetTextLabels](AssetTextLabels.html)
+- [AssetSmall](AssetSmall.html)
 
 ### 42 assets per simulate call
 
-- [AssetFull](interfaces/AssetFull.html)
+- [AssetFull](AssetFull.html)
 
 ### Concurrency
 
