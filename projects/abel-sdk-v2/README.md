@@ -2,6 +2,8 @@
 
 **Abel is an Asset Labeling registry, as well as a provider of batch asset data.**
 
+Docs site: [abel-docs.d13.co](https://abel-docs.d13.co)
+
 ## Install
 
 > [!WARNING]
@@ -54,14 +56,14 @@ const microData = await abel.getAssetsMicro([312769n, 6547014n, 6587142n, 271659
 
 The available asset views are:
 
-- [AssetMicro](AssetMicro.html) (no labels)
-- [AssetMicroLabels](AssetMicroLabels.html)
-- [AssetTiny](AssetTiny.html)  (no labels)
-- [AssetTinyLabels](AssetTinyLabels.html)
-- [AssetText](AssetText.html)  (no labels)
-- [AssetTextLabels](AssetTextLabels.html)
-- [AssetSmall](AssetSmall.html)
-- [AssetFull](AssetFull.html)
+- [AssetMicro](AssetMicro) (no labels)
+- [AssetMicroLabels](AssetMicroLabels)
+- [AssetTiny](AssetTiny)  (no labels)
+- [AssetTinyLabels](AssetTinyLabels)
+- [AssetText](AssetText)  (no labels)
+- [AssetTextLabels](AssetTextLabels)
+- [AssetSmall](AssetSmall)
+- [AssetFull](AssetFull)
 
 To fetch asset data in these views, use the corresponding `getXYZ` method of the SDK, e.g. [getAssetMicroLabels](classes/AbelSDK#getassetsmicrolabels).
 
@@ -77,20 +79,20 @@ You will get the best performance and efficiency if you use the smallest possibl
 
 ### 128 assets per simulate call
 
-- [AssetMicro](AssetMicro.html)
-- [AssetTiny](AssetTiny.html)
-- [AssetText](AssetText.html)
+- [AssetMicro](AssetMicro)
+- [AssetTiny](AssetTiny)
+- [AssetText](AssetText)
 
 ### 64 assets per simulate call
 
-- [AssetMicroLabels](AssetMicroLabels.html)
-- [AssetTinyLabels](AssetTinyLabels.html)
-- [AssetTextLabels](AssetTextLabels.html)
-- [AssetSmall](AssetSmall.html)
+- [AssetMicroLabels](AssetMicroLabels)
+- [AssetTinyLabels](AssetTinyLabels)
+- [AssetTextLabels](AssetTextLabels)
+- [AssetSmall](AssetSmall)
 
 ### 42 assets per simulate call
 
-- [AssetFull](AssetFull.html)
+- [AssetFull](AssetFull)
 
 ### Concurrency
 
