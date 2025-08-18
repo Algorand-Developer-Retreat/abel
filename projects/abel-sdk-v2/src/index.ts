@@ -91,13 +91,7 @@ export class AbelSDK {
   readonly #concurrency: number = 4;
 
   constructor(options: AbelSDKOptions) {
-    const {
-      algorand,
-      appId,
-      readAccount = DEFAULT_READ_ACCOUNT,
-      writeAccount,
-      concurrency,
-    } = options;
+    const { algorand, appId, readAccount = DEFAULT_READ_ACCOUNT, writeAccount, concurrency } = options;
     // Client used for read queries. Sender can be any funded address.
     // Default read is the A7N.. fee sink which is funded on all public ALGO networks
     // (localnet may be zero or at min balance though)
@@ -273,7 +267,6 @@ export class AbelSDK {
     return Boolean(hasLabel);
   }
 
-
   /**
    * Fetches the labels associated with a specific asset.
    *
@@ -330,7 +323,6 @@ export class AbelSDK {
 
     return map;
   };
-
 
   /**
    * Adds a label to the specified entity with the given details.
@@ -774,14 +766,21 @@ export class AbelSDK {
    */
   parseLogsAs<T extends AnyFn>(logs: Uint8Array[], tupleParser: T, abiDecodingMethodName: string): ReturnType<T>[] {
     const decodingMethod = this.readClient.appClient.getABIMethod(abiDecodingMethodName);
-    const parsed = logs.map((logValue) =>
-      logValue.length
-        ? tupleParser(
-            // @ts-ignore TODO fixable?
-            decodingMethod.returns.type.decode(logValue)
-          )
-        : { deleted: true }
-    );
+    const parsed = logs.map((logValue) => {
+      if (logValue.length) {
+        const parsed = tupleParser(
+          // @ts-ignore TODO fixable?
+          decodingMethod.returns.type.decode(logValue)
+        );
+        // decimals is actually returned as BigInt despite being typed as numbers
+        // patch this
+        if ("decimals" in parsed) {
+          parsed.decimals = Number(parsed.decimals)
+        }
+        return parsed
+      }
+      return { deleted: true };
+    });
     return parsed;
   }
 
