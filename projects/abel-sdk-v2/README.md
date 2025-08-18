@@ -16,7 +16,7 @@ npm i abel-sdk
 ## Usage
 
 > [!NOTE]
-> Want to explore with a CLI? Check out [abel-cil](https://github.com/tasosbit/abel/tree/main/projects/abel-cli) which uses this SDK under the hood.
+> Want to explore with a CLI? Check out [abel-cil](https://github.com/Algorand-Developer-Retreat/abel/tree/main/projects/abel-cli) which uses this SDK under the hood.
 
 
 The default use case is with a read-only client. This will allow you to fetch asset and label data, but not operate on the registry.
