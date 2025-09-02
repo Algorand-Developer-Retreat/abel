@@ -101,17 +101,14 @@ export interface BoxReturn {
   confirmation: PendingTransactionResponse;
   transaction: Transaction;
 }
-
-export type DeletedAsset = { id: bigint; deleted: true };
-
-export type AssetMicro = (AssetMicroValue & { id: bigint }) | DeletedAsset;
-export type AssetMicroLabels = (AssetMicroLabelsValue & { id: bigint }) | DeletedAsset;
-export type AssetTiny = (AssetTinyValue & { id: bigint }) | DeletedAsset;
-export type AssetTinyLabels = (AssetTinyLabelsValue & { id: bigint }) | DeletedAsset;
-export type AssetText = (AssetTextValue & { id: bigint }) | DeletedAsset;
-export type AssetTextLabels = (AssetTextLabelsValue & { id: bigint }) | DeletedAsset;
-export type AssetSmall = (AssetSmallValue & { id: bigint }) | DeletedAsset;
-export type AssetFull = (AssetFullValue & { id: bigint }) | DeletedAsset;
+export interface AssetMicro extends AssetMicroValue { id: bigint; }
+export interface AssetMicroLabels extends AssetMicroLabelsValue { id: bigint; }
+export interface AssetTiny extends AssetTinyValue { id: bigint; }
+export interface AssetTinyLabels extends AssetTinyLabelsValue { id: bigint; }
+export interface AssetText extends AssetTextValue { id: bigint; }
+export interface AssetTextLabels extends AssetTextLabelsValue { id: bigint; }
+export interface AssetSmall extends AssetSmallValue { id: bigint; }
+export interface AssetFull extends AssetFullValue { id: bigint; }
 
 /**
  * @protected
