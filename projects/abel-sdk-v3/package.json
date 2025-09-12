@@ -1,0 +1,54 @@
+{
+  "name": "abel-sdk",
+  "version": "0.1.5",
+  "description": "",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    },
+    "./client": {
+      "types": "./dist/esm/generated/abel-contract-client.d.ts",
+      "require": "./dist/cjs/generated/abel-contract-client.js",
+      "import": "./dist/esm/generated/abel-contract-client.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Algorand-Developer-Retreat/abel.git",
+    "directory": "projects/abel-sdk-v2"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist/ artifacts/ src/generated/",
+    "prebuild": "npm run clean && scripts/update-artifacts.sh",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "docs": "typedoc",
+    "build": "concurrently 'npm run build:cjs' 'npm run build:esm' 'npm run docs'",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@algorandfoundation/algokit-client-generator": "^6.0.0",
+    "@types/node": "^22.13.17",
+    "buffer": "^6.0.3",
+    "concurrently": "^9.2.0",
+    "tsx": "^4.19.3",
+    "typedoc": "^0.28.2"
+  },
+  "peerDependencies": {
+    "@algorandfoundation/algokit-utils": "^9.0.0",
+    "algosdk": "^3.4.0",
+    "p-map": "^7.0.3"
+  },
+  "type": "module"
+}
