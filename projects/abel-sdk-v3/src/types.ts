@@ -1,6 +1,5 @@
 import { ABIReturn } from "@algorandfoundation/algokit-utils/types/app";
-import { Transaction } from "algosdk";
-import { PendingTransactionResponse } from "algosdk/dist/types/client/v2/algod/models/types.js";
+import { modelsv2, Transaction } from "algosdk";
 import {
   LabelDescriptor as LabelDescriptorBoxValue,
   AssetMicro as AssetMicroValue,
@@ -12,8 +11,8 @@ import {
   AssetSmall as AssetSmallValue,
   AssetFull as AssetFullValue,
 } from "./generated/abel-contract-client.js";
-import {AlgorandClient} from "@algorandfoundation/algokit-utils";
-import {TransactionSignerAccount} from "@algorandfoundation/algokit-utils/types/account";
+import { AlgorandClient } from "@algorandfoundation/algokit-utils";
+import { TransactionSignerAccount } from "@algorandfoundation/algokit-utils/types/account";
 
 /**
  * Represents the configuration options for initializing the Abel SDK.
@@ -64,7 +63,7 @@ export interface LabelDescriptor extends LabelDescriptorBoxValue {
  */
 export type AnyFn = (...args: any[]) => any;
 
-export type ClientResponse = QueryReturn | SendReturn | BoxReturn;
+export type ClientResponse = QueryReturn | SendResponse;
 
 /**
  * @protected
@@ -72,43 +71,49 @@ export type ClientResponse = QueryReturn | SendReturn | BoxReturn;
 export interface QueryReturn {
   groupId: string;
   txIds: string[];
-  returns: ABIReturn[] & [];
-  confirmations: PendingTransactionResponse[];
+  returns: ABIReturn[] | undefined;
+  confirmations: modelsv2.PendingTransactionResponse[];
   transactions: Transaction[];
 }
 
 /**
  * @protected
  */
-export interface SendReturn {
-  confirmations: PendingTransactionResponse[];
-  groupId: string;
-  returns: ABIReturn[] & [undefined | void];
-  transactions: Transaction[];
-  txIds: string[];
-}
-
-/**
- * @protected
- */
-export interface BoxReturn {
-  return: void | undefined;
+export interface SendResponse {
   groupId: string;
   txIds: string[];
   returns?: ABIReturn[] | undefined;
-  confirmations: PendingTransactionResponse[];
+  confirmations: modelsv2.PendingTransactionResponse[];
   transactions: Transaction[];
-  confirmation: PendingTransactionResponse;
-  transaction: Transaction;
 }
-export interface AssetMicro extends AssetMicroValue { id: bigint; }
-export interface AssetMicroLabels extends AssetMicroLabelsValue { id: bigint; }
-export interface AssetTiny extends AssetTinyValue { id: bigint; }
-export interface AssetTinyLabels extends AssetTinyLabelsValue { id: bigint; }
-export interface AssetText extends AssetTextValue { id: bigint; }
-export interface AssetTextLabels extends AssetTextLabelsValue { id: bigint; }
-export interface AssetSmall extends AssetSmallValue { id: bigint; }
-export interface AssetFull extends AssetFullValue { id: bigint; }
+
+/**
+ * @protected
+ */
+export interface AssetMicro extends AssetMicroValue {
+  id: bigint;
+}
+export interface AssetMicroLabels extends AssetMicroLabelsValue {
+  id: bigint;
+}
+export interface AssetTiny extends AssetTinyValue {
+  id: bigint;
+}
+export interface AssetTinyLabels extends AssetTinyLabelsValue {
+  id: bigint;
+}
+export interface AssetText extends AssetTextValue {
+  id: bigint;
+}
+export interface AssetTextLabels extends AssetTextLabelsValue {
+  id: bigint;
+}
+export interface AssetSmall extends AssetSmallValue {
+  id: bigint;
+}
+export interface AssetFull extends AssetFullValue {
+  id: bigint;
+}
 
 /**
  * @protected

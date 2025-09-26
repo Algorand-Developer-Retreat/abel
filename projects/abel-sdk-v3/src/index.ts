@@ -30,6 +30,7 @@ import {
   AssetTinyLabels,
   ClientResponse,
   LabelDescriptor,
+  SendResponse,
 } from "./types.js";
 import { chunk, encodeUint64Arr, isNullish, mergeMapsArr, wrapErrors } from "./util.js";
 
@@ -448,7 +449,7 @@ export class AbelSDK {
         asset: assetId,
         label: labelId,
       },
-      boxReferences: [labelId, encodeUint64(assetId), decodeAddress(this.writeAccount.addr).publicKey],
+      boxReferences: [labelId, encodeUint64(assetId), this.writeAccount.addr.publicKey],
     });
     return wrapErrors(query);
   }
@@ -481,7 +482,7 @@ export class AbelSDK {
 
     let query = this.writeClient.newGroup();
 
-    const operatorBox = decodeAddress(this.writeAccount.addr).publicKey;
+    const operatorBox = this.writeAccount.addr.publicKey;
     // we need 2 refs for the first call only
     // we push two zero and adapt boxRefs in first call
     const AssetChunks = chunk([0n, 0n, ...assetIds], 8);
@@ -518,7 +519,7 @@ export class AbelSDK {
         asset: assetId,
         label: labelId,
       },
-      boxReferences: [labelId, encodeUint64(assetId), decodeAddress(this.writeAccount.addr).publicKey],
+      boxReferences: [labelId, encodeUint64(assetId), this.writeAccount.addr.publicKey],
     });
 
     return wrapErrors(query);
