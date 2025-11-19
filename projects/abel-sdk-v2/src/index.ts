@@ -169,7 +169,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .hasLabel({ args: { id: labelId } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
     return Boolean(hasLabel);
   }
@@ -188,7 +188,7 @@ export class AbelSDK {
         this.readClient
           .newGroup()
           .getLabel({ args: { id: labelId } })
-          .simulate(SIMULATE_PARAMS)
+          .simulate(SIMULATE_PARAMS),
       );
       return { id: labelId, ...labelDescriptorValue! };
     } catch (e) {
@@ -211,7 +211,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .logLabels({ args: { ids: labelIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
     const logs = confirmations[0]!.logs ?? [];
     const descriptorValues = this.parseLogsAs(logs, LabelDescriptorBoxValueFromTuple, "get_label");
@@ -280,7 +280,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetLabels({ args: { asset: assetId } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
     return assetLabels!;
   }
@@ -306,7 +306,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .logAssetsLabels({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const map: Map<bigint, string[]> = new Map();
@@ -314,7 +314,7 @@ export class AbelSDK {
     const labelValues = this.parseLogsAs(
       confirmations[0]!.logs ?? [],
       (arrs: Uint8Array[]) => arrs.map((arr) => Buffer.from(arr).toString()),
-      "get_asset_labels"
+      "get_asset_labels",
     );
 
     assetIds.forEach((assetId, idx) => {
@@ -343,7 +343,7 @@ export class AbelSDK {
           receiver: this.writeClient.appAddress,
           amount: (0.2).algos(),
         }),
-        this.writeAccount.signer
+        this.writeAccount.signer,
       )
       .addLabel({ args: { id: labelId, name, url }, boxReferences: [labelId] })
       .send();
@@ -471,7 +471,7 @@ export class AbelSDK {
   addLabelToAssets = async (assetIds: bigint[], labelId: string): Promise<ClientResponse | ClientResponse[]> => {
     this.requireWriteClient();
 
-    const METHOD_MAX = 6 + 8 * 15;
+    const METHOD_MAX = 3 + 4 * 15;
     if (assetIds.length > METHOD_MAX) {
       const chunked = chunk(assetIds, METHOD_MAX);
       return pMap(chunked, (assetIds) => this.addLabelToAssets(assetIds, labelId) as Promise<ClientResponse>, {
@@ -484,7 +484,7 @@ export class AbelSDK {
     const operatorBox = decodeAddress(this.writeAccount.addr).publicKey;
     // we need 2 refs for the first call only
     // we push two zero and adapt boxRefs in first call
-    const AssetChunks = chunk([0n, 0n, ...assetIds], 8);
+    const AssetChunks = chunk([0n, 0n, ...assetIds], 4);
 
     for (let i = 0; i < AssetChunks.length; i++) {
       // first box ref has label and acct. rest are all asset IDs
@@ -492,6 +492,15 @@ export class AbelSDK {
       const boxReferences = i === 0 ? [labelId, operatorBox, ...encodeUint64Arr(assetIds)] : encodeUint64Arr(assetIds);
 
       query.addLabelToAssets({
+        args: {
+          assets: assetIds,
+          label: labelId,
+        },
+        assetReferences: assetIds,
+        boxReferences,
+      });
+
+      console.log({
         args: {
           assets: assetIds,
           label: labelId,
@@ -543,7 +552,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetsMicro({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroFromTuple, "get_asset_micro");
@@ -572,7 +581,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetsMicroLabels({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetMicroLabelsFromTuple, "get_asset_micro_labels");
@@ -597,7 +606,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetsTiny({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetTinyFromTuple, "get_asset_tiny");
@@ -625,7 +634,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetsTinyLabels({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetTinyLabelsFromTuple, "get_asset_tiny_labels");
@@ -654,7 +663,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetsText({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetTextFromTuple, "get_asset_text");
@@ -682,7 +691,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetsTextLabels({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetTextLabelsFromTuple, "get_asset_text_labels");
@@ -712,7 +721,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetsSmall({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetSmallFromTuple, "get_asset_small");
@@ -739,7 +748,7 @@ export class AbelSDK {
       this.readClient
         .newGroup()
         .getAssetsFull({ args: { assets: assetIds } })
-        .simulate(SIMULATE_PARAMS)
+        .simulate(SIMULATE_PARAMS),
     );
 
     const assetValues = this.parseLogsAs(confirmations[0]!.logs ?? [], AssetFullFromTuple, "get_asset_full");
@@ -770,14 +779,14 @@ export class AbelSDK {
       if (logValue.length) {
         const parsed = tupleParser(
           // @ts-ignore TODO fixable?
-          decodingMethod.returns.type.decode(logValue)
+          decodingMethod.returns.type.decode(logValue),
         );
         // decimals is actually returned as BigInt despite being typed as numbers
         // patch this
         if ("decimals" in parsed) {
-          parsed.decimals = Number(parsed.decimals)
+          parsed.decimals = Number(parsed.decimals);
         }
-        return parsed
+        return parsed;
       }
       return { deleted: true };
     });

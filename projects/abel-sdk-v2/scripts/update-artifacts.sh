@@ -12,7 +12,9 @@ cd ../../asset_labeling-contracts
 contract_file=$(realpath smart_contracts/asset_labeling/contract.py)
 
 set -o xtrace
-algokit --no-color compile python "$contract_file" --out-dir="$artifacts_dir" --output-arc32 --no-output-arc56 --no-output-source-map --no-output-teal
+if algokit --version > /dev/null; then
+  algokit --no-color compile python "$contract_file" --out-dir="$artifacts_dir" --output-arc32 --no-output-arc56 --no-output-source-map --no-output-teal
+fi
 
 cd -
 
