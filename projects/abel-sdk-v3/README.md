@@ -1,4 +1,4 @@
-# Abel SDK for js-algorand-sdk v2
+# Abel SDK for js-algorand-sdk v3
 
 **Abel is an Asset Labeling registry, as well as a provider of batch asset data.**
 
@@ -7,7 +7,7 @@ Docs site: [abel-docs.d13.co](https://abel-docs.d13.co)
 ## Install
 
 > [!WARNING]
-> This version of abel-SDK only supports js-algorand-sdk v2 and its corresponding algokit-utils v7
+> This version of abel-SDK supports js-algorand-sdk v3 and algokit-utils v9
 
 ```
 npm i abel-sdk

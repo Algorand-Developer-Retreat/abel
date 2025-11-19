@@ -1,6 +1,7 @@
 {
   "name": "abel-sdk",
-  "version": "0.1.5",
+  "version": "3.0.0-alpha.0",
+  "publishConfig": { "tag": "alpha" },
   "description": "",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
