@@ -7,7 +7,8 @@ Docs site: [abel-docs.d13.co](https://abel-docs.d13.co)
 ## Install
 
 > [!WARNING]
-> This version of abel-SDK supports js-algorand-sdk v3 and algokit-utils v9
+> The v3.x versions of abel-SDK support js-algorand-sdk v3 and algokit-utils v9
+> For js-algorand-sdk v2 and utils v7, use the v0.x versions
 
 ```
 npm i abel-sdk
