@@ -6,7 +6,7 @@ cd $(dirname $(realpath $0))
 
 echo $(date) Started
 
-rm data/verified.json
+rm -f data/verified.json
 
 npx tsx scripts/download-pera-verified.ts
 
