@@ -771,8 +771,13 @@ export class AbelSDK {
     const parsed = logs.map((logValue) => {
       if (logValue.length) {
         const parsed = tupleParser(
+          // logValue is a subarray view into the simulate response buffer with a
+          // non-zero byteOffset. algosdk 3.x ABITupleType.decode reads dynamic head
+          // offsets via `new DataView(bytes.buffer).getUint16(i)`, ignoring byteOffset,
+          // so it reads from the wrong position and throws ("dynamic index segment
+          // miscalculation"). Copy to a fresh 0-offset buffer before decoding.
           // @ts-ignore TODO fixable?
-          decodingMethod.returns.type.decode(logValue),
+          decodingMethod.returns.type.decode(logValue.slice()),
         );
         // decimals is actually returned as BigInt despite being typed as numbers
         // patch this

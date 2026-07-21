@@ -1,6 +1,6 @@
 {
   "name": "abel-sdk",
-  "version": "3.1.6",
+  "version": "3.1.7",
   "description": "",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
