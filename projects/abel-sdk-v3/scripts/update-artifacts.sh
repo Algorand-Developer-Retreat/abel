@@ -16,4 +16,4 @@ algokit --no-color compile python "$contract_file" --out-dir="$artifacts_dir" --
 
 cd -
 
-npx --yes  @algorandfoundation/algokit-client-generator generate -a "$artifacts_dir/AssetLabeling.arc32.json" -o "$src_dir/generated/abel-contract-client.ts"
+npx --yes  @algorandfoundation/algokit-client-generator generate -a "$artifacts_dir/AssetLabeling.arc32.json" -o "$src_dir/generated/abel-contract-client.ts" -m minimal

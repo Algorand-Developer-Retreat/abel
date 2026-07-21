@@ -7,7 +7,6 @@ import pMap from "p-map";
 import {
   AssetFullFromTuple,
   AssetLabelingClient,
-  AssetLabelingFactory,
   AssetMicroFromTuple,
   AssetMicroLabelsFromTuple,
   AssetSmallFromTuple,
@@ -35,7 +34,7 @@ import {
 import { chunk, encodeUint64Arr, isNullish, mergeMapsArr, wrapErrors } from "./util.js";
 
 export * from "./types.js";
-export { AssetLabelingClient, AssetLabelingFactory };
+export { AssetLabelingClient };
 
 const DEFAULT_READ_ACCOUNT = "A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE";
 const SIMULATE_PARAMS = {
