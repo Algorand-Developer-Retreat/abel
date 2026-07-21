@@ -30,7 +30,7 @@ build = { commands = [
   'poetry run python -m smart_contracts build',
 ], description = 'Build all smart contracts in the project' }
 test = { commands = [
-  'npm run test',
+  'pnpm run test',
 ], description = 'Run smart contract tests using Jest' }
 audit = { commands = [
   'poetry run pip-audit',
