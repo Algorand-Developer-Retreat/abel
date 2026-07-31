@@ -12,3 +12,7 @@ jobs:
     name: Run asset_labeling-frontend validation
     uses: ./.github/workflows/asset-labeling-frontend-ci.yaml
 
+  abel-packages-ci:
+    name: Run abel SDKs and CLI validation
+    uses: ./.github/workflows/abel-packages-ci.yaml
+

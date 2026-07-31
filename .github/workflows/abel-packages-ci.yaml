@@ -1,0 +1,62 @@
+name: Validate abel SDKs and CLI
+
+on:
+  workflow_call:
+
+jobs:
+  validate:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      # Single install at the repo root covers every project in the pnpm workspace
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # abel-sdk (projects/abel-sdk-v3) is the package published to npm.
+      #
+      # Note these steps run build:esm / build:cjs rather than `build`. The `build`
+      # script has a `prebuild` hook that wipes src/generated and regenerates the
+      # contract client from contract.py, which needs algokit and the Python
+      # toolchain. Both the generated client and the arc32 artifact are committed,
+      # so compiling from them here is enough to catch a broken package.
+      - name: Typecheck abel-sdk
+        run: pnpm --filter abel-sdk run typecheck
+
+      - name: Test abel-sdk
+        run: pnpm --filter abel-sdk run test
+
+      - name: Build abel-sdk
+        run: |
+          pnpm --filter abel-sdk run build:esm
+          pnpm --filter abel-sdk run build:cjs
+
+      # typedoc is configured with requiredToBeDocumented, and abel-docs.d13.co is
+      # published from its output, so a docs build failure is a real failure.
+      - name: Build abel-sdk docs
+        run: pnpm --filter abel-sdk run docs
+
+      # abel-v2-sdk (projects/abel-sdk-v2) is the legacy line, published as abel-sdk v0.x
+      - name: Typecheck abel-v2-sdk
+        run: pnpm --filter abel-v2-sdk run typecheck
+
+      - name: Build abel-v2-sdk
+        run: |
+          pnpm --filter abel-v2-sdk run build:esm
+          pnpm --filter abel-v2-sdk run build:cjs
+
+      # abel-cli consumes abel-sdk via workspace:*. Typechecking it here is what
+      # catches the two packages resolving separate copies of algosdk, which breaks
+      # instanceof Address at runtime under js-algorand-sdk v3.
+      - name: Typecheck abel-cli
+        run: pnpm --filter abel-cli run typecheck

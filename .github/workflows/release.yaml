@@ -26,6 +26,11 @@ jobs:
     uses: ./.github/workflows/asset-labeling-contracts-cd.yaml
     needs: asset_labeling-contracts-validate
 
+  abel-packages-validate:
+    name: Run abel SDKs and CLI validation
+    secrets: inherit
+    uses: ./.github/workflows/abel-packages-ci.yaml
+
   asset_labeling-frontend-validate:
     name: Run asset_labeling-frontend release
     secrets: inherit
