@@ -8,10 +8,9 @@ permissions:
 
 jobs:
 
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    name: Deploy to Netlify
-    environment: frontend-prod
+    name: Build asset_labeling-frontend
 
     steps:
       - name: Checkout code
@@ -41,4 +40,6 @@ jobs:
       - name: Generate .env from template
         run: algokit project bootstrap env --ci
         working-directory: projects/asset_labeling-frontend
-    
+
+      - name: Build
+        run: algokit project run build --project-name 'asset_labeling-frontend'
