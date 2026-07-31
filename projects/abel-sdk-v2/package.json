@@ -33,6 +33,7 @@
     "docs": "typedoc",
     "build": "concurrently 'npm run build:cjs' 'npm run build:esm' 'npm run docs'",
     "prepublishOnly": "npm run build",
+    "typecheck": "tsc --project tsconfig.esm.json --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

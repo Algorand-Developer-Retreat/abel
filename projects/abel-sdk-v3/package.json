@@ -33,7 +33,8 @@
     "docs": "typedoc",
     "build": "concurrently 'npm run build:cjs' 'npm run build:esm' 'npm run docs'",
     "prepublishOnly": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc --project tsconfig.esm.json --noEmit"
   },
   "author": "",
   "license": "MIT",
