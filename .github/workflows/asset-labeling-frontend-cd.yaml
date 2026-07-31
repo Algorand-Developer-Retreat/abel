@@ -7,24 +7,38 @@ permissions:
   packages: read
 
 jobs:
-  
+
   deploy:
     runs-on: ubuntu-latest
     name: Deploy to Netlify
     environment: frontend-prod
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: pnpm
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       - name: Install algokit
         run: pipx install algokit
 
+      # Single install at the repo root covers every project in the pnpm workspace
       - name: Bootstrap dependencies
-        run: algokit project bootstrap all --project-name 'asset_labeling-frontend'
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate .env from template
+        run: algokit project bootstrap env --ci
+        working-directory: projects/asset_labeling-frontend
     

@@ -21,14 +21,28 @@ jobs:
           python-version: "3.12"
           cache: "poetry"
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
       - name: Install algokit
         run: pipx install algokit
 
       - name: Start LocalNet
         run: algokit localnet start
 
-      - name: Bootstrap dependencies
-        run: algokit project bootstrap all --project-name 'asset_labeling-contracts'
+      # Single install at the repo root covers every project in the pnpm workspace
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Bootstrap Python dependencies
+        run: algokit project bootstrap poetry
+        working-directory: projects/asset_labeling-contracts
 
       - name: Configure git
         shell: bash
