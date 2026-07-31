@@ -1,0 +1,15 @@
+{
+  "name": "abel-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Abel on-chain asset labeling registry - pnpm workspace root",
+  "license": "MIT",
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "build:sdk": "pnpm --filter abel-sdk build",
+    "build:sdk-v2": "pnpm --filter abel-v2-sdk build",
+    "build:frontend": "pnpm --filter asset_labeling-frontend build",
+    "typecheck:cli": "pnpm --filter abel-cli exec tsc --noEmit",
+    "test:contracts": "pnpm --filter smart_contracts test"
+  }
+}

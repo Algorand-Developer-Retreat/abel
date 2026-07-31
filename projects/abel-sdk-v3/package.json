@@ -19,7 +19,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Algorand-Developer-Retreat/abel.git",
-    "directory": "projects/abel-sdk-v2"
+    "directory": "projects/abel-sdk-v3"
   },
   "files": [
     "dist",
@@ -43,7 +43,8 @@
     "buffer": "^6.0.3",
     "concurrently": "^9.2.0",
     "tsx": "^4.19.3",
-    "typedoc": "^0.28.2"
+    "typedoc": "^0.28.2",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "@algorandfoundation/algokit-utils": "^9.0.0",

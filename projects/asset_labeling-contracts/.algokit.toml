@@ -15,7 +15,7 @@ name = 'asset_labeling-contracts'
 artifacts = 'smart_contracts/artifacts'
 
 [project.deploy]
-command = "npm run deploy:ci"
+command = "pnpm run deploy:ci"
 environment_secrets = [
   "DEPLOYER_MNEMONIC",
   "DISPENSER_MNEMONIC",
