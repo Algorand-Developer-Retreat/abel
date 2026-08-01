@@ -1,6 +1,6 @@
 {
-  "name": "abel-v2-sdk",
-  "version": "0.1.6",
+  "name": "abel-sdk",
+  "version": "3.2.0",
   "description": "",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -19,7 +19,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Algorand-Developer-Retreat/abel.git",
-    "directory": "projects/abel-sdk-v2"
+    "directory": "projects/abel-sdk-v3"
   },
   "files": [
     "dist",
@@ -33,13 +33,13 @@
     "docs": "typedoc",
     "build": "concurrently 'npm run build:cjs' 'npm run build:esm' 'npm run docs'",
     "prepublishOnly": "npm run build",
-    "typecheck": "tsc --project tsconfig.esm.json --noEmit",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc --project tsconfig.esm.json --noEmit"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@algorandfoundation/algokit-client-generator": "^4.0.9",
+    "@algorandfoundation/algokit-client-generator": "^6.0.0",
     "@types/node": "^22.13.17",
     "buffer": "^6.0.3",
     "concurrently": "^9.2.0",
@@ -48,8 +48,8 @@
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "@algorandfoundation/algokit-utils": "^7.0.2",
-    "algosdk": "^2.8.0",
+    "@algorandfoundation/algokit-utils": "^9.0.0",
+    "algosdk": "^3.4.0",
     "p-map": "^7.0.3"
   },
   "type": "module"

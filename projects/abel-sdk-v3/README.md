@@ -1,33 +1,28 @@
-# Abel SDK for js-algorand-sdk v2
+# Abel SDK
 
 **Abel is an Asset Labeling registry, as well as a provider of batch asset data.**
 
 The main asset label served is "Pera Verified".
 
-Docs site: [abel-docs.d13.co](https://abel-docs.d13.co) (documents the current v3.x release)
+Docs site: [abel-docs.d13.co](https://abel-docs.d13.co)
 
 ## Install
 
-> [!WARNING]
-> This is the legacy release line. It only supports js-algorand-sdk v2 and its corresponding algokit-utils v7.
+```
+npm i abel-sdk
+```
+
+> [!IMPORTANT]
+> abel-sdk v3.x is the current release. It targets js-algorand-sdk v3 and algokit-utils v9.
 >
-> Published releases of this line are on npm as `abel-sdk` v0.x. Because that name is shared with the current release, you **must** pin the major version — a bare `npm i abel-sdk` installs v3.x, which requires js-algorand-sdk v3.
-
-```
-npm i "abel-sdk@^0.1"
-```
-
-If you are on js-algorand-sdk v3 and algokit-utils v9, use the current release instead — see [abel-sdk-v3](../abel-sdk-v3/README.md).
-
-> [!NOTE]
-> Inside this repository the package is named `abel-v2-sdk`, so that both SDK lines can coexist as [pnpm workspace](../../README.md#workspace-layout) packages — workspace package names must be unique. `abel-v2-sdk` is not published to npm; install from the registry with `abel-sdk@^0.1` as above.
+> For js-algorand-sdk v2 and algokit-utils v7, install the v0.x releases instead — `npm i "abel-sdk@^0.1"` — documented in [abel-sdk-v2](../abel-sdk-v2/README.md), which is named `abel-v2-sdk` within this repository.
 
 `algosdk`, `@algorandfoundation/algokit-utils` and `p-map` are peer dependencies, so install them alongside abel-sdk if you don't have them already.
 
 ## Usage
 
 > [!NOTE]
-> Want to explore with a CLI? Check out [abel-cli](https://github.com/Algorand-Developer-Retreat/abel/tree/main/projects/abel-cli) which uses this SDK under the hood. Note that abel-cli tracks the v3 SDK.
+> Want to explore with a CLI? Check out [abel-cli](https://github.com/Algorand-Developer-Retreat/abel/tree/main/projects/abel-cli) which uses this SDK under the hood.
 
 The default use case is with a read-only client. This will allow you to fetch asset and label data, but not operate on the registry.
 
@@ -68,16 +63,16 @@ Asset IDs are `bigint`, as is the `id` field of every returned view. `decimals` 
 
 The available asset views are:
 
-- AssetMicro (no labels)
-- AssetMicroLabels
-- AssetTiny (no labels)
-- AssetTinyLabels
-- AssetText (no labels)
-- AssetTextLabels
-- AssetSmall
-- AssetFull
+- [AssetMicro](https://abel-docs.d13.co/AssetMicro) (no labels)
+- [AssetMicroLabels](https://abel-docs.d13.co/AssetMicroLabels)
+- [AssetTiny](https://abel-docs.d13.co/AssetTiny) (no labels)
+- [AssetTinyLabels](https://abel-docs.d13.co/AssetTinyLabels)
+- [AssetText](https://abel-docs.d13.co/AssetText) (no labels)
+- [AssetTextLabels](https://abel-docs.d13.co/AssetTextLabels)
+- [AssetSmall](https://abel-docs.d13.co/AssetSmall)
+- [AssetFull](https://abel-docs.d13.co/AssetFull)
 
-To fetch asset data in these views, use the corresponding `getAssetsXYZ` method of the SDK, e.g. `getAssetsMicroLabels`.
+To fetch asset data in these views, use the corresponding `getAssetsXYZ` method of the SDK, e.g. [getAssetsMicroLabels](https://abel-docs.d13.co/AbelSDK#getassetsmicrolabels).
 
 You can pass in as many asset IDs as you want.
 
@@ -91,20 +86,20 @@ You will get the best performance and efficiency if you use the smallest possibl
 
 ### 128 assets per simulate call
 
-- AssetMicro
-- AssetTiny
-- AssetText
+- [AssetMicro](https://abel-docs.d13.co/AssetMicro)
+- [AssetTiny](https://abel-docs.d13.co/AssetTiny)
+- [AssetText](https://abel-docs.d13.co/AssetText)
 
 ### 64 assets per simulate call
 
-- AssetMicroLabels
-- AssetTinyLabels
-- AssetTextLabels
-- AssetSmall
+- [AssetMicroLabels](https://abel-docs.d13.co/AssetMicroLabels)
+- [AssetTinyLabels](https://abel-docs.d13.co/AssetTinyLabels)
+- [AssetTextLabels](https://abel-docs.d13.co/AssetTextLabels)
+- [AssetSmall](https://abel-docs.d13.co/AssetSmall)
 
 ### 42 assets per simulate call
 
-- AssetFull
+- [AssetFull](https://abel-docs.d13.co/AssetFull)
 
 ### Concurrency
 
@@ -114,7 +109,7 @@ If you request more assets than a single simulate call can provide for that view
 
 By default, Abel will use up to 4 simulate "threads", i.e. it will keep up to 4 simulate requests in parallel in order to fetch asset data.
 
-You can control this level of concurrency by passing in a `concurrency` property in the Abel SDK constructor.
+You can control this level of concurrency by passing in a `concurrency` property in the [Abel SDK constructor](https://abel-docs.d13.co/AbelSDK#constructor).
 
 > [!NOTE]
 > The concurrency limit is per-method call, not global. For example, if you have `concurrency: 2` and you await two separate `getAssetsTiny()` methods of more than 128 assets each, there will be 4 simulate requests in flight.
@@ -185,5 +180,3 @@ It is also available on its own subpath, if you want the client without pulling 
 ```typescript
 import { AssetLabelingClient } from "abel-sdk/client";
 ```
-
-This release also re-exports `AssetLabelingFactory`. Note that v3.x does not — if you rely on the factory, construct it from the generated client module directly when migrating.

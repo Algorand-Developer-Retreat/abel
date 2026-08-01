@@ -1,6 +1,14 @@
 # asset_labeling-contracts
 
-This project has been generated using AlgoKit. See below for default getting started instructions.
+The Abel registry contract, written in Algorand Python (PuyaPy).
+
+- [`smart_contracts/asset_labeling/contract.py`](./smart_contracts/asset_labeling/contract.py) — the `AssetLabeling` contract: label CRUD, operator RBAC, asset labeling, and the batch asset view methods.
+- [`smart_contracts/asset_labeling/types.py`](./smart_contracts/asset_labeling/types.py) — the `LabelDescriptor` box struct and the eight asset view structs.
+- [`smart_contracts/asset_labeling/deploy-config.ts`](./smart_contracts/asset_labeling/deploy-config.ts) — deployment logic.
+
+See the [root README](../../README.md) for the registry design and the full method list.
+
+This project was generated using AlgoKit. See below for getting started instructions.
 
 # Setup
 
@@ -26,6 +34,7 @@ Ensure the following pre-requisites are installed and properly configured:
 Run the following commands within the project folder:
 
 - **Install Poetry**: Required for Python dependency management. [Installation Guide](https://python-poetry.org/docs/#installation). Verify with `poetry -V` to see version `1.2`+.
+- **Install Node dependencies**: This project is part of the repository's [pnpm workspace](../../README.md#workspace-layout). Run `pnpm install` once from the repository root rather than installing here.
 - **Setup Project**: Execute `algokit project bootstrap all` to install dependencies and setup a Python virtual environment in `.venv`.
 - **Configure environment**: Execute `algokit generate env-file -a target_network localnet` to create a `.env.localnet` file with default configuration for `localnet`.
 - **Start LocalNet**: Use `algokit localnet start` to initiate a local Algorand network.
@@ -36,9 +45,9 @@ Run the following commands within the project folder:
 Directly manage and interact with your project using AlgoKit commands:
 
 1. **Build Contracts**: `algokit project run build` compiles all smart contracts. You can also specify a specific contract by passing the name of the contract folder as an extra argument.
-For example: `algokit project run build -- hello_world` will only build the `hello_world` contract.
+For example: `algokit project run build -- asset_labeling` will only build the `asset_labeling` contract.
 2. **Deploy**: Use `algokit project deploy localnet` to deploy contracts to the local network. You can also specify a specific contract by passing the name of the contract folder as an extra argument.
-For example: `algokit project deploy localnet -- hello_world` will only deploy the `hello_world` contract.
+For example: `algokit project deploy localnet -- asset_labeling` will only deploy the `asset_labeling` contract.
 
 #### VS Code 
 For a seamless experience with breakpoint debugging and other features:
@@ -65,7 +74,7 @@ This template provides a set of [algokit generators](https://github.com/algorand
 
 ### Generate Smart Contract 
 
-By default the template creates a single `HelloWorld` contract under asset_labeling folder in the `smart_contracts` directory. To add a new contract:
+This project contains a single `AssetLabeling` contract under the `asset_labeling` folder in the `smart_contracts` directory. To add another contract:
 
 1. From the root of the project (`../`) execute `algokit generate smart-contract`. This will create a new starter smart contract and deployment configuration file under `{your_contract_name}` subfolder in the `smart_contracts` directory.
 2. Each contract potentially has different creation parameters and deployment steps. Hence, you need to define your deployment logic in `deploy-config.ts`file.
@@ -87,9 +96,11 @@ Refer to the commented header in the `index.ts` file in the `smart_contracts` fo
 
 If you have opted in to include VSCode launch configurations in your project, you can also use the `Debug TEAL via AlgoKit AVM Debugger` launch configuration to interactively select an available trace file and launch the debug session for your smart contract.
 
-For information on using and setting up the `AlgoKit AVM Debugger` VSCode extension refer [here](https://github.com/algorandfoundation/algokit-avm-vscode-debugger). To install the extension from the VSCode Marketplace, use the following link: [AlgoKit AVM Debugger extension](https://marketplace.visualstudio.com/items?itemName=algorandfoundation.algokit-avm-vscode-debugger).### Continuous Integration / Continuous Deployment (CI/CD)
+For information on using and setting up the `AlgoKit AVM Debugger` VSCode extension refer [here](https://github.com/algorandfoundation/algokit-avm-vscode-debugger). To install the extension from the VSCode Marketplace, use the following link: [AlgoKit AVM Debugger extension](https://marketplace.visualstudio.com/items?itemName=algorandfoundation.algokit-avm-vscode-debugger).
 
-This project uses [GitHub Actions](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions) to define CI/CD workflows, which are located in the [.github/workflows](`../../.github/workflows`) folder.
+### Continuous Integration / Continuous Deployment (CI/CD)
+
+This project uses [GitHub Actions](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions) to define CI/CD workflows, which are located in the [.github/workflows](../../.github/workflows) folder.
 
 > Please note, if you instantiated the project with --workspace flag in `algokit init` it will automatically attempt to move the contents of the `.github` folder to the root of the workspace.
 
@@ -144,8 +155,9 @@ This project makes use of Algorand Python to build Algorand smart contracts. The
 - [AlgoKit](https://github.com/algorandfoundation/algokit-cli) - One-stop shop tool for developers building on the Algorand network; [docs](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/algokit.md), [intro tutorial](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/tutorials/intro.md)
 - [Algorand Python](https://github.com/algorandfoundation/puya) - A semantically and syntactically compatible, typed Python language that works with standard Python tooling and allows you to express smart contracts (apps) and smart signatures (logic signatures) for deployment on the Algorand Virtual Machine (AVM); [docs](https://github.com/algorandfoundation/puya), [examples](https://github.com/algorandfoundation/puya/tree/main/examples)
 - [AlgoKit Utils](https://github.com/algorandfoundation/algokit-utils-ts) - A set of core Algorand utilities that make it easier to build solutions on Algorand.
-- [Poetry](https://python-poetry.org/): Python packaging and dependency management.- [Black](https://github.com/psf/black): A Python code formatter.- [Ruff](https://github.com/charliermarsh/ruff): An extremely fast Python linter.
-
+- [Poetry](https://python-poetry.org/): Python packaging and dependency management.
+- [Black](https://github.com/psf/black): A Python code formatter.
+- [Ruff](https://github.com/charliermarsh/ruff): An extremely fast Python linter.
 - [mypy](https://mypy-lang.org/): Static type checker.
 - [pip-audit](https://pypi.org/project/pip-audit/): Tool for scanning Python environments for packages with known vulnerabilities.
 - [npm](https://www.npmjs.com/): Node.js package manager

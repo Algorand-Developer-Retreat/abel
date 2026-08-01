@@ -1,10 +1,10 @@
 # Abel: On-Chain Asset Labeling Registry
 
-**Impatient? Jump to [setup](#Setup).**
+**Impatient? Jump to [setup](#setup), or the [SDK](#sdk).**
 
 **Status: PoC/Alpha**
 
-_Disclaimer: This is a proof of concept developer for the 2025 Algorand Developer Retreat. Not endorsed by the Algorand Foundation or Pera._
+_Disclaimer: This is a proof of concept developed for the 2025 Algorand Developer Retreat. Not endorsed by the Algorand Foundation or Pera._
 
 ## Overview
 
@@ -30,7 +30,7 @@ Establishing a straightforward distribution method for asset labeling should red
 
 The secondary utility of this contract will be offering read-only calls that can be simulated to fetch multiple assets' information at once, for use in frontends like explorers, defi, etc.
 
-Using this method will allow fetching up to 128 assets' data at a time, resulting in significantly reduced overhead in networking/API requests etc for frontends and (web 2) backends.
+Using this method will allow fetching up to 128 assets' data at a time — depending on the [view](#asset-viewsstructs) requested — resulting in significantly reduced overhead in networking/API requests etc for frontends and (web 2) backends.
 
 As an example, rendering a simple asset transfer transaction in a table row could require just the asset decimals (in order to render the amount) and the unit name (in order to indicate the asset being transferred.) Currently, querying for these two pieces of information requires an entire asset object lookup from algod or indexer, and for tens+ of assets in a page, this can add up.
 
@@ -78,9 +78,9 @@ admin: Address
 #### Label Descriptors
 
 ```python
-[label_id] -> Struct<label_name,num_labels,num_operators>
+[label_id] -> Struct<name,url,num_assets,num_operators>
 
-e.g. "pv" -> ["Pera Verified",2218,2]
+e.g. "pv" -> ["Pera Verified","https://perawallet.app",2218,2]
 ```
 
 Label ID: must be exactly 2 bytes
@@ -102,48 +102,59 @@ Operator: 32 bytes pk
 
 ## Registry Methods
 
-> [!WARNING]
-> Section may differ from implementation
+Method names and argument order match [`contract.py`](projects/asset_labeling-contracts/smart_contracts/asset_labeling/contract.py).
 
 ### Admin access
 
 ```python
 change_admin(new_admin)
-add_label(label_id, label_name, first_operator)
-remove_label(label_id)
+add_label(id, name, url)
+change_label(id, name, url)
+remove_label(id)
 ```
+
+`add_label` creates a label with zero operators and zero assets; assign the first operator with `add_operator_to_label`.
+
+`remove_label` requires the label to have no remaining operators and no remaining assets.
 
 ### Admin & Operator access
 
 ```python
-add_label_to_operator(operator, label_id)
-remove_label_to_operator(operator, label_id)
+add_operator_to_label(operator, label)
+remove_operator_from_label(operator, label)
 ```
 
 ### Operator access
 
 ```python
-add_label_to_asset(asset_id, label_id)
-remove_label_from_asset(asset_id, label_id)
+add_label_to_asset(label, asset)
+add_label_to_assets(label, assets[])
+remove_label_from_asset(label, asset)
 ```
+
+_Note: these take the label first and the asset(s) second._
 
 ### Public access / read only / label scope
 
 ```python
-get_label(label_id)
+has_label(id) -> UInt64
+get_label(id) -> LabelDescriptor
+log_labels(ids[]) -> void
 
-get_operator_labels(operator)
+has_operator_label(operator, label) -> UInt64
+get_operator_labels(operator) -> label_id[]
 
-has_asset_label(asset_id, label_id) -> Bool
-get_asset_labels(asset_id) -> label_id[]
-
-have_assets_label(asset_ids[], label_id) -> Bool[]
-get_assets_labels(asset_ids[]) -> label_id[][]
+has_asset_label(asset_id, label) -> UInt64
+get_asset_labels(asset) -> label_id[]
+get_assets_labels(assets[]) -> label_id[][]
+log_assets_labels(assets[]) -> void
 ```
 
-_Note: in methods that operate on multiple assets, inputs are mapped to outputs by offset. In `get_assets_labels`, an asset without labels should map to an empty labels array `[]` in the corresponding offset._
+_Note: the `has_` methods return `UInt64` (0 or 1) rather than `Bool`._
 
-### Public access / read only / mixed scope
+_Note: in methods that operate on multiple assets, inputs are mapped to outputs by offset. In `get_assets_labels`, an asset without labels maps to an empty labels array `[]` in the corresponding offset._
+
+_Note: `log_labels` and `log_assets_labels` log each result independently instead of returning them, which avoids the 4KB limit on returned data. See [View methods](#view-methods)._
 
 ## Data fetcher design
 
@@ -153,138 +164,197 @@ Abel provides readonly ABI methods as a simulate target to enable batch asset lo
 
 ### Asset Views/Structs
 
-> [!CAUTION]
-> Section differs from implementation
+Eight asset views are returned (or logged) as arc4 structs. Field lists match [`types.py`](projects/asset_labeling-contracts/smart_contracts/asset_labeling/types.py).
 
-We define 4 asset views that will be returned (or logged) as arc4 structs.
+Different use cases may opt to fetch different views. The number of assets that fit in a single simulate request depends on how many AVM resource references the view needs: one per asset, plus one for the asset's labels box, plus one for the reserve account.
 
-Different use cases may opt to fetch 
+Views come in pairs — a base view, and the same view plus labels. Fetching labels costs an extra resource reference, halving the assets per request, so use the label-free view when you only need asset data.
 
-#### Full (including reserve balance for circulating supply calculations)
+#### Micro (1 ref, max 128 assets)
 
-- Asset Name - AN 32
-- Unit Name - UN 8
-- Total - TOT 8
-- Decimal - DEC 4
-- URL 96
-- Manager - MGR 32
-- Freeze - FRZ 32
-- Clawback - CLWB 32
-- Reserve - 32
-- Reserve Balance - 8
-- LABELS 4 (? doublecheck dynamicarray<dynamicbytes> overhead)
+The MVP view, e.g. for rendering an asset transfer row: enough to format an amount.
 
-_Question: Should this include metadata hash and default frozen? Leaning yes._
+- unit_name
+- decimals
 
-Max assets per simulate: 64 (2 resources per asset: 1x acct, 1x asset)
+#### MicroLabels (2 refs, max 64 assets)
 
-Max logged: 288 x 64 = 18432 bytes
+Micro, plus labels.
 
-#### Large
+- unit_name
+- decimals
+- labels
 
-- AN 32
-- UN 8
-- TOT 8
-- DEC 4
-- URL 96
-- MGR 32
-- FRZ 32
-- CLWB 32
-- RSVR 32
-- LABELS 4
+#### Tiny (1 ref, max 128 assets)
 
-(See "full" view for acronym definitions)
+Micro, plus the asset name.
 
-max assets per simulate: 128
+- name
+- unit_name
+- decimals
 
-= 280 x 128 = 35840 max
+#### TinyLabels (2 refs, max 64 assets)
 
-#### Small
+Tiny, plus labels.
 
-- AN 32
-- UN 8
-- TOT 8
-- DEC 4
-- URL 96
-- FRZ_BOOL 1
-- CLWB_BOOL 1
-- LABELS 4
+- name
+- unit_name
+- decimals
+- labels
 
-(See "full" view for acronym definitions)
+#### Text (1 ref, max 128 assets)
 
-max assets per simulate: 128
+The searchable text fields, e.g. for building a client-side asset search index.
 
-= 154 x 128 = 19712 max
+- name
+- unit_name
+- url
 
-#### Tiny
+#### TextLabels (2 refs, max 64 assets)
 
-- UN 8
-- DEC 8
-- LABELS 4
+Text, plus labels.
 
-(See "full" view for acronym definitions)
+- name
+- unit_name
+- url
+- labels
 
-max assets per simulate: 128
+#### Small (2 refs, max 64 assets)
 
-= 20 x 128 = 2560 max
+What a hover card on an explorer may show. Freeze and clawback are reduced to booleans indicating whether the address is set.
+
+- name
+- unit_name
+- decimals
+- total
+- has_freeze
+- has_clawback
+- labels
+
+#### Full (3 refs, max 42 assets)
+
+Everything from the algod `/v2/assets` API, plus the reserve balance for circulating supply calculations. The third resource reference is the reserve account.
+
+- name
+- unit_name
+- url
+- total
+- decimals
+- creator
+- manager
+- freeze
+- clawback
+- reserve
+- default_frozen
+- metadata_hash
+- reserve_balance
+- labels
 
 ## View methods
 
-> [!CAUTION]
-> Section differs from implementation
->
-Each view above would have three corresponding read methods. E.g. for the full view:
+Each view has two corresponding read-only methods. E.g. for the micro view:
 
 ```python
-get_asset_full(asset_id) -> AssetFullView
-get_assets_full(asset_ids[]) -> AssetFullView[]
-log_assets_full(asset_ids[]) -> void
+get_asset_micro(asset) -> AssetMicro
+get_assets_micro(assets[]) -> void
 ```
 
-The `log_` variants will log each asset view independently. This will allow for more than 4KB of data to be "returned" per simulate request.
+The singular `get_asset_*` variant returns the struct directly, for a single asset.
 
-**Note: the `get_` variants will fail if the size of the returned data (including arc4 encoding overhead) exceeds 4KB. The `log_` variants should be preferred by the SDK and other clients.**
+The plural `get_assets_*` variant logs each asset view independently and returns nothing. This allows for more than 4KB of data to be "returned" per simulate request, since the 4KB limit applies to returned data rather than logs.
 
-The full list of methods (4 views x 3 methods) are:
+**Note: the plural `get_assets_*` variants should be preferred by the SDK and other clients.** This is what the [SDK](#sdk) uses.
+
+The full list of methods (8 views x 2 methods) are:
 
 ```python
-get_asset_full(asset_id) -> AssetFullView
-get_assets_full(asset_ids[]) -> AssetFullView[]
-log_assets_full(asset_ids[]) -> void
+get_asset_micro(asset) -> AssetMicro
+get_assets_micro(assets[]) -> void
 
-get_asset_large(asset_id) -> AssetLargeView
-get_assets_large(asset_ids[]) -> AssetLargeView[]
-log_assets_large(asset_ids[]) -> void
+get_asset_micro_labels(asset) -> AssetMicroLabels
+get_assets_micro_labels(assets[]) -> void
 
-get_asset_small(asset_id) -> AssetSmallView
-get_assets_small(asset_ids[]) -> AssetSmallView[]
-log_assets_small(asset_ids[]) -> void
+get_asset_tiny(asset) -> AssetTiny
+get_assets_tiny(assets[]) -> void
 
-get_asset_tiny(asset_id) -> AssetTinyView
-get_assets_tiny(asset_ids[]) -> AssetTinyView[]
-log_assets_tiny(asset_ids[]) -> void
+get_asset_tiny_labels(asset) -> AssetTinyLabels
+get_assets_tiny_labels(assets[]) -> void
+
+get_asset_text(asset) -> AssetText
+get_assets_text(assets[]) -> void
+
+get_asset_text_labels(asset) -> AssetTextLabels
+get_assets_text_labels(assets[]) -> void
+
+get_asset_small(asset) -> AssetSmall
+get_assets_small(assets[]) -> void
+
+get_asset_full(asset) -> AssetFull
+get_assets_full(assets[]) -> void
 ```
 
-_Question: should the single asset getter be omitted? the plural variant could be used to fetch a single asset as well. Leaning yes._
+## SDK
+
+[abel-sdk](projects/abel-sdk-v3/README.md) is a TypeScript SDK wrapping the registry, including batched asset lookups via simulate.
+
+```
+npm i abel-sdk
+```
+
+Docs site: [abel-docs.d13.co](https://abel-docs.d13.co)
+
+`abel-sdk` v3.x is the current release, targeting js-algorand-sdk v3 and algokit-utils v9. For js-algorand-sdk v2 and algokit-utils v7, use the v0.x releases, maintained in [abel-sdk-v2](projects/abel-sdk-v2/README.md).
+
+To explore the registry from a terminal, see [abel-cli](projects/abel-cli/README.md).
 
 ## Setup
 
 ### Initial setup
 1. Clone this repository to your local machine.
-2. Ensure [Docker](https://www.docker.com/) is installed and operational. Then, install `AlgoKit` following this [guide](https://github.com/algorandfoundation/algokit-cli#install).
-3. Run `algokit project bootstrap all` in the project directory. This command sets up your environment by installing necessary dependencies, setting up a Python virtual environment, and preparing your `.env` file.
-4. In the case of a smart contract project, execute `algokit generate env-file -a target_network localnet` from the `asset_labeling-contracts` directory to create a `.env.localnet` file with default configuration for `localnet`.
-5. To build your project, execute `algokit project run build`. This compiles your project and prepares it for running.
-6. For project-specific instructions, refer to the READMEs of the child projects:
+2. Ensure [Docker](https://www.docker.com/) is installed and operational. Then install [AlgoKit](https://github.com/algorandfoundation/algokit-cli#install) and [pnpm](https://pnpm.io/installation).
+3. Run `pnpm install` in the repository root. This is a [pnpm workspace](#workspace-layout) — one install at the root covers every JavaScript/TypeScript project under `projects/`.
+4. Run `algokit project bootstrap all` to set up the Python virtual environment for the contracts and prepare `.env` files.
+5. In the case of a smart contract project, execute `algokit generate env-file -a target_network localnet` from the `asset_labeling-contracts` directory to create a `.env.localnet` file with default configuration for `localnet`.
+6. To build your project, execute `algokit project run build`. This compiles your project and prepares it for running.
+7. For project-specific instructions, refer to the READMEs of the child projects:
    - Smart Contracts: [asset_labeling-contracts](projects/asset_labeling-contracts/README.md)
+   - TypeScript SDK, current: [abel-sdk-v3](projects/abel-sdk-v3/README.md) — js-algorand-sdk v3, algokit-utils v9
+   - TypeScript SDK, legacy: [abel-sdk-v2](projects/abel-sdk-v2/README.md) — js-algorand-sdk v2, algokit-utils v7
+   - CLI: [abel-cli](projects/abel-cli/README.md)
    - Frontend Application: [asset_labeling-frontend](projects/asset_labeling-frontend/README.md)
 
 > This project is structured as a monorepo, refer to the [documentation](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/features/project/run.md) to learn more about custom command orchestration via `algokit project run`.
 
+### Workspace layout
+
+The JavaScript/TypeScript projects form a single [pnpm workspace](https://pnpm.io/workspaces), declared in [`pnpm-workspace.yaml`](./pnpm-workspace.yaml) as `projects/*`. There is one lockfile, [`pnpm-lock.yaml`](./pnpm-lock.yaml), at the root; the individual projects do not have their own.
+
+| Directory | Package name | Notes |
+| --- | --- | --- |
+| `projects/abel-sdk-v3` | `abel-sdk` | Current SDK, published to npm |
+| `projects/abel-sdk-v2` | `abel-v2-sdk` | Legacy SDK, published to npm as `abel-sdk` v0.x |
+| `projects/abel-cli` | `abel-cli` | Consumes `abel-sdk` via `workspace:*` |
+| `projects/asset_labeling-contracts` | `smart_contracts` | Contract build and tests |
+| `projects/asset_labeling-frontend` | `asset_labeling-frontend` | React app |
+
+The two SDKs are published under the same npm name (`abel-sdk`) but on different major lines, so the legacy package is named `abel-v2-sdk` locally to keep the workspace names unique. See the [abel-sdk-v2 README](projects/abel-sdk-v2/README.md) for what this means when installing it.
+
+Run a script in one project with `--filter`, from anywhere in the repo:
+
+```
+pnpm --filter abel-sdk build          # build the current SDK
+pnpm --filter abel-cli exec tsc --noEmit
+pnpm --filter asset_labeling-frontend dev
+```
+
+Because `abel-cli` depends on `abel-sdk` with `workspace:*`, it always resolves the local SDK and shares a single copy of `algosdk` with it. That sharing matters: js-algorand-sdk v3 uses `instanceof Address` checks, which fail if a consumer and the SDK each resolve their own copy of `algosdk`.
+
+_Note: `algokit project run build` builds the contracts and frontend. Build the SDKs with `pnpm --filter abel-sdk build`; that build regenerates the contract client from the compiled contract artifacts._
+
 ### Subsequently
 
-1. If you update to the latest source code and there are new dependencies, you will need to run `algokit project bootstrap all` again.
-2. Follow step 3 above.
+1. If you update to the latest source code and there are new dependencies, run `pnpm install` in the repository root again.
+2. If Python dependencies changed, run `algokit project bootstrap all` again.
 
 ### Continuous Integration / Continuous Deployment (CI/CD)
 
@@ -292,28 +362,37 @@ This project uses [GitHub Actions](https://docs.github.com/en/actions/learn-gith
 
 For pushes to `main` branch, after the above checks pass, the following deployment actions are performed:
   - The smart contract(s) are deployed to TestNet using [AlgoNode](https://algonode.io).
-  - The frontend application is deployed to a provider of your choice (Netlify, Vercel, etc.). See [frontend README](frontend/README.md) for more information.
+  - The frontend application is built. It is not published anywhere — no hosting provider is configured. See [frontend README](projects/asset_labeling-frontend/README.md) for more information.
 
 > Please note deployment of smart contracts is done via `algokit deploy` command which can be invoked both via CI as seen on this project, or locally. For more information on how to use `algokit deploy` please see [AlgoKit documentation](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/features/deploy.md).
 
 ## Tools
 
-This project makes use of Python and React to build Algorand smart contracts and to provide a base project configuration to develop frontends for your Algorand dApps and interactions with smart contracts. The following tools are in use:
+The registry contract is written in Algorand Python; the SDKs, CLI and frontend are TypeScript. The following tools are in use:
 
 - Algorand, AlgoKit, and AlgoKit Utils
-- Python dependencies including Poetry, Black, Ruff or Flake8, mypy, pytest, and pip-audit
-- React and related dependencies including AlgoKit Utils, Tailwind CSS, daisyUI, use-wallet, npm, jest, playwright, Prettier, ESLint, and Github Actions workflows for build validation
+- Contracts: Algorand Python (PuyaPy), with Poetry, Black, Ruff, mypy and pip-audit
+- SDKs and CLI: TypeScript, tsx, typedoc, and the AlgoKit client generator
+- Frontend: React, Vite, and MUI
+- GitHub Actions workflows for build validation
 
 ### VS Code
 
-It has also been configured to have a productive dev experience out of the box in [VS Code](https://code.visualstudio.com/), see the [backend .vscode](./backend/.vscode) and [frontend .vscode](./frontend/.vscode) folders for more details.
+It has also been configured to have a productive dev experience out of the box in [VS Code](https://code.visualstudio.com/), see the [.vscode](./.vscode) folder and the [contracts .vscode](projects/asset_labeling-contracts/.vscode) folder for more details.
 
 ## Integrating with smart contracts and application clients
 
-Refer to the [asset_labeling-contracts](projects/asset_labeling-contracts/README.md) folder for overview of working with smart contracts, [projects/asset_labeling-frontend](projects/asset_labeling-frontend/README.md) for overview of the React project and the [projects/asset_labeling-frontend/contracts](projects/asset_labeling-frontend/src/contracts/README.md) folder for README on adding new smart contracts from backend as application clients on your frontend. The templates provided in these folders will help you get started.
-When you compile and generate smart contract artifacts, your frontend component will automatically generate typescript application clients from smart contract artifacts and move them to `frontend/src/contracts` folder, see [`generate:app-clients` in package.json](projects/asset_labeling-frontend/package.json). Afterwards, you are free to import and use them in your frontend application.
+The easiest way to integrate with the registry is the [SDK](#sdk), which wraps the generated contract client and handles simulate batching for you.
 
-The frontend starter also provides an example of interactions with your AssetLabelingClient in [`AppCalls.tsx`](projects/asset_labeling-frontend/src/components/AppCalls.tsx) component by default.
+If you need the generated ARC-4 client directly, it is published as a subpath export of the SDK package:
+
+```typescript
+import { AssetLabelingClient } from "abel-sdk/client";
+```
+
+The client is generated from the compiled contract artifacts by the SDK's build script, so it stays in sync with [`contract.py`](projects/asset_labeling-contracts/smart_contracts/asset_labeling/contract.py). Refer to the [asset_labeling-contracts](projects/asset_labeling-contracts/README.md) README for an overview of working with the contract itself.
+
+[asset_labeling-frontend](projects/asset_labeling-frontend/README.md) is a small React app that consumes the SDK, and serves as a worked example.
 
 ## Next Steps
 

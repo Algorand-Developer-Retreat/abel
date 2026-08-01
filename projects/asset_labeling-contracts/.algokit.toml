@@ -15,7 +15,7 @@ name = 'asset_labeling-contracts'
 artifacts = 'smart_contracts/artifacts'
 
 [project.deploy]
-command = "npm run deploy:ci"
+command = "pnpm run deploy:ci"
 environment_secrets = [
   "DEPLOYER_MNEMONIC",
   "DISPENSER_MNEMONIC",
@@ -30,7 +30,7 @@ build = { commands = [
   'poetry run python -m smart_contracts build',
 ], description = 'Build all smart contracts in the project' }
 test = { commands = [
-  'npm run test',
+  'pnpm run test',
 ], description = 'Run smart contract tests using Jest' }
 audit = { commands = [
   'poetry run pip-audit',

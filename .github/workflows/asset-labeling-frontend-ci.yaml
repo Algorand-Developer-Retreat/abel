@@ -14,25 +14,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
-      - name: Install poetry
-        run: pipx install poetry
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "poetry"
 
       - name: Install algokit
         run: pipx install algokit
 
+      # Single install at the repo root covers every project in the pnpm workspace
       - name: Install dependencies
-        run: algokit project bootstrap all --project-name 'asset_labeling-frontend'
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate .env from template
+        run: algokit project bootstrap env --ci
+        working-directory: projects/asset_labeling-frontend
 
       
       - name: Run linters
