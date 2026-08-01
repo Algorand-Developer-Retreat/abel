@@ -80,7 +80,6 @@ This project makes use of React to provide a frontend for the Abel registry. The
 - [Vite](https://vitejs.dev/) - Build tool and dev server.
 - [MUI](https://mui.com/) - React component library; the asset table uses [MUI X Data Grid](https://mui.com/x/react-data-grid/).
 - [npm](https://www.npmjs.com/): Node.js package manager
-- [playwright](https://playwright.dev/): Browser automation library
 - [Prettier](https://prettier.io/): Opinionated code formatter
 - [ESLint](https://eslint.org/): Tool for identifying and reporting on patterns in JavaScript
 - Github Actions workflows for build validation
